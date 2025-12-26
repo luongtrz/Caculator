@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="85dp"
+    android:layout_height="48dp"
+    android:padding="3dp">
+    
+    <EditText
+        android:id="@+id/edit_weight"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg_weight_cell"
+        android:gravity="center"
+        android:hint="0.00"
+        android:textColorHint="#9E9E9E"
+        android:inputType="numberDecimal"
+        android:maxLines="1"
+        android:textSize="13sp"
+        android:textColor="#37474F"
+        android:textStyle="bold"
+        android:imeOptions="actionNext"
+        android:importantForAutofill="no" />
+    
+</FrameLayout>

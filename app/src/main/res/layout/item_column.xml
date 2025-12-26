@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="4dp"
+    app:cardCornerRadius="4dp"
+    app:cardElevation="2dp"
+    android:backgroundTint="#FFFFFF">
+    
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="6dp"
+        android:background="@drawable/bg_weight_cell">
+        
+        <!-- Column Header -->
+        <TextView
+            android:id="@+id/tv_column_number"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:text="Cột 1"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="#37474F"
+            android:gravity="center"
+            android:background="#E0E0E0"
+            android:padding="4dp"
+            android:layout_marginBottom="3dp" />
+        
+        <!-- Bag 1 -->
+        <EditText
+            android:id="@+id/edit_weight_1"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:hint="0.0"
+            android:textColorHint="#9E9E9E"
+            android:inputType="numberDecimal"
+            android:gravity="center"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:padding="8dp"
+            android:background="@android:drawable/edit_text"
+            android:layout_marginBottom="2dp"
+            android:imeOptions="actionNext"
+            android:importantForAutofill="no" />
+        
+        <!-- Bag 2 -->
+        <EditText
+            android:id="@+id/edit_weight_2"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:hint="0.0"
+            android:textColorHint="#9E9E9E"
+            android:inputType="numberDecimal"
+            android:gravity="center"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:padding="8dp"
+            android:background="@android:drawable/edit_text"
+            android:layout_marginBottom="2dp"
+            android:imeOptions="actionNext"
+            android:importantForAutofill="no" />
+        
+        <!-- Bag 3 -->
+        <EditText
+            android:id="@+id/edit_weight_3"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:hint="0.0"
+            android:textColorHint="#9E9E9E"
+            android:inputType="numberDecimal"
+            android:gravity="center"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:padding="8dp"
+            android:background="@android:drawable/edit_text"
+            android:layout_marginBottom="2dp"
+            android:imeOptions="actionNext"
+            android:importantForAutofill="no" />
+        
+        <!-- Bag 4 -->
+        <EditText
+            android:id="@+id/edit_weight_4"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:hint="0.0"
+            android:textColorHint="#9E9E9E"
+            android:inputType="numberDecimal"
+            android:gravity="center"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:padding="8dp"
+            android:background="@android:drawable/edit_text"
+            android:layout_marginBottom="2dp"
+            android:imeOptions="actionNext"
+            android:importantForAutofill="no" />
+        
+        <!-- Bag 5 -->
+        <EditText
+            android:id="@+id/edit_weight_5"
+            android:layout_width="110dp"
+            android:layout_height="wrap_content"
+            android:hint="0.0"
+            android:textColorHint="#9E9E9E"
+            android:inputType="numberDecimal"
+            android:gravity="center"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:padding="8dp"
+            android:background="@android:drawable/edit_text"
+            android:layout_marginBottom="3dp"
+            android:imeOptions="actionNext"
+            android:importantForAutofill="no" />
+        
+        <!-- Divider Line -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="#4CAF50"
+            android:layout_marginVertical="3dp" />
+        
+        <!-- Column Total -->
+        <TextView
+            android:id="@+id/tv_column_total"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="0.0 kg"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:background="#4CAF50"
+            android:padding="10dp" />
+        
+    </LinearLayout>
+    
+</androidx.cardview.widget.CardView>
