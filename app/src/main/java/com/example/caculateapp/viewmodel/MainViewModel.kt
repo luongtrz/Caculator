@@ -5,16 +5,15 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.caculateapp.data.AppDatabase
+import com.example.caculateapp.data.FirebaseService
 import com.example.caculateapp.data.RiceRecord
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 /**
  * ViewModel for MainActivity
  * Manages rice weighing session data with real-time calculations
  * Handles both new session creation and existing session editing
+ * Now uses Firebase Firestore instead of Room Database
  */
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     
@@ -24,18 +23,20 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         private const val INITIAL_CELL_COUNT = INITIAL_COLUMNS * BAGS_PER_COLUMN
     }
     
-    private val database = AppDatabase.getDatabase(application)
-    private val riceDao = database.riceDao()
+    private val firebaseService = FirebaseService()
     
     // Current record ID for edit mode (null = new session, non-null = editing)
-    private var currentRecordId: Long? = null
+    private var currentRecordId: String? = null
+    
+    // Original state for change tracking
+    private var originalRecord: RiceRecord? = null
     
     // Customer information
     private val _customerName = MutableLiveData<String>("")
     val customerName: LiveData<String> = _customerName
     
-    private val _unitPrice = MutableLiveData<Double>(0.0)
-    val unitPrice: LiveData<Double> = _unitPrice
+    private val _unitPrice = MutableLiveData<Long>(0L)
+    val unitPrice: LiveData<Long> = _unitPrice
     
     // Weight data
     private val _weightList = MutableLiveData<MutableList<Double>>(mutableListOf())
@@ -48,8 +49,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     private val _grandTotal = MutableLiveData<Double>(0.0)
     val grandTotal: LiveData<Double> = _grandTotal
     
-    private val _totalMoney = MutableLiveData<Double>(0.0)
-    val totalMoney: LiveData<Double> = _totalMoney
+    private val _totalMoney = MutableLiveData<Long>(0L)
+    val totalMoney: LiveData<Long> = _totalMoney
     
     // UI state
     private val _saveStatus = MutableLiveData<String>()
@@ -66,26 +67,40 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * Initialize with empty cells for new session
      */
     private fun initializeEmptySession() {
-        _weightList.value = MutableList(INITIAL_CELL_COUNT) { 0.0 }
+        val initialWeights = MutableList(INITIAL_CELL_COUNT) { 0.0 }
+        _weightList.value = initialWeights
         calculateTotals()
+        
+        // Initialize original record as empty
+        originalRecord = RiceRecord(
+            customerName = "",
+            unitPrice = 0L,
+            weightList = initialWeights.toList(),
+            grandTotal = 0.0,
+            totalMoney = 0L
+        )
     }
     
     /**
      * Load existing record for editing
      */
-    fun loadExistingRecord(recordId: Long) {
+    fun loadExistingRecord(recordId: String) {
         viewModelScope.launch {
             try {
-                val record = withContext(Dispatchers.IO) {
-                    riceDao.getRecordById(recordId)
-                }
+                val result = firebaseService.getRecord(recordId)
+                val record = result.getOrNull()
                 
-                record?.let {
-                    currentRecordId = it.id
-                    _customerName.value = it.customerName
-                    _unitPrice.value = it.unitPrice
-                    _weightList.value = it.weightList.toMutableList()
+                if (record != null) {
+                    currentRecordId = record.id
+                    _customerName.value = record.customerName
+                    _unitPrice.value = record.unitPrice
+                    _weightList.value = record.weightList.toMutableList()
                     calculateTotals()
+                    
+                    // Save original state for change tracking
+                    originalRecord = record.copy()
+                } else {
+                    _saveStatus.value = "Lỗi khi tải dữ liệu: ${result.exceptionOrNull()?.message}"
                 }
             } catch (e: Exception) {
                 _saveStatus.value = "Lỗi khi tải dữ liệu: ${e.message}"
@@ -103,7 +118,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * Update unit price
      */
-    fun setUnitPrice(price: Double) {
+    fun setUnitPrice(price: Long) {
         _unitPrice.value = price
         calculateTotals() // Recalculate total money
     }
@@ -230,13 +245,13 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val total = weights.sum()
         _grandTotal.value = total
         
-        // Calculate total money
-        val price = _unitPrice.value ?: 0.0
-        _totalMoney.value = total * price
+        // Calculate total money (convert to Long)
+        val price = _unitPrice.value ?: 0L
+        _totalMoney.value = (total * price).toLong()
     }
     
     /**
-     * Save current session to database
+     * Save current session to Firestore
      */
     fun saveSession() {
         viewModelScope.launch {
@@ -247,43 +262,53 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     return@launch
                 }
                 
-                val price = _unitPrice.value ?: 0.0
-                if (price <= 0) {
+                val price = _unitPrice.value ?: 0L
+                if (price <= 0L) {
                     _saveStatus.value = "Vui lòng nhập đơn giá hợp lệ"
                     return@launch
                 }
                 
                 val weights = _weightList.value ?: mutableListOf()
                 val total = _grandTotal.value ?: 0.0
-                val money = _totalMoney.value ?: 0.0
+                val money = _totalMoney.value ?: 0L
                 
-                val record = if (currentRecordId != null) {
+                val record = RiceRecord(
+                    id = currentRecordId,
+                    customerName = name,
+                    unitPrice = price,
+                    weightList = weights.toList(),
+                    grandTotal = total,
+                    totalMoney = money
+                )
+                
+                val isSuccess: Boolean
+                val errorMessage: String?
+                val savedId: String?
+                
+                if (currentRecordId != null) {
                     // Update existing record
-                    RiceRecord(
-                        id = currentRecordId!!,
-                        customerName = name,
-                        unitPrice = price,
-                        weightList = weights.toList(),
-                        grandTotal = total,
-                        totalMoney = money,
-                        createdAt = System.currentTimeMillis() // Keep original timestamp would be better but OK for now
-                    )
+                    val result = firebaseService.updateRecord(record)
+                    isSuccess = result.isSuccess
+                    errorMessage = result.exceptionOrNull()?.message
+                    savedId = currentRecordId
                 } else {
                     // Create new record
-                    RiceRecord(
-                        customerName = name,
-                        unitPrice = price,
-                        weightList = weights.toList(),
-                        grandTotal = total,
-                        totalMoney = money
-                    )
+                    val result = firebaseService.saveRecord(record)
+                    isSuccess = result.isSuccess
+                    errorMessage = result.exceptionOrNull()?.message
+                    savedId = result.getOrNull()
                 }
                 
-                withContext(Dispatchers.IO) {
-                    riceDao.insert(record)
+                if (isSuccess) {
+                    _saveStatus.value = "Đã lưu thành công!"
+                    // Update original record tracking
+                    if (savedId != null) {
+                        originalRecord = record.copy(id = savedId)
+                        currentRecordId = savedId
+                    }
+                } else {
+                    _saveStatus.value = "Lỗi khi lưu: $errorMessage"
                 }
-                
-                _saveStatus.value = "Đã lưu thành công!"
             } catch (e: Exception) {
                 _saveStatus.value = "Lỗi khi lưu: ${e.message}"
             }
@@ -291,30 +316,48 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
     
     /**
-     * Get all saved records
+     * Check if current state differs from original/saved state
      */
-    suspend fun getAllRecords(): List<RiceRecord> {
-        return withContext(Dispatchers.IO) {
-            riceDao.getAllRecordsList()
+    fun hasUnsavedChanges(): Boolean {
+        val currentName = _customerName.value ?: ""
+        val currentPrice = _unitPrice.value ?: 0L
+        val currentWeights = _weightList.value ?: emptyList()
+        
+        // If we have an original record, compare against it
+        val original = originalRecord ?: return (currentName.isNotEmpty() || currentPrice > 0L || currentWeights.any { it > 0.0 })
+        
+        if (currentName != original.customerName) return true
+        if (currentPrice != original.unitPrice) return true
+        
+        // Compare weights (values only)
+        val originalWeights = original.weightList
+        if (currentWeights.size != originalWeights.size) return true
+        
+        for (i in currentWeights.indices) {
+            // Compare as Double roughly or exact
+            // Since we load and save doubles, exact match should usually work if no math changed them
+            // But let's be safe with strict equality for now as they are direct values
+            if (currentWeights[i] != originalWeights[i]) return true
         }
-    }
-    
+        
+        return false
+    }    
     /**
      * Generate shareable text for Zalo/social media
      */
     fun generateShareText(): String {
         val name = _customerName.value ?: "Không rõ"
-        val price = _unitPrice.value ?: 0.0
+        val price = _unitPrice.value ?: 0L
         val weights = _weightList.value ?: mutableListOf()
         val columns = _columnTotals.value ?: emptyList()
         val total = _grandTotal.value ?: 0.0
-        val money = _totalMoney.value ?: 0.0
+        val money = _totalMoney.value ?: 0L
         
         val sb = StringBuilder()
         sb.append("PHIẾU CÂN\n")
         sb.append("━━━━━━━━━━━━━━━━━━\n\n")
         sb.append("Khách hàng: $name\n")
-        sb.append("Đơn giá: ${String.format("%,.0f", price)} VNĐ/kg\n\n")
+        sb.append("Đơn giá: ${String.format("%,d", price)} VNĐ/kg\n\n")
         sb.append("CHI TIẾT CÂN:\n")
         sb.append("━━━━━━━━━━━━━━━━━━\n")
         
@@ -343,7 +386,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         
         sb.append("\n━━━━━━━━━━━━━━━━━━\n")
         sb.append("📦 TỔNG KHỐI LƯỢNG: ${String.format("%.2f", total)} kg\n")
-        sb.append("💵 THÀNH TIỀN: ${String.format("%,.0f", money)} VNĐ\n")
+        sb.append("💵 THÀNH TIỀN: ${String.format("%,d", money)} VNĐ\n")
         sb.append("━━━━━━━━━━━━━━━━━━\n")
         
         return sb.toString()
@@ -375,7 +418,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun clearSession() {
         _customerName.value = ""
-        _unitPrice.value = 0.0
+        _unitPrice.value = 0L
         _weightList.value = MutableList(15) { 0.0 }
         calculateTotals()
     }

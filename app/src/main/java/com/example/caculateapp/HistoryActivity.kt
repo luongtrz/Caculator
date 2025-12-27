@@ -13,8 +13,12 @@ import com.example.caculateapp.adapter.HistoryAdapter
 import com.example.caculateapp.databinding.ActivityHistoryBinding
 import com.example.caculateapp.utils.ExportManager
 import com.example.caculateapp.viewmodel.HistoryViewModel
+import com.google.firebase.firestore.ktx.firestore
+import com.google.firebase.ktx.Firebase
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withTimeoutOrNull
 
 /**
  * History Activity - Main launcher screen
@@ -33,13 +37,125 @@ class HistoryActivity : AppCompatActivity() {
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        
+        // Hide action bar/title bar
+        supportActionBar?.hide()
+        
         binding = ActivityHistoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
         setupRecyclerView()
         setupFAB()
         setupSearch()
+        setupSettings()
+        observeSyncStatus()
         observeRecords()
+    }
+    
+    override fun onResume() {
+        super.onResume()
+        // Force check status when returning (e.g. from Add Session)
+        viewModel.checkSyncStatus()
+    }
+    
+    /**
+     * Setup Settings icon click
+     */
+    private fun setupSettings() {
+        binding.btnSettings.setOnClickListener {
+            showSettingsBottomSheet()
+        }
+    }
+    
+    /**
+     * Show sign out confirmation dialog
+     */
+    private fun showSignOutConfirmation() {
+        // First, check for pending Firestore writes
+        lifecycleScope.launch {
+            try {
+                val firestore = Firebase.firestore
+                
+                // Try to wait for pending writes with timeout
+                val hasPendingWrites = withTimeoutOrNull(5000) {
+                    try {
+                        firestore.waitForPendingWrites().await()
+                        false // No pending writes
+                    } catch (e: Exception) {
+                        true // Has pending writes or error
+                    }
+                } ?: true // Timeout = assume has pending writes
+                
+                if (hasPendingWrites) {
+                    showPendingWritesWarning()
+                } else {
+                    showNormalSignOutDialog()
+                }
+            } catch (e: Exception) {
+                // If check fails, show warning to be safe
+                showPendingWritesWarning()
+            }
+        }
+    }
+    
+    /**
+     * Show warning when there are pending writes
+     */
+    private fun showPendingWritesWarning() {
+        AlertDialog.Builder(this)
+            .setTitle("⚠️ Cảnh báo")
+            .setMessage(
+                "Có dữ liệu chưa được đồng bộ lên cloud!\n\n" +
+                "Nếu đăng xuất ngay, bạn có thể MẤT DỮ LIỆU vừa nhập.\n\n" +
+                "Khuyến nghị:\n" +
+                "• Kết nối WiFi/4G trước\n" +
+                "• Đợi ít nhất 5-10 giây cho app sync\n" +
+                "• Hoặc hủy và tiếp tục làm việc"
+            )
+            .setPositiveButton("Vẫn đăng xuất (RỦI RO)") { _, _ ->
+                performSignOut()
+            }
+            .setNegativeButton("Hủy - Giữ an toàn", null)
+            .setCancelable(true)
+            .show()
+    }
+    
+    /**
+     * Show normal sign out dialog (when all data is synced)
+     */
+    private fun showNormalSignOutDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Đăng xuất")
+            .setMessage("Bạn có chắc muốn đăng xuất?\n\nDữ liệu đã được lưu an toàn trên cloud.")
+            .setPositiveButton("Đăng xuất") { _, _ ->
+                performSignOut()
+            }
+            .setNegativeButton("Hủy", null)
+            .show()
+    }
+    
+    /**
+     * Perform sign out and navigate to LoginActivity
+     */
+    private fun performSignOut() {
+        lifecycleScope.launch {
+            try {
+                val authManager = com.example.caculateapp.auth.AuthManager(this@HistoryActivity)
+                authManager.signOut()
+                
+                // Navigate to LoginActivity
+                val intent = Intent(this@HistoryActivity, com.example.caculateapp.auth.LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
+            } catch (e: Exception) {
+                AlertDialog.Builder(this@HistoryActivity)
+                    .setTitle("Lỗi")
+                    .setMessage("Không thể đăng xuất: ${e.message}")
+                    .setPositiveButton("OK", null)
+                    .show()
+            }
+        }
     }
     
     /**
@@ -68,11 +184,18 @@ class HistoryActivity : AppCompatActivity() {
      */
     private fun setupFAB() {
         binding.fabAddSession.setOnClickListener {
+            // Prevent double click (debounce 300ms)
+            if (System.currentTimeMillis() - lastClickTime < 300) return@setOnClickListener
+            lastClickTime = System.currentTimeMillis()
+            
             // Open MainActivity for new session
             val intent = Intent(this, MainActivity::class.java)
             startActivityForResult(intent, REQUEST_CODE_NEW_SESSION)
         }
     }
+    
+    // Add debounce variable
+    private var lastClickTime: Long = 0
     
     /**
      * Setup search functionality
@@ -113,7 +236,7 @@ class HistoryActivity : AppCompatActivity() {
     /**
      * Open MainActivity to edit existing session
      */
-    private fun openEditSession(recordId: Long) {
+    private fun openEditSession(recordId: String?) {
         val intent = Intent(this, MainActivity::class.java)
         intent.putExtra("EXTRA_RECORD_ID", recordId)
         startActivityForResult(intent, REQUEST_CODE_EDIT_SESSION)
@@ -127,7 +250,11 @@ class HistoryActivity : AppCompatActivity() {
             .setTitle("Xác nhận xóa")
             .setMessage("Bạn có chắc muốn xóa đợt cân của ${record.customerName}?")
             .setPositiveButton("Xóa") { _, _ ->
-                viewModel.deleteRecord(record)
+                viewModel.deleteRecord(record) { success ->
+                    if (!success) {
+                        android.widget.Toast.makeText(this, "Lỗi khi xóa", android.widget.Toast.LENGTH_SHORT).show()
+                    }
+                }
             }
             .setNegativeButton("Hủy", null)
             .show()
@@ -177,9 +304,9 @@ class HistoryActivity : AppCompatActivity() {
             pageView.findViewById<android.widget.TextView>(R.id.tv_page_customer_name).text = record.customerName
             pageView.findViewById<android.widget.TextView>(R.id.tv_page_date).text = 
                 java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault())
-                    .format(java.util.Date(record.createdAt))
+                    .format(record.createdAt ?: java.util.Date())
             pageView.findViewById<android.widget.TextView>(R.id.tv_page_unit_price).text = 
-                String.format("%,.0f VNĐ/kg", record.unitPrice)
+                String.format("%,d VNĐ/kg", record.unitPrice)
             pageView.findViewById<android.widget.TextView>(R.id.tv_page_title).text = 
                 "PHIẾU CÂN - Trang ${pageIndex + 1}/${columnChunks.size}"
             
@@ -207,7 +334,7 @@ class HistoryActivity : AppCompatActivity() {
             pageView.findViewById<android.widget.TextView>(R.id.tv_grand_total).text = 
                 String.format("%.1f kg", record.grandTotal)
             pageView.findViewById<android.widget.TextView>(R.id.tv_total_money).text = 
-                String.format("%,.0f VNĐ", record.totalMoney)
+                String.format("%,d VNĐ", record.totalMoney)
             
             // Add page to container with some margin
             val layoutParams = android.widget.LinearLayout.LayoutParams(
@@ -349,6 +476,88 @@ class HistoryActivity : AppCompatActivity() {
         return columnLayout
     }
     
+    /**
+     * Start monitoring Firestore sync status
+     */
+    private fun observeSyncStatus() {
+        lifecycleScope.launch {
+            viewModel.isCloudSynced.collectLatest { isSynced ->
+                updateSyncBadge(isSynced)
+            }
+        }
+    }
+    
+    /**
+     * Update sync status badge
+     */
+    /**
+     * Update sync status badge
+     */
+    private fun updateSyncBadge(isSynced: Boolean) {
+        binding.syncBadge.setBackgroundColor(
+            if (isSynced) {
+                android.graphics.Color.parseColor("#4CAF50") // Green
+            } else {
+                android.graphics.Color.parseColor("#FF9800") // Orange
+            }
+        )
+    }
+    
+    /**
+     * Show settings bottom sheet
+     */
+    private fun showSettingsBottomSheet() {
+        val bottomSheet = com.google.android.material.bottomsheet.BottomSheetDialog(this)
+        val sheetView = layoutInflater.inflate(R.layout.bottom_sheet_settings, null)
+        bottomSheet.setContentView(sheetView)
+        
+        // Get user info
+        val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
+        sheetView.findViewById<android.widget.TextView>(R.id.tv_user_name).text = 
+            currentUser?.displayName ?: "User"
+        sheetView.findViewById<android.widget.TextView>(R.id.tv_user_email).text = 
+            currentUser?.email ?: "No email"
+        
+        // Check sync status using ViewModel state (Realtime)
+        val syncStatusBadge = sheetView.findViewById<android.view.View>(R.id.sync_status_badge)
+        val syncStatusText = sheetView.findViewById<android.widget.TextView>(R.id.tv_sync_status)
+        val syncDetailText = sheetView.findViewById<android.widget.TextView>(R.id.tv_sync_detail)
+        
+        // Launch a job to collect sync status while the bottom sheet is open
+        // We use sheetView attached to window or dialog lifecycle?
+        // Using activity lifecycleScope is fine, but we should probably cancel it when dialog closes.
+        // Easier: Just launch in lifecycleScope and let it update the detached view (no harm)
+        // Or better: Observe until dialog is dismissed.
+        
+        val job = lifecycleScope.launch {
+            viewModel.isCloudSynced.collectLatest { isSynced ->
+                if (isSynced) {
+                    // All synced
+                    syncStatusBadge.setBackgroundColor(android.graphics.Color.parseColor("#4CAF50")) // Green
+                    syncStatusText.text = "Đã đồng bộ"
+                    syncDetailText.text = "Tất cả dữ liệu đã lưu trên cloud"
+                } else {
+                    // Has pending
+                    syncStatusBadge.setBackgroundColor(android.graphics.Color.parseColor("#FF9800")) // Orange
+                    syncStatusText.text = "Đang đồng bộ..."
+                    syncDetailText.text = "Có dữ liệu chưa sync lên cloud"
+                }
+            }
+        }
+        
+        bottomSheet.setOnDismissListener {
+            job.cancel()
+        }
+        
+        // Setup sign out button
+        sheetView.findViewById<android.widget.Button>(R.id.btn_sign_out_settings).setOnClickListener {
+            bottomSheet.dismiss()
+            showSignOutConfirmation()
+        }
+        
+        bottomSheet.show()
+    }
+    
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         // Refresh list when returning from MainActivity
@@ -357,3 +566,4 @@ class HistoryActivity : AppCompatActivity() {
         }
     }
 }
+

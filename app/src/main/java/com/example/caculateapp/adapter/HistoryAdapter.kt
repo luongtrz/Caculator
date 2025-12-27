@@ -53,7 +53,7 @@ class HistoryAdapter(
             
             // Format date and time: "HH:MM PM dd/MM/yyyy"
             val dateFormat = SimpleDateFormat("hh:mm a dd/MM/yyyy", Locale.getDefault())
-            tvDateTime.text = dateFormat.format(Date(record.createdAt))
+            tvDateTime.text = dateFormat.format(record.createdAt ?: Date())
             
             // Grand total with thousand separators
             val weightFormat = NumberFormat.getInstance(Locale.getDefault())

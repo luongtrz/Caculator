@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="#FFFFFF"
+    android:padding="24dp">
+    
+    <!-- Warning Icon + Title -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="16dp">
+        
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚠️"
+            android:textSize="32sp"
+            android:layout_marginEnd="12dp" />
+        
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Dữ liệu chưa lưu"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#212121" />
+    </LinearLayout>
+    
+    <!-- Message -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Bạn có dữ liệu chưa lưu. Thoát ra sẽ làm mất dữ liệu này.\n\nBạn nên nhấn nút &quot;HỦY &gt;&gt; LƯU LẠI&quot; để lưu phiếu cân trước khi thoát."
+        android:textSize="16sp"
+        android:textColor="#616161"
+        android:lineSpacingExtra="4dp"
+        android:layout_marginBottom="24dp" />
+    
+    <!-- Buttons Container -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end">
+        
+        <!-- Exit Button (Left) -->
+        <Button
+            android:id="@+id/btn_exit_anyway"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Vẫn thoát"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            app:backgroundTint="#F44336"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:layout_marginEnd="12dp" />
+        
+        <!-- Cancel Button (Right) -->
+        <Button
+            android:id="@+id/btn_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Hủy"
+            android:textColor="#FFFFFF"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            app:backgroundTint="#2196F3"
+            android:paddingStart="24dp"
+            android:paddingEnd="24dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp" />
+    </LinearLayout>
+    
+</LinearLayout>

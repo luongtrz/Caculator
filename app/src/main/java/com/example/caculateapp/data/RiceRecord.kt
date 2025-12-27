@@ -1,46 +1,41 @@
 package com.example.caculateapp.data
 
-import androidx.room.Entity
-import androidx.room.PrimaryKey
-import androidx.room.TypeConverter
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
+import com.google.firebase.firestore.DocumentId
+import com.google.firebase.firestore.ServerTimestamp
+import java.util.Date
 
 /**
  * Entity representing a rice weighing session record
+ * Firestore-only data model (Room Database removed)
  */
-@Entity(tableName = "rice_records")
 data class RiceRecord(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    @DocumentId
+    val id: String? = null, // Firestore document ID (nullable for new records)
     
-    val customerName: String,
+    val customerName: String = "",
     
-    val unitPrice: Double, // VNĐ per kg
+    val unitPrice: Long = 0L, // VNĐ per kg (integer only)
     
-    val weightList: List<Double>, // List of all weight entries
+    val weightList: List<Double> = emptyList(), // List of all weight entries
     
-    val grandTotal: Double, // Sum of all weights
+    val grandTotal: Double = 0.0, // Sum of all weights
     
-    val totalMoney: Double, // totalWeight * unitPrice
+    val totalMoney: Long = 0L, // grandTotal * unitPrice (integer only)
     
-    val createdAt: Long = System.currentTimeMillis() // Timestamp for sorting
-)
-
-/**
- * TypeConverter for List<Double> to store in Room database
- */
-class Converters {
-    private val gson = Gson()
+    @ServerTimestamp
+    val createdAt: Date? = null, // Firestore server timestamp
     
-    @TypeConverter
-    fun fromDoubleList(value: List<Double>): String {
-        return gson.toJson(value)
-    }
-    
-    @TypeConverter
-    fun toDoubleList(value: String): List<Double> {
-        val listType = object : TypeToken<List<Double>>() {}.type
-        return gson.fromJson(value, listType)
-    }
+    val updatedAt: Long = System.currentTimeMillis() // Local timestamp
+) {
+    // No-argument constructor for Firestore
+    constructor() : this(
+        id = null,
+        customerName = "",
+        unitPrice = 0L,
+        weightList = emptyList(),
+        grandTotal = 0.0,
+        totalMoney = 0L,
+        createdAt = null,
+        updatedAt = System.currentTimeMillis()
+    )
 }

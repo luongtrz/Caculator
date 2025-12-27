@@ -13,3 +13,10 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Keys and Secrets
+my-release-key
+app/google-services.json
+
+# IDE
+.idea/

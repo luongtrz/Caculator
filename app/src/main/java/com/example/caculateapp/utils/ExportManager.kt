@@ -94,9 +94,9 @@ class ExportManager(private val context: Context) {
     fun createMultiplePages(
         columns: List<List<Double>>,
         customerName: String,
-        unitPrice: Double,
+        unitPrice: Long,
         grandTotal: Double,
-        totalMoney: Double
+        totalMoney: Long
     ): List<Bitmap> {
         val pages = mutableListOf<Bitmap>()
         val columnChunks = columns.chunked(10)
@@ -119,7 +119,7 @@ class ExportManager(private val context: Context) {
             
             pageView.findViewById<android.widget.TextView>(
                 context.resources.getIdentifier("tv_page_unit_price", "id", context.packageName)
-            ).text = String.format("%,.0f VNĐ/kg", unitPrice)
+            ).text = String.format("%,d VNĐ/kg", unitPrice)
             
             pageView.findViewById<android.widget.TextView>(
                 context.resources.getIdentifier("tv_page_title", "id", context.packageName)
@@ -158,7 +158,7 @@ class ExportManager(private val context: Context) {
             
             pageView.findViewById<android.widget.TextView>(
                 context.resources.getIdentifier("tv_total_money", "id", context.packageName)
-            ).text = String.format("%,.0f VNĐ", totalMoney)
+            ).text = String.format("%,d VNĐ", totalMoney)
             
             // Capture page as bitmap
             val bitmap = captureViewToBitmap(pageView)
@@ -209,12 +209,13 @@ class ExportManager(private val context: Context) {
                 contentValues
             )
             
+            uri?.let {
                 context.contentResolver.openOutputStream(it)?.use { outputStream ->
                     bitmap.compress(Bitmap.CompressFormat.JPEG, 95, outputStream)
                 }
                 // Toast removed to avoid duplication with exportToMultipleImages summary
-                it
             }
+            uri
         } catch (e: Exception) {
             e.printStackTrace()
             Toast.makeText(context, "Lỗi khi lưu ảnh: ${e.message}", Toast.LENGTH_LONG).show()
@@ -309,9 +310,9 @@ class ExportManager(private val context: Context) {
     fun exportToMultipleImages(
         columns: List<List<Double>>,
         customerName: String,
-        unitPrice: Double,
+        unitPrice: Long,
         grandTotal: Double,
-        totalMoney: Double
+        totalMoney: Long
     ): List<Uri> {
         val pages = createMultiplePages(columns, customerName, unitPrice, grandTotal, totalMoney)
         val uris = mutableListOf<Uri>()
@@ -340,9 +341,9 @@ class ExportManager(private val context: Context) {
     fun exportToMultiPagePDF(
         columns: List<List<Double>>,
         customerName: String,
-        unitPrice: Double,
+        unitPrice: Long,
         grandTotal: Double,
-        totalMoney: Double
+        totalMoney: Long
     ): Uri? {
         val pages = createMultiplePages(columns, customerName, unitPrice, grandTotal, totalMoney)
         

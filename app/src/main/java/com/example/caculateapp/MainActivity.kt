@@ -39,13 +39,16 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         
+        // Hide action bar/title bar
+        supportActionBar?.hide()
+        
         // Setup ViewBinding
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
         // Check if editing existing record
-        val recordId = intent.getLongExtra("EXTRA_RECORD_ID", -1L)
-        if (recordId != -1L) {
+        val recordId = intent.getStringExtra("EXTRA_RECORD_ID")
+        if (recordId != null) {
             // Load existing record for editing
             viewModel.loadExistingRecord(recordId)
         }
@@ -56,9 +59,10 @@ class MainActivity : AppCompatActivity() {
         setupInputListeners()
         setupObservers()
         setupButtons()
+        setupBackPressHandler()
         
         // Auto-focus on quick input and show keyboard (only for new sessions)
-        if (recordId == -1L) {
+        if (recordId == null) {
             binding.etQuickInput.postDelayed({
                 binding.etQuickInput.requestFocus()
                 val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
@@ -136,6 +140,10 @@ class MainActivity : AppCompatActivity() {
             this.layoutManager = layoutManager
         }
         
+        // Load initial columns immediately
+        val initialColumns = viewModel.getColumns()
+        columnAdapter.updateColumns(initialColumns)
+        
         // Observe weight changes and update adapter
         viewModel.weightList.observe(this) {
             val columns = viewModel.getColumns()
@@ -194,7 +202,6 @@ class MainActivity : AppCompatActivity() {
             // Keep focus on quick input
             binding.etQuickInput.requestFocus()
             
-            Toast.makeText(this, "Đã thêm: $weight kg", Toast.LENGTH_SHORT).show()
         } else {
             Toast.makeText(this, "Lỗi khi thêm dữ liệu", Toast.LENGTH_SHORT).show()
         }
@@ -212,7 +219,7 @@ class MainActivity : AppCompatActivity() {
         }
         
         viewModel.unitPrice.observe(this) { price ->
-            val expectedText = if (price > 0.0) price.toString() else ""
+            val expectedText = if (price > 0L) price.toString() else ""
             if (binding.editUnitPrice.text.toString() != expectedText) {
                 binding.editUnitPrice.setText(expectedText)
             }
@@ -235,7 +242,7 @@ class MainActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
                 val priceText = s?.toString() ?: ""
-                val price = priceText.toDoubleOrNull() ?: 0.0
+                val price = priceText.toLongOrNull() ?: 0L
                 if (viewModel.unitPrice.value != price) {
                     viewModel.setUnitPrice(price)
                 }
@@ -254,14 +261,14 @@ class MainActivity : AppCompatActivity() {
         
         // Observe total money
         viewModel.totalMoney.observe(this) { money ->
-            binding.tvTotalMoney.text = String.format("%,.0f VNĐ", money)
+            binding.tvTotalMoney.text = String.format("%,d VNĐ", money)
         }
         
         // Observe save status - handle validation and success
         viewModel.saveStatus.observe(this) { status ->
             status?.let {
                 when {
-                    it == "Đã lưu thành công!" -> {
+                    it.startsWith("Đã lưu thành công") -> {
                         // Success case - show toast and return to history
                         Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
                         setResult(RESULT_OK)
@@ -286,11 +293,6 @@ class MainActivity : AppCompatActivity() {
      * Setup button click listeners
      */
     private fun setupButtons() {
-        // Back button - return to HistoryActivity
-        binding.btnBack.setOnClickListener {
-            finish()
-        }
-        
         // Save button - validate then save and return to history
         binding.btnSave.setOnClickListener {
             // First validate by attempting to save
@@ -330,9 +332,9 @@ class MainActivity : AppCompatActivity() {
         
         // Get data from ViewModel
         val customerName = viewModel.customerName.value?.ifBlank { "Khách hàng" } ?: "Khách hàng"
-        val unitPrice = viewModel.unitPrice.value ?: 0.0
+        val unitPrice = viewModel.unitPrice.value ?: 0L
         val grandTotal = viewModel.grandTotal.value ?: 0.0
-        val totalMoney = viewModel.totalMoney.value ?: 0.0
+        val totalMoney = viewModel.totalMoney.value ?: 0L
         val columns = viewModel.getColumns()
         
         // Get pages container
@@ -351,7 +353,7 @@ class MainActivity : AppCompatActivity() {
             pageView.findViewById<android.widget.TextView>(R.id.tv_page_date).text = 
                 java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault()).format(java.util.Date())
             pageView.findViewById<android.widget.TextView>(R.id.tv_page_unit_price).text = 
-                String.format("%,.0f VNĐ/kg", unitPrice)
+                String.format("%,d VNĐ/kg", unitPrice)
             pageView.findViewById<android.widget.TextView>(R.id.tv_page_title).text = 
                 "PHIẾU CÂN - Trang ${pageIndex + 1}/${columnChunks.size}"
             
@@ -379,7 +381,7 @@ class MainActivity : AppCompatActivity() {
             pageView.findViewById<android.widget.TextView>(R.id.tv_grand_total).text = 
                 String.format("%.1f kg", grandTotal)
             pageView.findViewById<android.widget.TextView>(R.id.tv_total_money).text = 
-                String.format("%,.0f VNĐ", totalMoney)
+                String.format("%,d VNĐ", totalMoney)
             
             // Add page to container with some margin
             val layoutParams = android.widget.LinearLayout.LayoutParams(
@@ -483,7 +485,7 @@ class MainActivity : AppCompatActivity() {
         templateBinding.tvExportDate.text = "Ngày: $currentDate"
         
         // Unit price
-        val unitPrice = viewModel.unitPrice.value ?: 0.0
+        val unitPrice = viewModel.unitPrice.value ?: 0L
         val unitPriceStr = String.format("%,.0f", unitPrice)
         templateBinding.tvExportUnitPrice.text = "Đơn giá: $unitPriceStr VNĐ/kg"
         
@@ -599,9 +601,9 @@ class MainActivity : AppCompatActivity() {
         
         // Get data from ViewModel
         val customerName = viewModel.customerName.value?.ifBlank { "Khách hàng" } ?: "Khách hàng"
-        val unitPrice = viewModel.unitPrice.value ?: 0.0
+        val unitPrice = viewModel.unitPrice.value ?: 0L
         val grandTotal = viewModel.grandTotal.value ?: 0.0
-        val totalMoney = viewModel.totalMoney.value ?: 0.0
+        val totalMoney = viewModel.totalMoney.value ?: 0L
         val columns = viewModel.getColumns()
         
         // Export as Images (multi-page)
@@ -641,5 +643,57 @@ class MainActivity : AppCompatActivity() {
         }
         
         bottomSheet.show()
+    }
+    
+    /**
+     * Setup back button handler with confirmation dialog
+     * Uses modern OnBackPressedDispatcher instead of deprecated onBackPressed
+     */
+    private fun setupBackPressHandler() {
+        onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                // Check if there's unsaved data
+                val hasUnsavedData = hasUnsavedData()
+                
+                if (!hasUnsavedData) {
+                    // No unsaved data, exit normally
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                    return
+                }
+                
+                // Show custom confirmation dialog
+                val dialogView = layoutInflater.inflate(R.layout.dialog_unsaved_warning, null)
+                val dialog = Dialog(this@MainActivity)
+                dialog.setContentView(dialogView)
+                dialog.window?.setBackgroundDrawableResource(android.R.drawable.dialog_holo_light_frame)
+                dialog.setCancelable(true)
+                
+                // Setup buttons
+                val btnExitAnyway = dialogView.findViewById<android.widget.Button>(R.id.btn_exit_anyway)
+                val btnCancel = dialogView.findViewById<android.widget.Button>(R.id.btn_cancel)
+                
+                btnExitAnyway.setOnClickListener {
+                    // User accepts the risk, exit
+                    isEnabled = false
+                    dialog.dismiss()
+                    onBackPressedDispatcher.onBackPressed()
+                }
+                
+                btnCancel.setOnClickListener {
+                    // User cancels, stay on the screen
+                    dialog.dismiss()
+                }
+                
+                dialog.show()
+            }
+        })
+    }
+    
+    /**
+     * Check if there's any unsaved data
+     */
+    private fun hasUnsavedData(): Boolean {
+        return viewModel.hasUnsavedChanges()
     }
 }
