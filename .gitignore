@@ -31,3 +31,6 @@ app/build/
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# RTK cache
+.rtk/
