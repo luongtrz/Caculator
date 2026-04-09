@@ -16,7 +16,18 @@ local.properties
 
 # Keys and Secrets
 my-release-key
+*.jks
+*.keystore
 app/google-services.json
 
 # IDE
 .idea/
+
+# Build outputs
+app/build/
+*/build/
+
+# OS files
+Thumbs.db
+ehthumbs.db
+Desktop.ini

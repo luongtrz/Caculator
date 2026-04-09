@@ -98,16 +98,30 @@ class MainActivity : AppCompatActivity() {
                 
                 binding.tvDate.text = "$dayOfWeek, ngày $day tháng $month năm $year"
                 
-                // Lunar calendar (placeholder - can integrate library later)
-                val lunarDay = day - 1  // Simple approximation
-                val lunarMonth = if (month > 1) month - 1 else 12
-                val lunarYear = when(year) {
-                    2024 -> "Giáp Thìn"
-                    2025 -> "Ất Tỵ"
-                    else -> "Ất Tỵ"
+                // Lunar calendar using Android ICU (API 24+)
+                var lunarText = ""
+                try {
+                     // Use ChineseCalendar with Vietnam TimeZone
+                     // Note: Must use android.icu.util.TimeZone, not java.util.TimeZone
+                     val lunarCal = android.icu.util.ChineseCalendar(android.icu.util.TimeZone.getTimeZone("Asia/Ho_Chi_Minh"))
+                     lunarCal.timeInMillis = calendar.timeInMillis
+                     
+                     val lDay = lunarCal.get(android.icu.util.ChineseCalendar.DAY_OF_MONTH)
+                     val lMonth = lunarCal.get(android.icu.util.ChineseCalendar.MONTH) + 1
+                     val lYearCycle = lunarCal.get(android.icu.util.ChineseCalendar.YEAR)
+                     
+                     val isLeap = lunarCal.get(android.icu.util.ChineseCalendar.IS_LEAP_MONTH) == 1
+                     val monthStr = if (isLeap) "$lMonth (Nhuận)" else "$lMonth"
+                     
+                     // Can Chi: CycleYear (1-60) + 3 aligns with getCanChi formula
+                     val lunarYearStr = getCanChi(lYearCycle + 3)
+                     
+                     lunarText = "(Âm lịch: ngày $lDay tháng $monthStr năm $lunarYearStr)"
+                } catch (e: Exception) {
+                     lunarText = "..."
                 }
-                binding.tvLunarDate.text = "(Âm lịch: ngày $lunarDay tháng $lunarMonth năm $lunarYear)"
                 
+                binding.tvLunarDate.text = lunarText                
                 // Format time: "11:13:26 PM"
                 val timeFormat = SimpleDateFormat("hh:mm:ss a", Locale.US)
                 binding.tvTime.text = timeFormat.format(calendar.time)
@@ -118,7 +132,17 @@ class MainActivity : AppCompatActivity() {
         }
         handler.post(updateTime)
     }
-    
+
+    /**
+     * Calculate Can Chi (Lunar Year Name)
+     */
+    private fun getCanChi(year: Int): String {
+        val can = arrayOf("Canh", "Tân", "Nhâm", "Quý", "Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ")
+        val chi = arrayOf("Thân", "Dậu", "Tuất", "Hợi", "Tí", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi")
+        
+        return "${can[year % 10]} ${chi[year % 12]}"
+    }
+
     /**
      * Setup RecyclerView with LinearLayoutManager (Horizontal)
      * Column-based layout like traditional paper sheet
@@ -433,14 +457,21 @@ class MainActivity : AppCompatActivity() {
         }
         columnLayout.addView(header)
         
-        // Weight values (only non-zero)
-        weights.filter { it > 0.0 }.forEach { weight ->
+        // Weight values (always show 5 cells)
+        weights.forEach { weight ->
             val weightText = android.widget.TextView(this).apply {
-                text = if (weight % 1.0 == 0.0) weight.toInt().toString() else weight.toString()
+                text = if (weight > 0.0) {
+                    if (weight % 1.0 == 0.0) weight.toInt().toString() else weight.toString()
+                } else {
+                    "" // Empty string for zero values
+                }
                 setTextColor(android.graphics.Color.BLACK)
                 textSize = 13f
                 gravity = android.view.Gravity.CENTER
                 setPadding(0, 4, 0, 4)
+                
+                // Ensure it has height even if empty
+                minHeight = (24 * resources.displayMetrics.density).toInt()
             }
             columnLayout.addView(weightText)
         }

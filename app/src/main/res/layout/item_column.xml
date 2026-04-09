@@ -41,9 +41,10 @@
             android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="#000000"
-            android:padding="8dp"
+            android:padding="4dp"
             android:background="@android:drawable/edit_text"
-            android:layout_marginBottom="2dp"
+            android:layout_marginBottom="1dp"
+            android:minHeight="36dp"
             android:imeOptions="actionNext"
             android:importantForAutofill="no" />
         
@@ -59,9 +60,10 @@
             android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="#000000"
-            android:padding="8dp"
+            android:padding="4dp"
             android:background="@android:drawable/edit_text"
-            android:layout_marginBottom="2dp"
+            android:layout_marginBottom="1dp"
+            android:minHeight="36dp"
             android:imeOptions="actionNext"
             android:importantForAutofill="no" />
         
@@ -77,9 +79,10 @@
             android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="#000000"
-            android:padding="8dp"
+            android:padding="4dp"
             android:background="@android:drawable/edit_text"
-            android:layout_marginBottom="2dp"
+            android:layout_marginBottom="1dp"
+            android:minHeight="36dp"
             android:imeOptions="actionNext"
             android:importantForAutofill="no" />
         
@@ -95,9 +98,10 @@
             android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="#000000"
-            android:padding="8dp"
+            android:padding="4dp"
             android:background="@android:drawable/edit_text"
-            android:layout_marginBottom="2dp"
+            android:layout_marginBottom="1dp"
+            android:minHeight="36dp"
             android:imeOptions="actionNext"
             android:importantForAutofill="no" />
         
@@ -113,9 +117,10 @@
             android:textSize="22sp"
             android:textStyle="bold"
             android:textColor="#000000"
-            android:padding="8dp"
+            android:padding="4dp"
             android:background="@android:drawable/edit_text"
-            android:layout_marginBottom="3dp"
+            android:layout_marginBottom="1dp"
+            android:minHeight="36dp"
             android:imeOptions="actionNext"
             android:importantForAutofill="no" />
         

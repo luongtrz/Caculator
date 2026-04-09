@@ -9,188 +9,206 @@
     
     
     <!-- Date & Time Header -->
-    <androidx.cardview.widget.CardView
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
-        app:cardCornerRadius="6dp"
-        app:cardElevation="2dp"
-        android:backgroundTint="#2196F3">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true">
         
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="10dp"
-            android:gravity="center">
-            
-            <TextView
-                android:id="@+id/tv_date"
-                android:layout_width="wrap_content"
+            android:paddingBottom="8dp">
+
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Thứ 5, ngày 26 tháng 12 năm 2024"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:textColor="#FFFFFF" />
-            
-            <TextView
-                android:id="@+id/tv_lunar_date"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="(Âm lịch: ngày 25 tháng 11 năm Giáp Thìn)"
-                android:textSize="12sp"
-                android:textColor="#E3F2FD"
-                android:layout_marginTop="2dp" />
-            
-            <TextView
-                android:id="@+id/tv_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="11:13:00 PM"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="#E3F2FD"
-                android:layout_marginTop="2dp" />
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-    
-    <!-- Compact Input Card (Name + Price in one row) -->
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        app:cardCornerRadius="6dp"
-        app:cardElevation="2dp"
-        android:backgroundTint="#FFFFFF">
-        
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="8dp"
-            android:weightSum="10">
-            
-            <!-- Customer Name (60%) -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="6"
-                android:hint="Tên khách hàng"
-                app:boxBackgroundColor="#F5F5F5"
-                app:boxStrokeColor="#4CAF50"
-                app:hintTextColor="#4CAF50"
-                android:layout_marginEnd="4dp"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-                
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edit_customer_name"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPersonName"
-                    android:textSize="16sp"
-                    android:maxLines="1" />
-            </com.google.android.material.textfield.TextInputLayout>
-            
-            <!-- Unit Price (40%) -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="4"
-                android:hint="Đơn giá (VNĐ)"
-                app:boxBackgroundColor="#F5F5F5"
-                app:boxStrokeColor="#FF9800"
-                app:hintTextColor="#FF9800"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-                
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edit_unit_price"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:textSize="16sp"
-                    android:maxLines="1" />
-            </com.google.android.material.textfield.TextInputLayout>
-            
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-    
-    <!-- Quick Input Card (Compact) -->
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="6dp"
-        app:cardCornerRadius="6dp"
-        app:cardElevation="2dp"
-        android:backgroundTint="#E8F5E9">
-        
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="6dp"
-            android:gravity="center_vertical">
-            
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="⚡"
-                android:textSize="18sp"
-                android:layout_marginEnd="4dp" />
-            
-            <EditText
-                android:id="@+id/et_quick_input"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:hint="Nhập kg"
-                android:inputType="numberDecimal"
-                android:imeOptions="actionDone"
-                android:textSize="18sp"
-                android:maxLines="1"
-                android:maxLength="5"
-                android:gravity="center"
-                android:padding="12dp"
-                android:background="@android:drawable/edit_text" />
-            
-            <Button
-                android:id="@+id/btn_confirm"
-                android:layout_width="0dp"
-                android:layout_height="56dp"
-                android:layout_weight="1"
-                android:text="OK"
-                android:textSize="20sp"
-                android:textStyle="bold"
+                android:layout_marginTop="4dp"
                 android:layout_marginStart="8dp"
-                android:backgroundTint="#4CAF50"
-                app:cornerRadius="10dp"
-                style="@style/Widget.MaterialComponents.Button" />
-        </LinearLayout>
-    </androidx.cardview.widget.CardView>
-    
-    <!-- RecyclerView with Card Background (Compact) -->
-    <androidx.cardview.widget.CardView
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:layout_marginStart="12dp"
-        android:layout_marginEnd="12dp"
-        android:layout_marginBottom="8dp"
-        app:cardCornerRadius="10dp"
-        app:cardElevation="2dp"
-        android:backgroundTint="#FFFFFF">
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="6dp"
+                app:cardElevation="2dp"
+                android:backgroundTint="#2196F3">
+                
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="10dp"
+                    android:gravity="center">
+                    
+                    <TextView
+                        android:id="@+id/tv_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Thứ 5, ngày 26 tháng 12 năm 2024"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="#FFFFFF" />
+                    
+                    <TextView
+                        android:id="@+id/tv_lunar_date"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="(Âm lịch: ngày 25 tháng 11 năm Giáp Thìn)"
+                        android:textSize="12sp"
+                        android:textColor="#E3F2FD"
+                        android:layout_marginTop="2dp" />
+                    
+                    <TextView
+                        android:id="@+id/tv_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="11:13:00 PM"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="#E3F2FD"
+                        android:layout_marginTop="2dp" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+            
+            <!-- Compact Input Card (Name + Price in one row) -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:cardCornerRadius="6dp"
+                app:cardElevation="2dp"
+                android:backgroundTint="#FFFFFF">
+                
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="8dp"
+                    android:weightSum="10">
+                    
+                    <!-- Customer Name (60%) -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="6"
+                        android:hint="Tên khách hàng"
+                        app:boxBackgroundColor="#F5F5F5"
+                        app:boxStrokeColor="#4CAF50"
+                        app:hintTextColor="#4CAF50"
+                        android:layout_marginEnd="4dp"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_customer_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPersonName"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    
+                    <!-- Unit Price (40%) -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="4"
+                        android:hint="Đơn giá (VNĐ)"
+                        app:boxBackgroundColor="#F5F5F5"
+                        app:boxStrokeColor="#FF9800"
+                        app:hintTextColor="#FF9800"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_unit_price"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:textSize="16sp"
+                            android:textStyle="bold"
+                            android:maxLines="1" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                    
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+            
+            <!-- Quick Input Card (Compact) -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="6dp"
+                app:cardCornerRadius="6dp"
+                app:cardElevation="2dp"
+                android:backgroundTint="#E8F5E9">
+                
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="6dp"
+                    android:gravity="center_vertical">
+                    
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⚡"
+                        android:textSize="18sp"
+                        android:layout_marginEnd="4dp" />
+                    
+                    <EditText
+                        android:id="@+id/et_quick_input"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="Nhập kg"
+                        android:inputType="numberDecimal"
+                        android:imeOptions="actionDone"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:maxLines="1"
+                        android:maxLength="5"
+                        android:gravity="center"
+                        android:padding="12dp"
+                        android:background="@android:drawable/edit_text" />
+                    
+                    <Button
+                        android:id="@+id/btn_confirm"
+                        android:layout_width="0dp"
+                        android:layout_height="56dp"
+                        android:layout_weight="1"
+                        android:text="OK"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:layout_marginStart="8dp"
+                        android:backgroundTint="#4CAF50"
+                        app:cornerRadius="10dp"
+                        style="@style/Widget.MaterialComponents.Button" />
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+            
+            <!-- RecyclerView with Card Background (Compact) -->
+            <!-- Changed to wrap_content and removed layout_weight -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="2dp"
+                android:backgroundTint="#FFFFFF">
+                
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_weights"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="8dp"
+                    android:clipToPadding="false" />
+            </androidx.cardview.widget.CardView>
         
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_weights"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:padding="8dp"
-            android:clipToPadding="false" />
-    </androidx.cardview.widget.CardView>
+        </LinearLayout>
+    </ScrollView>
     
     <!-- Bottom Summary Bar (Compact & Prominent) -->
     <LinearLayout

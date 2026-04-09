@@ -44,6 +44,7 @@ class HistoryActivity : AppCompatActivity() {
         binding = ActivityHistoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
+        setupDateTime()
         setupRecyclerView()
         setupFAB()
         setupSearch()
@@ -66,6 +67,85 @@ class HistoryActivity : AppCompatActivity() {
             showSettingsBottomSheet()
         }
     }
+
+    private val updateTimeRunnable = object : Runnable {
+        override fun run() {
+            val calendar = java.util.Calendar.getInstance()
+            
+            // Format time: "03:12:00 PM"
+            val timeFormat = java.text.SimpleDateFormat("hh:mm:ss a", java.util.Locale.US)
+            val time = timeFormat.format(calendar.time)
+            
+            // Format date: "Thứ 7, 27/12/2025"
+            val dayOfWeek = when (calendar.get(java.util.Calendar.DAY_OF_WEEK)) {
+                java.util.Calendar.SUNDAY -> "Chủ nhật"
+                java.util.Calendar.MONDAY -> "Thứ 2"
+                java.util.Calendar.TUESDAY -> "Thứ 3"
+                java.util.Calendar.WEDNESDAY -> "Thứ 4"
+                java.util.Calendar.THURSDAY -> "Thứ 5"
+                java.util.Calendar.FRIDAY -> "Thứ 6"
+                java.util.Calendar.SATURDAY -> "Thứ 7"
+                else -> ""
+            }
+            
+            val dateFormat = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
+            val date = dateFormat.format(calendar.time)
+            
+            // Calculate Lunar Date using LunarCalendar4J
+            val day = calendar.get(java.util.Calendar.DAY_OF_MONTH)
+            val month = calendar.get(java.util.Calendar.MONTH) + 1
+            val year = calendar.get(java.util.Calendar.YEAR)
+            
+            // Lunar calendar using Android ICU (API 24+)
+            var lunarString = ""
+            try {
+                // Use ChineseCalendar with Vietnam TimeZone (approximate but much better than manual math)
+                // Note: Must use android.icu.util.TimeZone, not java.util.TimeZone
+                val lunarCal = android.icu.util.ChineseCalendar(android.icu.util.TimeZone.getTimeZone("Asia/Ho_Chi_Minh"))
+                lunarCal.timeInMillis = calendar.timeInMillis
+                
+                val lDay = lunarCal.get(android.icu.util.ChineseCalendar.DAY_OF_MONTH)
+                val lMonth = lunarCal.get(android.icu.util.ChineseCalendar.MONTH) + 1
+                val lYearCycle = lunarCal.get(android.icu.util.ChineseCalendar.YEAR)
+                
+                // Check if leap month
+                val isLeap = lunarCal.get(android.icu.util.ChineseCalendar.IS_LEAP_MONTH) == 1
+                val monthStr = if (isLeap) "$lMonth (Nhuận)" else "$lMonth"
+                
+                // Can Chi: CycleYear (1-60) + 3 aligns with our getCanChi (year%10, year%12) formula
+                // Ex: 2024 is year 41. (41+3)%10=4(Giap), (41+3)%12=8(Thin) -> Correct
+                val lunarYearStr = getCanChi(lYearCycle + 3)
+                
+                lunarString = "$lDay/$monthStr/$lunarYearStr"
+            } catch (e: Exception) {
+                // Very basic fallback
+                lunarString = "..."
+            }
+            
+            // Combine: "03:12:ss PM, Thứ 7, 27/12/2025 (Âm: 26/11/2025)"
+            val combinedText = "$time, $dayOfWeek, $date (Âm: $lunarString)"
+            
+            binding.tvDateTime.text = combinedText
+            
+            // Update every second
+            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(this, 1000)
+        }
+    }
+
+    /**
+     * Calculate Can Chi (Lunar Year Name)
+     */
+    private fun getCanChi(year: Int): String {
+        val can = arrayOf("Canh", "Tân", "Nhâm", "Quý", "Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ")
+        val chi = arrayOf("Thân", "Dậu", "Tuất", "Hợi", "Tí", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi")
+        
+        return "${can[year % 10]} ${chi[year % 12]}"
+    }
+
+    private fun setupDateTime() {
+        android.os.Handler(android.os.Looper.getMainLooper()).post(updateTimeRunnable)
+    }
+
     
     /**
      * Show sign out confirmation dialog
@@ -438,14 +518,21 @@ class HistoryActivity : AppCompatActivity() {
         }
         columnLayout.addView(header)
         
-        // Weight values (only non-zero)
-        weights.filter { it > 0.0 }.forEach { weight ->
+        // Weight values (always show 5 cells)
+        weights.forEach { weight ->
             val weightText = android.widget.TextView(this).apply {
-                text = if (weight % 1.0 == 0.0) weight.toInt().toString() else weight.toString()
+                text = if (weight > 0.0) {
+                    if (weight % 1.0 == 0.0) weight.toInt().toString() else weight.toString()
+                } else {
+                    "" // Empty string for zero values
+                }
                 setTextColor(android.graphics.Color.BLACK)
                 textSize = 13f
                 gravity = android.view.Gravity.CENTER
                 setPadding(0, 4, 0, 4)
+                
+                // Ensure it has height even if empty
+                minHeight = (24 * resources.displayMetrics.density).toInt()
             }
             columnLayout.addView(weightText)
         }

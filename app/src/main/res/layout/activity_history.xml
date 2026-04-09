@@ -24,6 +24,18 @@
                 android:orientation="vertical"
                 android:background="#2196F3"
                 android:padding="16dp">
+
+                <!-- Date & Time Display -->
+                <TextView
+                    android:id="@+id/tv_date_time"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="03:12 PM, Thứ 7, 27/12/2025( âm: 26/11/2025)"
+                    android:textColor="#E3F2FD"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:gravity="center_horizontal"
+                    android:layout_marginBottom="4dp" />
                 
                 <!-- Title and Settings Row -->
                 <LinearLayout
