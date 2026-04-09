@@ -117,9 +117,27 @@ class WeightAdapter(
      * Called when ViewModel updates the data
      */
     fun updateWeights(newWeights: List<Double>) {
-        weights.clear()
-        weights.addAll(newWeights)
-        notifyDataSetChanged()
+        val oldSize = weights.size
+        val newSize = newWeights.size
+        val minSize = minOf(oldSize, newSize)
+
+        // Update changed items only
+        for (i in 0 until minSize) {
+            if (weights[i] != newWeights[i]) {
+                weights[i] = newWeights[i]
+                notifyItemChanged(i)
+            }
+        }
+
+        if (newSize > oldSize) {
+            weights.addAll(newWeights.subList(oldSize, newSize))
+            notifyItemRangeInserted(oldSize, newSize - oldSize)
+        } else if (oldSize > newSize) {
+            for (i in oldSize - 1 downTo newSize) {
+                weights.removeAt(i)
+            }
+            notifyItemRangeRemoved(newSize, oldSize - newSize)
+        }
     }
     
     /**
@@ -127,6 +145,6 @@ class WeightAdapter(
      */
     fun setLocked(locked: Boolean) {
         isLocked = locked
-        notifyDataSetChanged() // Refresh all views to update enabled state
+        notifyItemRangeChanged(0, itemCount)
     }
 }

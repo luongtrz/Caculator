@@ -19,3 +19,8 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Keep Firebase/Firestore data classes
+-keep class com.example.caculateapp.data.RiceRecord { *; }
+-keepattributes Signature
+-keepattributes *Annotation*

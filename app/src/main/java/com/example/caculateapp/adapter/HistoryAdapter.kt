@@ -27,6 +27,12 @@ class HistoryAdapter(
     
     companion object {
         private const val DATE_FORMAT_PATTERN = "dd/MM/yyyy HH:mm"
+        private val dateFormat = SimpleDateFormat("hh:mm a dd/MM/yyyy", Locale.getDefault())
+        private val weightFormat = NumberFormat.getInstance(Locale.getDefault()).apply {
+            minimumFractionDigits = 1
+            maximumFractionDigits = 1
+        }
+        private val moneyFormat = NumberFormat.getInstance(Locale("vi", "VN"))
     }
     
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryViewHolder {
@@ -51,18 +57,8 @@ class HistoryAdapter(
             // Customer name (fallback to default if empty)
             tvCustomerName.text = record.customerName.ifBlank { "Khách hàng" }
             
-            // Format date and time: "HH:MM PM dd/MM/yyyy"
-            val dateFormat = SimpleDateFormat("hh:mm a dd/MM/yyyy", Locale.getDefault())
             tvDateTime.text = dateFormat.format(record.createdAt ?: Date())
-            
-            // Grand total with thousand separators
-            val weightFormat = NumberFormat.getInstance(Locale.getDefault())
-            weightFormat.minimumFractionDigits = 1
-            weightFormat.maximumFractionDigits = 1
             tvGrandTotal.text = "${weightFormat.format(record.grandTotal)} kg"
-            
-            // Format money with thousand separators
-            val moneyFormat = NumberFormat.getInstance(Locale("vi", "VN"))
             tvTotalMoney.text = "${moneyFormat.format(record.totalMoney.toLong())} VNĐ"
             
             // Card click -> navigate to edit screen

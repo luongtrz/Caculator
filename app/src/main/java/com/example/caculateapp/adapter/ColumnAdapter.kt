@@ -170,24 +170,29 @@ class ColumnAdapter(
     override fun getItemCount() = columns.size
     
     /**
-     * Update columns data safely (post to avoid layout conflicts)
+     * Update columns data with targeted notifications (avoids full rebind)
      */
     fun updateColumns(newColumns: List<List<Double>>) {
-        val oldSize = columns.size
-        
-        // Create NEW list instead of clearing (prevents race conditions)
+        val oldColumns = columns
         val newColumnsList = newColumns.map { it.toMutableList() }.toMutableList()
         columns = newColumnsList
-        
-        // Post to handler to avoid "Cannot call this method while RecyclerView is computing a layout"
-        android.os.Handler(android.os.Looper.getMainLooper()).post {
-            try {
-                // Always use notifyDataSetChanged for simplicity and reliability
-                notifyDataSetChanged()
-            } catch (e: Exception) {
-                // Log error but don't crash
-                e.printStackTrace()
+
+        val oldSize = oldColumns.size
+        val newSize = newColumnsList.size
+        val minSize = minOf(oldSize, newSize)
+
+        // Notify only changed columns
+        for (i in 0 until minSize) {
+            if (oldColumns[i] != newColumnsList[i]) {
+                notifyItemChanged(i)
             }
+        }
+
+        // Handle added/removed columns
+        if (newSize > oldSize) {
+            notifyItemRangeInserted(oldSize, newSize - oldSize)
+        } else if (oldSize > newSize) {
+            notifyItemRangeRemoved(newSize, oldSize - newSize)
         }
     }
     
