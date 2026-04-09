@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark mode overrides -->
+    <color name="md_theme_primary">#FFA5D6A7</color>
+    <color name="md_theme_onPrimary">#FF1B5E20</color>
+    <color name="md_theme_primaryContainer">#FF2E7D32</color>
+    <color name="md_theme_onPrimaryContainer">#FFC8E6C9</color>
+
+    <color name="md_theme_secondary">#FFFFF59D</color>
+    <color name="md_theme_onSecondary">#FFF57F17</color>
+    <color name="md_theme_secondaryContainer">#FFF9A825</color>
+    <color name="md_theme_onSecondaryContainer">#FFFFF8E1</color>
+
+    <color name="md_theme_tertiary">#FFBCAAA4</color>
+    <color name="md_theme_onTertiary">#FF4E342E</color>
+    <color name="md_theme_tertiaryContainer">#FF795548</color>
+    <color name="md_theme_onTertiaryContainer">#FFD7CCC8</color>
+
+    <color name="md_theme_error">#FFFFB4AB</color>
+    <color name="md_theme_onError">#FF690005</color>
+    <color name="md_theme_errorContainer">#FF93000A</color>
+    <color name="md_theme_onErrorContainer">#FFFFDAD6</color>
+
+    <color name="md_theme_surface">#FF1C1B1F</color>
+    <color name="md_theme_onSurface">#FFE6E1E5</color>
+    <color name="md_theme_surfaceVariant">#FF49454F</color>
+    <color name="md_theme_onSurfaceVariant">#FFCAC4D0</color>
+    <color name="md_theme_surfaceContainerLowest">#FF121212</color>
+    <color name="md_theme_surfaceContainerLow">#FF1E1E1E</color>
+    <color name="md_theme_surfaceContainer">#FF252525</color>
+    <color name="md_theme_surfaceContainerHigh">#FF2C2C2C</color>
+    <color name="md_theme_surfaceContainerHighest">#FF353535</color>
+
+    <color name="md_theme_outline">#FF938F99</color>
+    <color name="md_theme_outlineVariant">#FF49454F</color>
+
+    <!-- Semantic aliases (dark) -->
+    <color name="color_weight_positive">#FFA5D6A7</color>
+    <color name="color_money_highlight">#FFFFAB91</color>
+    <color name="color_divider">#FF49454F</color>
+    <color name="color_header_bg">#FF2E7D32</color>
+    <color name="color_header_text">#FFFFFFFF</color>
+</resources>

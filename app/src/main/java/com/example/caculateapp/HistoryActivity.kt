@@ -68,82 +68,31 @@ class HistoryActivity : AppCompatActivity() {
         }
     }
 
+    private val timeFormat = java.text.SimpleDateFormat("hh:mm:ss a", java.util.Locale.US)
+    private val dateFormat = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
+    private val timeHandler = android.os.Handler(android.os.Looper.getMainLooper())
+    private val dayNames = arrayOf("", "Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7")
+
     private val updateTimeRunnable = object : Runnable {
         override fun run() {
             val calendar = java.util.Calendar.getInstance()
-            
-            // Format time: "03:12:00 PM"
-            val timeFormat = java.text.SimpleDateFormat("hh:mm:ss a", java.util.Locale.US)
             val time = timeFormat.format(calendar.time)
-            
-            // Format date: "Thứ 7, 27/12/2025"
-            val dayOfWeek = when (calendar.get(java.util.Calendar.DAY_OF_WEEK)) {
-                java.util.Calendar.SUNDAY -> "Chủ nhật"
-                java.util.Calendar.MONDAY -> "Thứ 2"
-                java.util.Calendar.TUESDAY -> "Thứ 3"
-                java.util.Calendar.WEDNESDAY -> "Thứ 4"
-                java.util.Calendar.THURSDAY -> "Thứ 5"
-                java.util.Calendar.FRIDAY -> "Thứ 6"
-                java.util.Calendar.SATURDAY -> "Thứ 7"
-                else -> ""
-            }
-            
-            val dateFormat = java.text.SimpleDateFormat("dd/MM/yyyy", java.util.Locale.getDefault())
+            val dayOfWeek = dayNames[calendar.get(java.util.Calendar.DAY_OF_WEEK)]
             val date = dateFormat.format(calendar.time)
-            
-            // Calculate Lunar Date using LunarCalendar4J
-            val day = calendar.get(java.util.Calendar.DAY_OF_MONTH)
-            val month = calendar.get(java.util.Calendar.MONTH) + 1
-            val year = calendar.get(java.util.Calendar.YEAR)
-            
-            // Lunar calendar using Android ICU (API 24+)
-            var lunarString = ""
-            try {
-                // Use ChineseCalendar with Vietnam TimeZone (approximate but much better than manual math)
-                // Note: Must use android.icu.util.TimeZone, not java.util.TimeZone
-                val lunarCal = android.icu.util.ChineseCalendar(android.icu.util.TimeZone.getTimeZone("Asia/Ho_Chi_Minh"))
-                lunarCal.timeInMillis = calendar.timeInMillis
-                
-                val lDay = lunarCal.get(android.icu.util.ChineseCalendar.DAY_OF_MONTH)
-                val lMonth = lunarCal.get(android.icu.util.ChineseCalendar.MONTH) + 1
-                val lYearCycle = lunarCal.get(android.icu.util.ChineseCalendar.YEAR)
-                
-                // Check if leap month
-                val isLeap = lunarCal.get(android.icu.util.ChineseCalendar.IS_LEAP_MONTH) == 1
-                val monthStr = if (isLeap) "$lMonth (Nhuận)" else "$lMonth"
-                
-                // Can Chi: CycleYear (1-60) + 3 aligns with our getCanChi (year%10, year%12) formula
-                // Ex: 2024 is year 41. (41+3)%10=4(Giap), (41+3)%12=8(Thin) -> Correct
-                val lunarYearStr = getCanChi(lYearCycle + 3)
-                
-                lunarString = "$lDay/$monthStr/$lunarYearStr"
-            } catch (e: Exception) {
-                // Very basic fallback
-                lunarString = "..."
-            }
-            
-            // Combine: "03:12:ss PM, Thứ 7, 27/12/2025 (Âm: 26/11/2025)"
-            val combinedText = "$time, $dayOfWeek, $date (Âm: $lunarString)"
-            
-            binding.tvDateTime.text = combinedText
-            
-            // Update every second
-            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(this, 1000)
+
+            binding.tvDateTime.text = "$time, $dayOfWeek, $date"
+
+            timeHandler.postDelayed(this, 1000)
         }
     }
 
-    /**
-     * Calculate Can Chi (Lunar Year Name)
-     */
-    private fun getCanChi(year: Int): String {
-        val can = arrayOf("Canh", "Tân", "Nhâm", "Quý", "Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ")
-        val chi = arrayOf("Thân", "Dậu", "Tuất", "Hợi", "Tí", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi")
-        
-        return "${can[year % 10]} ${chi[year % 12]}"
+    private fun setupDateTime() {
+        timeHandler.post(updateTimeRunnable)
     }
 
-    private fun setupDateTime() {
-        android.os.Handler(android.os.Looper.getMainLooper()).post(updateTimeRunnable)
+    override fun onDestroy() {
+        super.onDestroy()
+        timeHandler.removeCallbacks(updateTimeRunnable)
     }
 
     
@@ -255,8 +204,11 @@ class HistoryActivity : AppCompatActivity() {
             }
         )
         
-        binding.recyclerHistory.layoutManager = LinearLayoutManager(this)
-        binding.recyclerHistory.adapter = adapter
+        binding.recyclerHistory.apply {
+            layoutManager = LinearLayoutManager(this@HistoryActivity)
+            adapter = this@HistoryActivity.adapter
+            setHasFixedSize(true)
+        }
     }
     
     /**
@@ -277,16 +229,22 @@ class HistoryActivity : AppCompatActivity() {
     // Add debounce variable
     private var lastClickTime: Long = 0
     
+    private var searchJob: kotlinx.coroutines.Job? = null
+    private val searchHandler = android.os.Handler(android.os.Looper.getMainLooper())
+
     /**
-     * Setup search functionality
+     * Setup search functionality with debounce
      */
     private fun setupSearch() {
         binding.etSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             override fun afterTextChanged(s: Editable?) {
-                val query = s?.toString() ?: ""
-                searchRecords(query)
+                searchHandler.removeCallbacksAndMessages(null)
+                searchHandler.postDelayed({
+                    val query = s?.toString() ?: ""
+                    searchRecords(query)
+                }, 300)
             }
         })
     }
@@ -306,7 +264,8 @@ class HistoryActivity : AppCompatActivity() {
      * Search records by query
      */
     private fun searchRecords(query: String) {
-        lifecycleScope.launch {
+        searchJob?.cancel()
+        searchJob = lifecycleScope.launch {
             viewModel.searchRecords(query).collectLatest { records ->
                 adapter.submitList(records)
             }
@@ -583,9 +542,9 @@ class HistoryActivity : AppCompatActivity() {
     private fun updateSyncBadge(isSynced: Boolean) {
         binding.syncBadge.setBackgroundColor(
             if (isSynced) {
-                android.graphics.Color.parseColor("#4CAF50") // Green
+                androidx.core.content.ContextCompat.getColor(this, R.color.color_weight_positive) // Green
             } else {
-                android.graphics.Color.parseColor("#FF9800") // Orange
+                androidx.core.content.ContextCompat.getColor(this, R.color.md_theme_secondary) // Orange
             }
         )
     }
@@ -620,12 +579,12 @@ class HistoryActivity : AppCompatActivity() {
             viewModel.isCloudSynced.collectLatest { isSynced ->
                 if (isSynced) {
                     // All synced
-                    syncStatusBadge.setBackgroundColor(android.graphics.Color.parseColor("#4CAF50")) // Green
+                    syncStatusBadge.setBackgroundColor(androidx.core.content.ContextCompat.getColor(this, R.color.color_weight_positive)) // Green
                     syncStatusText.text = "Đã đồng bộ"
                     syncDetailText.text = "Tất cả dữ liệu đã lưu trên cloud"
                 } else {
                     // Has pending
-                    syncStatusBadge.setBackgroundColor(android.graphics.Color.parseColor("#FF9800")) // Orange
+                    syncStatusBadge.setBackgroundColor(androidx.core.content.ContextCompat.getColor(this, R.color.md_theme_secondary)) // Orange
                     syncStatusText.text = "Đang đồng bộ..."
                     syncDetailText.text = "Có dữ liệu chưa sync lên cloud"
                 }

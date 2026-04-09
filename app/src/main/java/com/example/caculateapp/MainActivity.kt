@@ -74,73 +74,32 @@ class MainActivity : AppCompatActivity() {
     /**
      * Setup date and time display (auto-update every second)
      */
-    private fun setupDateTime() {
-        val handler = android.os.Handler(mainLooper)
-        val updateTime = object : Runnable {
-            override fun run() {
-                val calendar = java.util.Calendar.getInstance()
-                
-                // Format date: "Thứ 5, ngày 26 tháng 12 năm 2024"
-                val dayOfWeek = when (calendar.get(java.util.Calendar.DAY_OF_WEEK)) {
-                    java.util.Calendar.SUNDAY -> "Chủ nhật"
-                    java.util.Calendar.MONDAY -> "Thứ 2"
-                    java.util.Calendar.TUESDAY -> "Thứ 3"
-                    java.util.Calendar.WEDNESDAY -> "Thứ 4"
-                    java.util.Calendar.THURSDAY -> "Thứ 5"
-                    java.util.Calendar.FRIDAY -> "Thứ 6"
-                    java.util.Calendar.SATURDAY -> "Thứ 7"
-                    else -> ""
-                }
-                
-                val day = calendar.get(java.util.Calendar.DAY_OF_MONTH)
-                val month = calendar.get(java.util.Calendar.MONTH) + 1
-                val year = calendar.get(java.util.Calendar.YEAR)
-                
-                binding.tvDate.text = "$dayOfWeek, ngày $day tháng $month năm $year"
-                
-                // Lunar calendar using Android ICU (API 24+)
-                var lunarText = ""
-                try {
-                     // Use ChineseCalendar with Vietnam TimeZone
-                     // Note: Must use android.icu.util.TimeZone, not java.util.TimeZone
-                     val lunarCal = android.icu.util.ChineseCalendar(android.icu.util.TimeZone.getTimeZone("Asia/Ho_Chi_Minh"))
-                     lunarCal.timeInMillis = calendar.timeInMillis
-                     
-                     val lDay = lunarCal.get(android.icu.util.ChineseCalendar.DAY_OF_MONTH)
-                     val lMonth = lunarCal.get(android.icu.util.ChineseCalendar.MONTH) + 1
-                     val lYearCycle = lunarCal.get(android.icu.util.ChineseCalendar.YEAR)
-                     
-                     val isLeap = lunarCal.get(android.icu.util.ChineseCalendar.IS_LEAP_MONTH) == 1
-                     val monthStr = if (isLeap) "$lMonth (Nhuận)" else "$lMonth"
-                     
-                     // Can Chi: CycleYear (1-60) + 3 aligns with getCanChi formula
-                     val lunarYearStr = getCanChi(lYearCycle + 3)
-                     
-                     lunarText = "(Âm lịch: ngày $lDay tháng $monthStr năm $lunarYearStr)"
-                } catch (e: Exception) {
-                     lunarText = "..."
-                }
-                
-                binding.tvLunarDate.text = lunarText                
-                // Format time: "11:13:26 PM"
-                val timeFormat = SimpleDateFormat("hh:mm:ss a", Locale.US)
-                binding.tvTime.text = timeFormat.format(calendar.time)
-                
-                // Update every second
-                handler.postDelayed(this, 1000)
-            }
+    private val timeFormat = SimpleDateFormat("hh:mm:ss a", Locale.US)
+    private val timeHandler = android.os.Handler(android.os.Looper.getMainLooper())
+    private val dayNames = arrayOf("", "Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7")
+
+    private val updateTimeRunnable = object : Runnable {
+        override fun run() {
+            val calendar = java.util.Calendar.getInstance()
+            val dayOfWeek = dayNames[calendar.get(java.util.Calendar.DAY_OF_WEEK)]
+            val day = calendar.get(java.util.Calendar.DAY_OF_MONTH)
+            val month = calendar.get(java.util.Calendar.MONTH) + 1
+            val year = calendar.get(java.util.Calendar.YEAR)
+
+            binding.tvDate.text = "$dayOfWeek, ngày $day tháng $month năm $year"
+            binding.tvTime.text = timeFormat.format(calendar.time)
+
+            timeHandler.postDelayed(this, 1000)
         }
-        handler.post(updateTime)
     }
 
-    /**
-     * Calculate Can Chi (Lunar Year Name)
-     */
-    private fun getCanChi(year: Int): String {
-        val can = arrayOf("Canh", "Tân", "Nhâm", "Quý", "Giáp", "Ất", "Bính", "Đinh", "Mậu", "Kỷ")
-        val chi = arrayOf("Thân", "Dậu", "Tuất", "Hợi", "Tí", "Sửu", "Dần", "Mão", "Thìn", "Tỵ", "Ngọ", "Mùi")
-        
-        return "${can[year % 10]} ${chi[year % 12]}"
+    private fun setupDateTime() {
+        timeHandler.post(updateTimeRunnable)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        timeHandler.removeCallbacks(updateTimeRunnable)
     }
 
     /**
@@ -162,6 +121,8 @@ class MainActivity : AppCompatActivity() {
         binding.recyclerWeights.apply {
             adapter = columnAdapter
             this.layoutManager = layoutManager
+            setHasFixedSize(true)
+            isNestedScrollingEnabled = false
         }
         
         // Load initial columns immediately
@@ -567,9 +528,9 @@ class MainActivity : AppCompatActivity() {
             val headerText = TextView(this).apply {
                 text = "C${colIndex + 1}"
                 textSize = 10f
-                setTextColor(resources.getColor(android.R.color.black, null))
+                setTextColor(androidx.core.content.ContextCompat.getColor(this@MainActivity, R.color.md_theme_onPrimaryContainer))
                 setPadding(4, 4, 4, 4)
-                setBackgroundColor(resources.getColor(android.R.color.darker_gray, null))
+                setBackgroundColor(androidx.core.content.ContextCompat.getColor(this@MainActivity, R.color.md_theme_primaryContainer))
                 gravity = android.view.Gravity.CENTER
             }
             columnLayout.addView(headerText)
@@ -582,9 +543,9 @@ class MainActivity : AppCompatActivity() {
                 val cellText = TextView(this).apply {
                     text = if (weight > 0) String.format("%.1f", weight) else ""
                     textSize = 11f
-                    setTextColor(resources.getColor(android.R.color.black, null))
+                    setTextColor(androidx.core.content.ContextCompat.getColor(this@MainActivity, R.color.md_theme_onSurface))
                     setPadding(4, 8, 4, 8)
-                    setBackgroundResource(android.R.drawable.edit_text)
+                    setBackgroundResource(R.drawable.bg_weight_cell)
                     gravity = android.view.Gravity.CENTER
                     minWidth = 60
                 }
@@ -596,9 +557,9 @@ class MainActivity : AppCompatActivity() {
             val totalText = TextView(this).apply {
                 text = String.format("%.1f", total)
                 textSize = 10f
-                setTextColor(resources.getColor(android.R.color.black, null))
+                setTextColor(androidx.core.content.ContextCompat.getColor(this@MainActivity, R.color.md_theme_onPrimary))
                 setPadding(4, 4, 4, 4)
-                setBackgroundColor(resources.getColor(android.R.color.holo_blue_light, null))
+                setBackgroundColor(androidx.core.content.ContextCompat.getColor(this@MainActivity, R.color.md_theme_primary))
                 gravity = android.view.Gravity.CENTER
                 setTypeface(null, android.graphics.Typeface.BOLD)
             }
@@ -612,7 +573,7 @@ class MainActivity : AppCompatActivity() {
             val warningText = TextView(this).apply {
                 text = "... +${numColumns - columnsToShow} cột"
                 textSize = 10f
-                setTextColor(resources.getColor(android.R.color.holo_red_dark, null))
+                setTextColor(androidx.core.content.ContextCompat.getColor(this@MainActivity, R.color.md_theme_error))
                 setPadding(8, 20, 8, 8)
                 gravity = android.view.Gravity.CENTER
             }

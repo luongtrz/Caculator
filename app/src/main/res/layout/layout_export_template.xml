@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="@color/export_bg">
     
     <LinearLayout
         android:layout_width="match_parent"
@@ -28,7 +28,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Tên khách hàng"
-                    android:textColor="#000000"
+                    android:textColor="@color/export_text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
                 
@@ -37,7 +37,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Ngày: 26/12/2025"
-                    android:textColor="#000000"
+                    android:textColor="@color/export_text_primary"
                     android:textSize="12sp"
                     android:layout_marginTop="4dp" />
             </LinearLayout>
@@ -47,7 +47,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Đơn giá: 0 VNĐ/kg"
-                android:textColor="#000000"
+                android:textColor="@color/export_text_primary"
                 android:textSize="14sp"
                 android:textStyle="bold"
                 android:layout_gravity="center_vertical" />
@@ -57,7 +57,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="#000000"
+            android:background="@color/export_text_primary"
             android:layout_marginBottom="16dp" />
         
         <!-- Title -->
@@ -65,7 +65,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="PHIẾU CÂN"
-            android:textColor="#000000"
+            android:textColor="@color/export_text_primary"
             android:textSize="20sp"
             android:textStyle="bold"
             android:gravity="center"
@@ -92,7 +92,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="#000000"
+            android:background="@color/export_text_primary"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp" />
         
@@ -101,7 +101,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="#F0F0F0"
+            android:background="@color/export_totals_bg"
             android:padding="12dp">
             
             <LinearLayout
@@ -115,7 +115,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="TỔNG KHỐI LƯỢNG:"
-                    android:textColor="#000000"
+                    android:textColor="@color/export_text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
                 
@@ -124,7 +124,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0.00 kg"
-                    android:textColor="#000000"
+                    android:textColor="@color/export_text_primary"
                     android:textSize="18sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -139,7 +139,7 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="THÀNH TIỀN:"
-                    android:textColor="#000000"
+                    android:textColor="@color/export_text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
                 
@@ -148,7 +148,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0 VNĐ"
-                    android:textColor="#000000"
+                    android:textColor="@color/export_text_primary"
                     android:textSize="20sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -172,7 +172,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Người giao"
-                    android:textColor="#000000"
+                    android:textColor="@color/export_text_primary"
                     android:textSize="12sp"
                     android:textStyle="italic" />
                 
@@ -180,7 +180,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="(Ký, ghi rõ họ tên)"
-                    android:textColor="#666666"
+                    android:textColor="@color/export_text_secondary"
                     android:textSize="10sp"
                     android:layout_marginTop="4dp" />
             </LinearLayout>
@@ -196,7 +196,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Người nhận"
-                    android:textColor="#000000"
+                    android:textColor="@color/export_text_primary"
                     android:textSize="12sp"
                     android:textStyle="italic" />
                 
@@ -204,7 +204,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="(Ký, ghi rõ họ tên)"
-                    android:textColor="#666666"
+                    android:textColor="@color/export_text_secondary"
                     android:textSize="10sp"
                     android:layout_marginTop="4dp" />
             </LinearLayout>

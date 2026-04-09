@@ -4,220 +4,210 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#F5F5F5"
+    android:background="@color/md_theme_surface"
     android:fitsSystemWindows="true">
-    
-    
-    <!-- Date & Time Header -->
+
+    <!-- Scrollable Content -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:fillViewport="true">
-        
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingBottom="8dp">
+            android:paddingBottom="@dimen/spacing_sm">
 
-            <androidx.cardview.widget.CardView
+            <!-- Date & Time Header -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="8dp"
-                app:cardCornerRadius="6dp"
-                app:cardElevation="2dp"
-                android:backgroundTint="#2196F3">
-                
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:layout_marginStart="@dimen/spacing_sm"
+                android:layout_marginEnd="@dimen/spacing_sm"
+                android:layout_marginBottom="@dimen/spacing_sm"
+                app:cardCornerRadius="@dimen/corner_md"
+                app:cardElevation="@dimen/card_elevation"
+                app:cardBackgroundColor="@color/color_header_bg">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     android:padding="10dp"
                     android:gravity="center">
-                    
+
                     <TextView
                         android:id="@+id/tv_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Thứ 5, ngày 26 tháng 12 năm 2024"
-                        android:textSize="14sp"
+                        android:textSize="@dimen/text_body"
                         android:textStyle="bold"
-                        android:textColor="#FFFFFF" />
-                    
+                        android:textColor="@color/color_header_text" />
+
                     <TextView
                         android:id="@+id/tv_lunar_date"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="(Âm lịch: ngày 25 tháng 11 năm Giáp Thìn)"
-                        android:textSize="12sp"
-                        android:textColor="#E3F2FD"
-                        android:layout_marginTop="2dp" />
-                    
+                        android:text="..."
+                        android:textSize="@dimen/text_body_sm"
+                        android:textColor="#C8E6C9"
+                        android:layout_marginTop="1dp" />
+
                     <TextView
                         android:id="@+id/tv_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="11:13:00 PM"
-                        android:textSize="16sp"
+                        android:textSize="@dimen/text_body_lg"
                         android:textStyle="bold"
-                        android:textColor="#E3F2FD"
+                        android:textColor="#C8E6C9"
                         android:layout_marginTop="2dp" />
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
-            
-            <!-- Compact Input Card (Name + Price in one row) -->
-            <androidx.cardview.widget.CardView
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Input Card (Name + Price) -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                app:cardCornerRadius="6dp"
-                app:cardElevation="2dp"
-                android:backgroundTint="#FFFFFF">
-                
+                android:layout_margin="@dimen/spacing_sm"
+                app:cardCornerRadius="@dimen/corner_md"
+                app:cardElevation="@dimen/card_elevation"
+                app:cardBackgroundColor="@color/md_theme_surfaceContainerLow">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:padding="8dp"
+                    android:padding="@dimen/spacing_sm"
                     android:weightSum="10">
-                    
+
                     <!-- Customer Name (60%) -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="6"
                         android:hint="Tên khách hàng"
-                        app:boxBackgroundColor="#F5F5F5"
-                        app:boxStrokeColor="#4CAF50"
-                        app:hintTextColor="#4CAF50"
-                        android:layout_marginEnd="4dp"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-                        
+                        app:boxStrokeColor="@color/md_theme_primary"
+                        app:hintTextColor="@color/md_theme_primary"
+                        android:layout_marginEnd="@dimen/spacing_xs"
+                        style="@style/Widget.Rice.TextInputLayout">
+
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/edit_customer_name"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="textPersonName"
-                            android:textSize="16sp"
+                            android:textSize="@dimen/text_body_lg"
                             android:textStyle="bold"
                             android:maxLines="1" />
                     </com.google.android.material.textfield.TextInputLayout>
-                    
+
                     <!-- Unit Price (40%) -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="4"
                         android:hint="Đơn giá (VNĐ)"
-                        app:boxBackgroundColor="#F5F5F5"
-                        app:boxStrokeColor="#FF9800"
-                        app:hintTextColor="#FF9800"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
-                        
+                        app:boxStrokeColor="@color/md_theme_secondary"
+                        app:hintTextColor="@color/md_theme_onSecondaryContainer"
+                        style="@style/Widget.Rice.TextInputLayout">
+
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/edit_unit_price"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="number"
-                            android:textSize="16sp"
+                            android:textSize="@dimen/text_body_lg"
                             android:textStyle="bold"
                             android:maxLines="1" />
                     </com.google.android.material.textfield.TextInputLayout>
-                    
+
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
-            
-            <!-- Quick Input Card (Compact) -->
-            <androidx.cardview.widget.CardView
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Quick Input Card -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
+                android:layout_marginStart="@dimen/spacing_sm"
+                android:layout_marginEnd="@dimen/spacing_sm"
                 android:layout_marginBottom="6dp"
-                app:cardCornerRadius="6dp"
-                app:cardElevation="2dp"
-                android:backgroundTint="#E8F5E9">
-                
+                app:cardCornerRadius="@dimen/corner_md"
+                app:cardElevation="@dimen/card_elevation"
+                app:cardBackgroundColor="@color/md_theme_primaryContainer">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:padding="6dp"
                     android:gravity="center_vertical">
-                    
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="⚡"
-                        android:textSize="18sp"
-                        android:layout_marginEnd="4dp" />
-                    
+
                     <EditText
                         android:id="@+id/et_quick_input"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:hint="Nhập kg"
+                        android:textColorHint="@color/md_theme_onSurfaceVariant"
                         android:inputType="numberDecimal"
                         android:imeOptions="actionDone"
-                        android:textSize="18sp"
+                        android:textSize="@dimen/text_title_sm"
                         android:textStyle="bold"
+                        android:textColor="@color/md_theme_onSurface"
                         android:maxLines="1"
                         android:maxLength="5"
                         android:gravity="center"
-                        android:padding="12dp"
-                        android:background="@android:drawable/edit_text" />
-                    
-                    <Button
+                        android:padding="@dimen/spacing_md"
+                        android:background="@drawable/bg_quick_input" />
+
+                    <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_confirm"
                         android:layout_width="0dp"
-                        android:layout_height="56dp"
+                        android:layout_height="@dimen/button_height_lg"
                         android:layout_weight="1"
                         android:text="OK"
-                        android:textSize="20sp"
+                        android:textSize="@dimen/text_title"
                         android:textStyle="bold"
-                        android:layout_marginStart="8dp"
-                        android:backgroundTint="#4CAF50"
-                        app:cornerRadius="10dp"
-                        style="@style/Widget.MaterialComponents.Button" />
+                        android:layout_marginStart="@dimen/spacing_sm"
+                        style="@style/Widget.Rice.Button.Primary" />
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
-            
-            <!-- RecyclerView with Card Background (Compact) -->
-            <!-- Changed to wrap_content and removed layout_weight -->
-            <androidx.cardview.widget.CardView
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Weight Columns RecyclerView -->
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_marginEnd="12dp"
-                android:layout_marginBottom="8dp"
-                app:cardCornerRadius="10dp"
-                app:cardElevation="2dp"
-                android:backgroundTint="#FFFFFF">
-                
+                android:layout_marginStart="@dimen/spacing_md"
+                android:layout_marginEnd="@dimen/spacing_md"
+                android:layout_marginBottom="@dimen/spacing_sm"
+                app:cardCornerRadius="@dimen/corner_md"
+                app:cardElevation="@dimen/card_elevation"
+                app:cardBackgroundColor="@color/md_theme_surfaceContainerLow">
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/recycler_weights"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:padding="8dp"
+                    android:padding="@dimen/spacing_sm"
                     android:clipToPadding="false" />
-            </androidx.cardview.widget.CardView>
-        
+            </com.google.android.material.card.MaterialCardView>
+
         </LinearLayout>
     </ScrollView>
-    
-    <!-- Bottom Summary Bar (Compact & Prominent) -->
+
+    <!-- Bottom Summary Bar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@drawable/bg_bottom_gradient"
-        android:padding="12dp">
-        
+        android:padding="@dimen/spacing_md">
+
         <!-- Totals Row -->
         <LinearLayout
             android:layout_width="match_parent"
@@ -225,7 +215,7 @@
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:layout_marginBottom="10dp">
-            
+
             <!-- Grand Total -->
             <LinearLayout
                 android:layout_width="0dp"
@@ -233,25 +223,25 @@
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:gravity="center">
-                
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Tổng KL"
-                    android:textSize="14sp"
-                    android:textColor="#B3E5FC"
+                    android:textSize="@dimen/text_body"
+                    android:textColor="#C8E6C9"
                     android:textStyle="bold" />
-                
+
                 <TextView
                     android:id="@+id/tv_grand_total"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0.00 kg"
-                    android:textSize="24sp"
+                    android:textSize="@dimen/text_title_lg"
                     android:textStyle="bold"
-                    android:textColor="#FFFFFF" />
+                    android:textColor="@color/white" />
             </LinearLayout>
-            
+
             <!-- Total Money -->
             <LinearLayout
                 android:layout_width="0dp"
@@ -259,58 +249,58 @@
                 android:layout_weight="1"
                 android:orientation="vertical"
                 android:gravity="center">
-                
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Thành tiền"
-                    android:textSize="14sp"
-                    android:textColor="#FFECB3"
+                    android:textSize="@dimen/text_body"
+                    android:textColor="#FFF9C4"
                     android:textStyle="bold" />
-                
+
                 <TextView
                     android:id="@+id/tv_total_money"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="0 VNĐ"
-                    android:textSize="24sp"
+                    android:textSize="@dimen/text_title_lg"
                     android:textStyle="bold"
                     android:textColor="#FFD54F" />
             </LinearLayout>
         </LinearLayout>
-        
-        <!-- Action Buttons (Large) -->
+
+        <!-- Action Buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="2">
-            
-            <Button
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_save"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
                 android:text="Lưu lại"
-                android:textSize="16sp"
+                android:textSize="@dimen/text_body_lg"
                 android:textStyle="bold"
-                android:backgroundTint="#4CAF50"
                 android:layout_marginEnd="6dp"
-                app:cornerRadius="10dp"
-                style="@style/Widget.MaterialComponents.Button" />
-            
-            <Button
+                style="@style/Widget.Rice.Button.Primary"
+                app:backgroundTint="@color/white"
+                android:textColor="@color/md_theme_primary" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_share"
                 android:layout_width="0dp"
                 android:layout_height="60dp"
                 android:layout_weight="1"
                 android:text="Chia sẻ"
-                android:textSize="16sp"
+                android:textSize="@dimen/text_body_lg"
                 android:textStyle="bold"
-                android:backgroundTint="#FF9800"
                 android:layout_marginStart="6dp"
-                app:cornerRadius="10dp"
-                style="@style/Widget.MaterialComponents.Button" />
+                style="@style/Widget.Rice.Button.Secondary"
+                app:backgroundTint="#C8E6C9"
+                android:textColor="@color/md_theme_onPrimaryContainer" />
         </LinearLayout>
     </LinearLayout>
 

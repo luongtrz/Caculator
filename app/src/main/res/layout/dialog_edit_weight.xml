@@ -1,92 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:cardCornerRadius="16dp"
+    app:cardCornerRadius="@dimen/corner_lg"
     app:cardElevation="8dp"
-    android:layout_margin="24dp">
-    
+    app:cardBackgroundColor="@color/md_theme_surface"
+    android:layout_margin="@dimen/spacing_xl">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp"
-        android:background="#FFFFFF">
-        
-        <!-- Title with icon -->
+        android:padding="@dimen/spacing_xl">
+
+        <!-- Title -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical"
             android:layout_marginBottom="20dp">
-            
+
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Chỉnh sửa giá trị"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textColor="#2196F3" />
+                android:textAppearance="@style/TextAppearance.Rice.Title"
+                android:textColor="@color/md_theme_primary" />
         </LinearLayout>
-        
-        <!-- Input field with better styling -->
+
+        <!-- Input field -->
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Nhập giá trị (kg)"
-            app:boxBackgroundMode="outline"
-            app:boxCornerRadiusTopStart="8dp"
-            app:boxCornerRadiusTopEnd="8dp"
-            app:boxCornerRadiusBottomStart="8dp"
-            app:boxCornerRadiusBottomEnd="8dp"
-            app:boxStrokeColor="#2196F3"
-            app:hintTextColor="#2196F3"
-            android:layout_marginBottom="24dp">
-            
+            app:boxStrokeColor="@color/md_theme_primary"
+            app:hintTextColor="@color/md_theme_primary"
+            android:layout_marginBottom="@dimen/spacing_xl"
+            style="@style/Widget.Rice.TextInputLayout">
+
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_edit_weight"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="numberDecimal"
-                android:textSize="24sp"
-                android:textColor="#000000"
+                android:textSize="@dimen/text_title_lg"
+                android:textColor="@color/md_theme_onSurface"
                 android:textStyle="bold"
-                android:padding="16dp" />
+                android:padding="@dimen/spacing_lg" />
         </com.google.android.material.textfield.TextInputLayout>
-        
+
         <!-- Buttons -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
-            
-            <Button
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_cancel"
                 android:layout_width="0dp"
-                android:layout_height="56dp"
+                android:layout_height="@dimen/button_height_lg"
                 android:layout_weight="1"
                 android:text="HỦY"
-                android:textSize="16sp"
-                android:textColor="#666666"
-                android:backgroundTint="#F5F5F5"
-                android:layout_marginEnd="8dp" />
-            
-            <Button
+                android:textSize="@dimen/text_body_lg"
+                android:layout_marginEnd="@dimen/spacing_sm"
+                style="@style/Widget.Rice.Button.Text" />
+
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_save"
                 android:layout_width="0dp"
-                android:layout_height="56dp"
+                android:layout_height="@dimen/button_height_lg"
                 android:layout_weight="1"
                 android:text="LƯU"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="#FFFFFF"
-                android:backgroundTint="#4CAF50"
-                android:layout_marginStart="8dp" />
+                android:textSize="@dimen/text_body_lg"
+                android:layout_marginStart="@dimen/spacing_sm"
+                style="@style/Widget.Rice.Button.Primary" />
         </LinearLayout>
-        
+
     </LinearLayout>
-    
-</androidx.cardview.widget.CardView>
+
+</com.google.android.material.card.MaterialCardView>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- ==================== Buttons ==================== -->
+
+    <style name="Widget.Rice.Button.Primary" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/md_theme_primary</item>
+        <item name="android:textColor">@color/md_theme_onPrimary</item>
+        <item name="android:textStyle">bold</item>
+        <item name="cornerRadius">@dimen/corner_md</item>
+    </style>
+
+    <style name="Widget.Rice.Button.Secondary" parent="Widget.Material3.Button.TonalButton">
+        <item name="backgroundTint">@color/md_theme_secondaryContainer</item>
+        <item name="android:textColor">@color/md_theme_onSecondaryContainer</item>
+        <item name="android:textStyle">bold</item>
+        <item name="cornerRadius">@dimen/corner_md</item>
+    </style>
+
+    <style name="Widget.Rice.Button.Danger" parent="Widget.Material3.Button">
+        <item name="backgroundTint">@color/md_theme_error</item>
+        <item name="android:textColor">@color/md_theme_onError</item>
+        <item name="android:textStyle">bold</item>
+        <item name="cornerRadius">@dimen/corner_md</item>
+    </style>
+
+    <style name="Widget.Rice.Button.Text" parent="Widget.Material3.Button.TextButton">
+        <item name="android:textColor">@color/md_theme_onSurfaceVariant</item>
+    </style>
+
+    <!-- ==================== Cards ==================== -->
+
+    <style name="Widget.Rice.Card" parent="Widget.Material3.CardView.Filled">
+        <item name="cardCornerRadius">@dimen/corner_md</item>
+        <item name="cardElevation">@dimen/card_elevation</item>
+        <item name="cardBackgroundColor">@color/md_theme_surfaceContainerLow</item>
+    </style>
+
+    <style name="Widget.Rice.Card.Elevated" parent="Widget.Material3.CardView.Elevated">
+        <item name="cardCornerRadius">@dimen/corner_md</item>
+        <item name="cardElevation">2dp</item>
+    </style>
+
+    <!-- ==================== Text Appearances ==================== -->
+
+    <style name="TextAppearance.Rice.Headline" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:textSize">@dimen/text_headline</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.Rice.Title" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textSize">@dimen/text_title</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.Rice.TitleSmall" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textSize">@dimen/text_title_sm</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.Rice.Body" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textSize">@dimen/text_body</item>
+    </style>
+
+    <style name="TextAppearance.Rice.BodyLarge" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textSize">@dimen/text_body_lg</item>
+    </style>
+
+    <style name="TextAppearance.Rice.Caption" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textSize">@dimen/text_caption</item>
+    </style>
+
+    <!-- ==================== Text Input ==================== -->
+
+    <style name="Widget.Rice.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
+        <item name="boxCornerRadiusTopStart">@dimen/corner_sm</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/corner_sm</item>
+        <item name="boxCornerRadiusBottomStart">@dimen/corner_sm</item>
+        <item name="boxCornerRadiusBottomEnd">@dimen/corner_sm</item>
+    </style>
+
+</resources>

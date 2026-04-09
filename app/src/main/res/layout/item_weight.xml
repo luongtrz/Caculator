@@ -3,7 +3,7 @@
     android:layout_width="85dp"
     android:layout_height="48dp"
     android:padding="3dp">
-    
+
     <EditText
         android:id="@+id/edit_weight"
         android:layout_width="match_parent"
@@ -11,13 +11,13 @@
         android:background="@drawable/bg_weight_cell"
         android:gravity="center"
         android:hint="0.00"
-        android:textColorHint="#9E9E9E"
+        android:textColorHint="@color/md_theme_outlineVariant"
         android:inputType="numberDecimal"
         android:maxLines="1"
-        android:textSize="13sp"
-        android:textColor="#37474F"
+        android:textSize="@dimen/text_body_sm"
+        android:textColor="@color/md_theme_onSurface"
         android:textStyle="bold"
         android:imeOptions="actionNext"
         android:importantForAutofill="no" />
-    
+
 </FrameLayout>

@@ -1,10 +1,58 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
+    <!-- MD3 Primary: Deep paddy green -->
+    <color name="md_theme_primary">#FF2E7D32</color>
+    <color name="md_theme_onPrimary">#FFFFFFFF</color>
+    <color name="md_theme_primaryContainer">#FFC8E6C9</color>
+    <color name="md_theme_onPrimaryContainer">#FF1B5E20</color>
+
+    <!-- MD3 Secondary: Rice gold -->
+    <color name="md_theme_secondary">#FFF9A825</color>
+    <color name="md_theme_onSecondary">#FFFFFFFF</color>
+    <color name="md_theme_secondaryContainer">#FFFFF8E1</color>
+    <color name="md_theme_onSecondaryContainer">#FFF57F17</color>
+
+    <!-- MD3 Tertiary: Earthy brown -->
+    <color name="md_theme_tertiary">#FF795548</color>
+    <color name="md_theme_onTertiary">#FFFFFFFF</color>
+    <color name="md_theme_tertiaryContainer">#FFD7CCC8</color>
+    <color name="md_theme_onTertiaryContainer">#FF4E342E</color>
+
+    <!-- MD3 Error -->
+    <color name="md_theme_error">#FFBA1A1A</color>
+    <color name="md_theme_onError">#FFFFFFFF</color>
+    <color name="md_theme_errorContainer">#FFFFDAD6</color>
+    <color name="md_theme_onErrorContainer">#FF410002</color>
+
+    <!-- MD3 Surfaces -->
+    <color name="md_theme_surface">#FFFFFBF5</color>
+    <color name="md_theme_onSurface">#FF1C1B1F</color>
+    <color name="md_theme_surfaceVariant">#FFF5F0EB</color>
+    <color name="md_theme_onSurfaceVariant">#FF49454F</color>
+    <color name="md_theme_surfaceContainerLowest">#FFFFFFFF</color>
+    <color name="md_theme_surfaceContainerLow">#FFFFF8F0</color>
+    <color name="md_theme_surfaceContainer">#FFF5EFE7</color>
+    <color name="md_theme_surfaceContainerHigh">#FFF0EBE3</color>
+    <color name="md_theme_surfaceContainerHighest">#FFE6E1D9</color>
+
+    <!-- MD3 Outline -->
+    <color name="md_theme_outline">#FF79747E</color>
+    <color name="md_theme_outlineVariant">#FFCAC4D0</color>
+
+    <!-- Semantic aliases -->
+    <color name="color_weight_positive">#FF2E7D32</color>
+    <color name="color_money_highlight">#FFE65100</color>
+    <color name="color_divider">#FFE0E0E0</color>
+    <color name="color_header_bg">#FF2E7D32</color>
+    <color name="color_header_text">#FFFFFFFF</color>
+
+    <!-- Export-specific (non-theme, always light for print) -->
+    <color name="export_text_primary">#FF000000</color>
+    <color name="export_text_secondary">#FF666666</color>
+    <color name="export_bg">#FFFFFFFF</color>
+    <color name="export_totals_bg">#FFF5F5F5</color>
+
+    <!-- Base colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 </resources>
