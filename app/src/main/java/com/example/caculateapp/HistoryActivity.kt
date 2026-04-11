@@ -417,17 +417,38 @@ class HistoryActivity : AppCompatActivity() {
         bottomSheetBinding.btnExportImage.setOnClickListener {
             bottomSheet.dismiss()
             
-            try {
-                exportManager.exportToMultipleImages(
-                    columns,
-                    record.customerName,
-                    record.unitPrice,
-                    record.grandTotal,
-                    record.totalMoney
-                )
-            } catch (e: Exception) {
-                e.printStackTrace()
-                android.widget.Toast.makeText(this, "Lỗi: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
+            lifecycleScope.launch {
+                runCatching {
+                    exportManager.exportToMultipleImages(
+                        columns,
+                        record.customerName,
+                        record.unitPrice,
+                        record.grandTotal,
+                        record.totalMoney,
+                        showToast = false
+                    )
+                }.onSuccess { uris ->
+                    if (uris.isNotEmpty()) {
+                        android.widget.Toast.makeText(
+                            this@HistoryActivity,
+                            "Đã xuất ${uris.size} ảnh vào thư mục Pictures/RiceManager",
+                            android.widget.Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+                        android.widget.Toast.makeText(
+                            this@HistoryActivity,
+                            "Không thể xuất ảnh",
+                            android.widget.Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }.onFailure { error ->
+                    error.printStackTrace()
+                    android.widget.Toast.makeText(
+                        this@HistoryActivity,
+                        "Lỗi: ${error.message}",
+                        android.widget.Toast.LENGTH_LONG
+                    ).show()
+                }
             }
         }
         
@@ -435,17 +456,38 @@ class HistoryActivity : AppCompatActivity() {
         bottomSheetBinding.btnExportPdf.setOnClickListener {
             bottomSheet.dismiss()
             
-            try {
-                exportManager.exportToMultiPagePDF(
-                    columns,
-                    record.customerName,
-                    record.unitPrice,
-                    record.grandTotal,
-                    record.totalMoney
-                )
-            } catch (e: Exception) {
-                e.printStackTrace()
-                android.widget.Toast.makeText(this, "Lỗi: ${e.message}", android.widget.Toast.LENGTH_LONG).show()
+            lifecycleScope.launch {
+                runCatching {
+                    exportManager.exportToMultiPagePDF(
+                        columns,
+                        record.customerName,
+                        record.unitPrice,
+                        record.grandTotal,
+                        record.totalMoney,
+                        showToast = false
+                    )
+                }.onSuccess { uri ->
+                    if (uri != null) {
+                        android.widget.Toast.makeText(
+                            this@HistoryActivity,
+                            "Đã xuất PDF vào thư mục Downloads/RiceManager",
+                            android.widget.Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+                        android.widget.Toast.makeText(
+                            this@HistoryActivity,
+                            "Không thể xuất PDF",
+                            android.widget.Toast.LENGTH_LONG
+                        ).show()
+                    }
+                }.onFailure { error ->
+                    error.printStackTrace()
+                    android.widget.Toast.makeText(
+                        this@HistoryActivity,
+                        "Lỗi: ${error.message}",
+                        android.widget.Toast.LENGTH_LONG
+                    ).show()
+                }
             }
         }
         
@@ -579,12 +621,12 @@ class HistoryActivity : AppCompatActivity() {
             viewModel.isCloudSynced.collectLatest { isSynced ->
                 if (isSynced) {
                     // All synced
-                    syncStatusBadge.setBackgroundColor(androidx.core.content.ContextCompat.getColor(this, R.color.color_weight_positive)) // Green
+                    syncStatusBadge.setBackgroundColor(androidx.core.content.ContextCompat.getColor(this@HistoryActivity, R.color.color_weight_positive)) // Green
                     syncStatusText.text = "Đã đồng bộ"
                     syncDetailText.text = "Tất cả dữ liệu đã lưu trên cloud"
                 } else {
                     // Has pending
-                    syncStatusBadge.setBackgroundColor(androidx.core.content.ContextCompat.getColor(this, R.color.md_theme_secondary)) // Orange
+                    syncStatusBadge.setBackgroundColor(androidx.core.content.ContextCompat.getColor(this@HistoryActivity, R.color.md_theme_secondary)) // Orange
                     syncStatusText.text = "Đang đồng bộ..."
                     syncDetailText.text = "Có dữ liệu chưa sync lên cloud"
                 }

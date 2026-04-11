@@ -1,81 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="?attr/colorSurface"
-    android:gravity="center"
-    android:padding="@dimen/spacing_xxl">
+    android:background="@color/md_theme_surface"
+    android:padding="@dimen/spacing_xl">
 
-    <!-- App Logo -->
-    <ImageView
-        android:layout_width="120dp"
-        android:layout_height="120dp"
-        android:src="@drawable/ic_app_logo_rice"
-        android:scaleType="centerInside"
-        android:layout_marginBottom="@dimen/spacing_lg"
-        android:contentDescription="Logo" />
-
-    <!-- App Name -->
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/layout_login_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Ung Dung Can"
-        android:textAppearance="@style/TextAppearance.Rice.Headline"
-        android:textColor="?attr/colorOnSurface"
-        android:layout_marginBottom="@dimen/spacing_sm" />
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <!-- Subtitle -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Quan ly phieu can de dang"
-        android:textAppearance="@style/TextAppearance.Rice.BodyLarge"
-        android:textColor="?attr/colorOnSurfaceVariant"
-        android:layout_marginBottom="48dp" />
-
-    <!-- Welcome Message -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Dang nhap de bat dau"
-        android:textAppearance="@style/TextAppearance.Rice.TitleSmall"
-        android:textColor="?attr/colorOnSurface"
-        android:layout_marginBottom="@dimen/spacing_xl" />
-
-    <!-- Google Sign-in Button -->
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/btn_google_sign_in"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/spacing_lg" />
-
-    <!-- Loading Indicator -->
-    <ProgressBar
-        android:id="@+id/progress_bar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="gone" />
-
-    <!-- Feature Info Card -->
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/spacing_xxl"
-        app:cardCornerRadius="@dimen/corner_md"
-        app:cardElevation="0dp"
-        app:cardBackgroundColor="@color/md_theme_surfaceContainerLow">
+        <ImageView
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:src="@drawable/ic_app_logo_rice"
+            android:scaleType="centerInside"
+            android:contentDescription="Logo"
+            android:layout_marginBottom="@dimen/spacing_lg" />
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Cân kg"
+            android:textAppearance="@style/TextAppearance.Rice.Headline"
+            android:textColor="@color/md_theme_onSurface" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Quản lý phiếu cân nhanh, gọn, rõ ràng"
+            android:textAppearance="@style/TextAppearance.Rice.BodyLarge"
+            android:textColor="@color/md_theme_onSurfaceVariant"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:layout_marginBottom="@dimen/spacing_xl" />
+
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="- Du lieu duoc luu an toan tren cloud\n- Khong mat du lieu khi go ung dung\n- Hoat dong offline, tu dong dong bo"
-            android:textAppearance="@style/TextAppearance.Rice.Body"
-            android:textColor="?attr/colorOnSurfaceVariant"
-            android:gravity="center"
-            android:lineSpacingExtra="4dp"
-            android:padding="@dimen/spacing_lg" />
-    </com.google.android.material.card.MaterialCardView>
+            style="@style/Widget.Rice.Card.Outlined"
+            android:layout_marginBottom="@dimen/spacing_xl">
 
-</LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_lg">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Đăng nhập để bắt đầu"
+                    android:textAppearance="@style/TextAppearance.Rice.TitleSmall"
+                    android:textColor="@color/md_theme_onSurface" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="• Dữ liệu lưu an toàn trên cloud\n• Hỗ trợ offline và tự đồng bộ\n• Không mất dữ liệu khi thoát app"
+                    android:textAppearance="@style/TextAppearance.Rice.Body"
+                    android:textColor="@color/md_theme_onSurfaceVariant"
+                    android:lineSpacingExtra="4dp"
+                    android:layout_marginTop="@dimen/spacing_md" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.gms.common.SignInButton
+            android:id="@+id/btn_google_sign_in"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height_lg" />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_lg"
+            android:visibility="gone" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -4,48 +4,52 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/md_theme_surfaceVariant">
+    android:background="@color/md_theme_surface">
 
-    <!-- Header -->
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/color_header_bg"
-        android:padding="@dimen/spacing_lg"
-        android:orientation="horizontal"
-        android:gravity="center_vertical">
+        android:layout_margin="@dimen/spacing_sm"
+        style="@style/Widget.Rice.Card">
 
-        <TextView
-            android:layout_width="0dp"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Xem trước Phiếu Cân"
-            android:textColor="@color/color_header_text"
-            android:textAppearance="@style/TextAppearance.Rice.TitleSmall" />
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="@dimen/spacing_md">
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_close_preview"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ĐÓNG"
-            android:textSize="@dimen/text_body"
-            style="@style/Widget.Rice.Button.Text"
-            android:textColor="@color/white" />
-    </LinearLayout>
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Xem trước phiếu cân"
+                android:textColor="@color/md_theme_onSurface"
+                android:textAppearance="@style/TextAppearance.Rice.TitleSmall" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_close_preview"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Đóng"
+                style="@style/Widget.Rice.Button.Text" />
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
     <!-- Scrollable pages -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:clipToPadding="false">
 
         <LinearLayout
             android:id="@+id/layout_pages_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="@dimen/spacing_lg" />
+            android:padding="@dimen/spacing_md" />
     </ScrollView>
 
     <!-- Confirm Button -->
@@ -53,10 +57,9 @@
         android:id="@+id/btn_confirm_export"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="XÁC NHẬN XUẤT"
+        android:text="Tiếp tục xuất"
         android:textSize="@dimen/text_body_lg"
         android:textStyle="bold"
-        android:padding="@dimen/spacing_lg"
         android:layout_margin="@dimen/spacing_sm"
         style="@style/Widget.Rice.Button.Primary" />
 

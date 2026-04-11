@@ -6,7 +6,9 @@
     android:layout_margin="@dimen/spacing_xs"
     app:cardCornerRadius="@dimen/corner_sm"
     app:cardElevation="@dimen/card_elevation"
-    app:cardBackgroundColor="@color/md_theme_surfaceContainerLow">
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/md_theme_outlineVariant"
+    app:cardBackgroundColor="@color/md_theme_surfaceContainerLowest">
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -22,19 +24,18 @@
             android:text="Cột 1"
             android:textSize="@dimen/text_body"
             android:textStyle="bold"
-            android:textColor="@color/md_theme_onPrimaryContainer"
+            android:textColor="@color/md_theme_onSurfaceVariant"
             android:gravity="center"
             android:background="@drawable/bg_column_header"
             android:layout_marginBottom="3dp" />
 
         <!-- Bag 1 -->
-        <EditText
+        <TextView
             android:id="@+id/edit_weight_1"
             android:layout_width="@dimen/weight_cell_width"
             android:layout_height="wrap_content"
             android:hint="0.0"
             android:textColorHint="@color/md_theme_outlineVariant"
-            android:inputType="numberDecimal"
             android:gravity="center"
             android:textSize="@dimen/weight_text_size"
             android:textStyle="bold"
@@ -43,17 +44,17 @@
             android:background="@drawable/bg_weight_cell"
             android:layout_marginBottom="1dp"
             android:minHeight="@dimen/weight_cell_height"
-            android:imeOptions="actionNext"
-            android:importantForAutofill="no" />
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground" />
 
         <!-- Bag 2 -->
-        <EditText
+        <TextView
             android:id="@+id/edit_weight_2"
             android:layout_width="@dimen/weight_cell_width"
             android:layout_height="wrap_content"
             android:hint="0.0"
             android:textColorHint="@color/md_theme_outlineVariant"
-            android:inputType="numberDecimal"
             android:gravity="center"
             android:textSize="@dimen/weight_text_size"
             android:textStyle="bold"
@@ -62,17 +63,17 @@
             android:background="@drawable/bg_weight_cell"
             android:layout_marginBottom="1dp"
             android:minHeight="@dimen/weight_cell_height"
-            android:imeOptions="actionNext"
-            android:importantForAutofill="no" />
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground" />
 
         <!-- Bag 3 -->
-        <EditText
+        <TextView
             android:id="@+id/edit_weight_3"
             android:layout_width="@dimen/weight_cell_width"
             android:layout_height="wrap_content"
             android:hint="0.0"
             android:textColorHint="@color/md_theme_outlineVariant"
-            android:inputType="numberDecimal"
             android:gravity="center"
             android:textSize="@dimen/weight_text_size"
             android:textStyle="bold"
@@ -81,17 +82,17 @@
             android:background="@drawable/bg_weight_cell"
             android:layout_marginBottom="1dp"
             android:minHeight="@dimen/weight_cell_height"
-            android:imeOptions="actionNext"
-            android:importantForAutofill="no" />
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground" />
 
         <!-- Bag 4 -->
-        <EditText
+        <TextView
             android:id="@+id/edit_weight_4"
             android:layout_width="@dimen/weight_cell_width"
             android:layout_height="wrap_content"
             android:hint="0.0"
             android:textColorHint="@color/md_theme_outlineVariant"
-            android:inputType="numberDecimal"
             android:gravity="center"
             android:textSize="@dimen/weight_text_size"
             android:textStyle="bold"
@@ -100,17 +101,17 @@
             android:background="@drawable/bg_weight_cell"
             android:layout_marginBottom="1dp"
             android:minHeight="@dimen/weight_cell_height"
-            android:imeOptions="actionNext"
-            android:importantForAutofill="no" />
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground" />
 
         <!-- Bag 5 -->
-        <EditText
+        <TextView
             android:id="@+id/edit_weight_5"
             android:layout_width="@dimen/weight_cell_width"
             android:layout_height="wrap_content"
             android:hint="0.0"
             android:textColorHint="@color/md_theme_outlineVariant"
-            android:inputType="numberDecimal"
             android:gravity="center"
             android:textSize="@dimen/weight_text_size"
             android:textStyle="bold"
@@ -119,8 +120,9 @@
             android:background="@drawable/bg_weight_cell"
             android:layout_marginBottom="1dp"
             android:minHeight="@dimen/weight_cell_height"
-            android:imeOptions="actionNext"
-            android:importantForAutofill="no" />
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackground" />
 
         <!-- Divider Line -->
         <View
@@ -137,7 +139,7 @@
             android:text="0.0 kg"
             android:textSize="@dimen/weight_total_text_size"
             android:textStyle="bold"
-            android:textColor="@color/md_theme_onPrimary"
+            android:textColor="@color/md_theme_onPrimaryContainer"
             android:gravity="center"
             android:background="@drawable/bg_column_total" />
 

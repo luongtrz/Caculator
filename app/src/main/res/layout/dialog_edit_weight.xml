@@ -4,8 +4,10 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:cardCornerRadius="@dimen/corner_lg"
-    app:cardElevation="8dp"
-    app:cardBackgroundColor="@color/md_theme_surface"
+    app:cardElevation="@dimen/card_elevation"
+    app:strokeWidth="1dp"
+    app:strokeColor="@color/md_theme_outlineVariant"
+    app:cardBackgroundColor="@color/md_theme_surfaceContainerLowest"
     android:layout_margin="@dimen/spacing_xl">
 
     <LinearLayout
@@ -28,7 +30,7 @@
                 android:layout_weight="1"
                 android:text="Chỉnh sửa giá trị"
                 android:textAppearance="@style/TextAppearance.Rice.Title"
-                android:textColor="@color/md_theme_primary" />
+                android:textColor="@color/md_theme_onSurface" />
         </LinearLayout>
 
         <!-- Input field -->
@@ -66,7 +68,7 @@
                 android:text="HỦY"
                 android:textSize="@dimen/text_body_lg"
                 android:layout_marginEnd="@dimen/spacing_sm"
-                style="@style/Widget.Rice.Button.Text" />
+                style="@style/Widget.Rice.Button.Secondary" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_save"

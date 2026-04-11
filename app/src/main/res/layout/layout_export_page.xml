@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:background="@color/export_bg"
-    android:padding="24dp">
+    android:padding="20dp">
     
     <!-- Header -->
     <LinearLayout
@@ -25,7 +25,7 @@
                 android:layout_height="wrap_content"
                 android:text="Khách hàng"
                 android:textColor="@color/export_text_primary"
-                android:textSize="14sp"
+                android:textSize="15sp"
                 android:textStyle="bold" />
             
             <TextView
@@ -44,7 +44,7 @@
             android:layout_height="wrap_content"
             android:text="0 VNĐ/kg"
             android:textColor="@color/export_text_primary"
-            android:textSize="12sp"
+            android:textSize="13sp"
             android:textStyle="bold"
             android:layout_gravity="center_vertical" />
     </LinearLayout>
@@ -53,7 +53,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/export_text_primary"
+        android:background="@color/export_text_secondary"
         android:layout_marginBottom="12dp" />
     
     <!-- Title -->
@@ -63,7 +63,7 @@
         android:layout_height="wrap_content"
         android:text="PHIẾU CÂN - Trang 1/1"
         android:textColor="@color/export_text_primary"
-        android:textSize="16sp"
+        android:textSize="18sp"
         android:textStyle="bold"
         android:gravity="center"
         android:layout_marginBottom="12dp" />
@@ -88,7 +88,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="@color/export_text_primary"
+        android:background="@color/export_text_secondary"
         android:layout_marginBottom="12dp" />
     
     <!-- Page Totals -->
@@ -97,7 +97,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@color/export_totals_bg"
-        android:padding="10dp">
+        android:padding="12dp">
         
         <LinearLayout
             android:layout_width="match_parent"
@@ -111,7 +111,7 @@
                 android:layout_weight="1"
                 android:text="Tổng trang này:"
                 android:textColor="@color/export_text_primary"
-                android:textSize="13sp"
+                android:textSize="14sp"
                 android:textStyle="bold" />
             
             <TextView
@@ -120,7 +120,7 @@
                 android:layout_height="wrap_content"
                 android:text="0.0 kg"
                 android:textColor="@color/export_text_primary"
-                android:textSize="14sp"
+                android:textSize="15sp"
                 android:textStyle="bold" />
         </LinearLayout>
         
@@ -135,7 +135,7 @@
                 android:layout_weight="1"
                 android:text="TỔNG CỘNG:"
                 android:textColor="@color/export_text_primary"
-                android:textSize="14sp"
+                android:textSize="15sp"
                 android:textStyle="bold" />
             
             <TextView
@@ -144,7 +144,7 @@
                 android:layout_height="wrap_content"
                 android:text="0.0 kg"
                 android:textColor="@color/export_text_primary"
-                android:textSize="16sp"
+                android:textSize="17sp"
                 android:textStyle="bold" />
         </LinearLayout>
         
@@ -160,7 +160,7 @@
                 android:layout_weight="1"
                 android:text="THÀNH TIỀN:"
                 android:textColor="@color/export_text_primary"
-                android:textSize="14sp"
+                android:textSize="15sp"
                 android:textStyle="bold" />
             
             <TextView
@@ -169,7 +169,7 @@
                 android:layout_height="wrap_content"
                 android:text="0 VNĐ"
                 android:textColor="@color/export_text_primary"
-                android:textSize="16sp"
+                android:textSize="18sp"
                 android:textStyle="bold" />
         </LinearLayout>
     </LinearLayout>

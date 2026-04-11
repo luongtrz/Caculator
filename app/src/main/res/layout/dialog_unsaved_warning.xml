@@ -4,39 +4,23 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="?attr/colorSurface"
+    android:background="@color/md_theme_surfaceContainerLowest"
     android:padding="@dimen/spacing_xl">
 
-    <!-- Warning Icon + Title -->
-    <LinearLayout
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        android:layout_marginBottom="@dimen/spacing_lg">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="⚠️"
-            android:textSize="32sp"
-            android:layout_marginEnd="@dimen/spacing_md" />
-
-        <TextView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Dữ liệu chưa lưu"
-            android:textAppearance="@style/TextAppearance.Rice.Title"
-            android:textColor="@color/md_theme_onSurface" />
-    </LinearLayout>
+        android:text="Dữ liệu chưa lưu"
+        android:textAppearance="@style/TextAppearance.Rice.Title"
+        android:textColor="@color/md_theme_onSurface"
+        android:layout_marginBottom="@dimen/spacing_md" />
 
     <!-- Message -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Bạn có dữ liệu chưa lưu. Thoát ra sẽ làm mất dữ liệu này.\n\nBạn nên nhấn nút &quot;HỦY >> LƯU LẠI&quot; để lưu phiếu cân trước khi thoát."
-        android:textAppearance="@style/TextAppearance.Rice.BodyLarge"
+        android:textAppearance="@style/TextAppearance.Rice.Body"
         android:textColor="@color/md_theme_onSurfaceVariant"
         android:lineSpacingExtra="4dp"
         android:layout_marginBottom="@dimen/spacing_xl" />
@@ -52,7 +36,7 @@
             android:id="@+id/btn_exit_anyway"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Vẫn thoát"
+            android:text="Thoát"
             android:textSize="@dimen/text_body"
             android:layout_marginEnd="@dimen/spacing_md"
             style="@style/Widget.Rice.Button.Danger" />
@@ -61,7 +45,7 @@
             android:id="@+id/btn_cancel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Hủy"
+            android:text="Quay lại"
             android:textSize="@dimen/text_body"
             style="@style/Widget.Rice.Button.Primary" />
     </LinearLayout>

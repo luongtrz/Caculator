@@ -10,12 +10,11 @@ import android.view.LayoutInflater
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
-import android.widget.TableLayout
-import android.widget.TableRow
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.example.caculateapp.adapter.ColumnAdapter
 import com.example.caculateapp.databinding.ActivityMainBinding
 import com.example.caculateapp.databinding.DialogExportPreviewBinding
@@ -24,6 +23,7 @@ import com.example.caculateapp.databinding.LayoutExportTemplateBinding
 import com.example.caculateapp.utils.ExportManager
 import com.example.caculateapp.viewmodel.MainViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -77,6 +77,7 @@ class MainActivity : AppCompatActivity() {
     private val timeFormat = SimpleDateFormat("hh:mm:ss a", Locale.US)
     private val timeHandler = android.os.Handler(android.os.Looper.getMainLooper())
     private val dayNames = arrayOf("", "Chủ nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7")
+    private var lastRenderedDate: String? = null
 
     private val updateTimeRunnable = object : Runnable {
         override fun run() {
@@ -86,7 +87,11 @@ class MainActivity : AppCompatActivity() {
             val month = calendar.get(java.util.Calendar.MONTH) + 1
             val year = calendar.get(java.util.Calendar.YEAR)
 
-            binding.tvDate.text = "$dayOfWeek, ngày $day tháng $month năm $year"
+            val dateText = "$dayOfWeek, ngày $day tháng $month năm $year"
+            if (lastRenderedDate != dateText) {
+                binding.tvDate.text = dateText
+                lastRenderedDate = dateText
+            }
             binding.tvTime.text = timeFormat.format(calendar.time)
 
             timeHandler.postDelayed(this, 1000)
@@ -123,6 +128,7 @@ class MainActivity : AppCompatActivity() {
             this.layoutManager = layoutManager
             setHasFixedSize(true)
             isNestedScrollingEnabled = false
+            itemAnimator = null
         }
         
         // Load initial columns immediately
@@ -180,9 +186,9 @@ class MainActivity : AppCompatActivity() {
             binding.etQuickInput.text?.clear()
             
             // Scroll to column containing the new weight
-            binding.recyclerWeights.postDelayed({
-                binding.recyclerWeights.smoothScrollToPosition(columnIndex)
-            }, 100)
+            binding.recyclerWeights.post {
+                binding.recyclerWeights.scrollToPosition(columnIndex)
+            }
             
             // Keep focus on quick input
             binding.etQuickInput.requestFocus()
@@ -602,17 +608,30 @@ class MainActivity : AppCompatActivity() {
         bottomSheetBinding.btnExportImage.setOnClickListener {
             bottomSheet.dismiss()
             
-            try {
-                val uris = exportManager.exportToMultipleImages(
-                    columns,
-                    customerName,
-                    unitPrice,
-                    grandTotal,
-                    totalMoney
-                )
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(this, "Lỗi: ${e.message}", Toast.LENGTH_LONG).show()
+            lifecycleScope.launch {
+                runCatching {
+                    exportManager.exportToMultipleImages(
+                        columns,
+                        customerName,
+                        unitPrice,
+                        grandTotal,
+                        totalMoney,
+                        showToast = false
+                    )
+                }.onSuccess { uris ->
+                    if (uris.isNotEmpty()) {
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Đã xuất ${uris.size} ảnh vào thư mục Pictures/RiceManager",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+                        Toast.makeText(this@MainActivity, "Không thể xuất ảnh", Toast.LENGTH_LONG).show()
+                    }
+                }.onFailure { error ->
+                    error.printStackTrace()
+                    Toast.makeText(this@MainActivity, "Lỗi: ${error.message}", Toast.LENGTH_LONG).show()
+                }
             }
         }
         
@@ -620,17 +639,30 @@ class MainActivity : AppCompatActivity() {
         bottomSheetBinding.btnExportPdf.setOnClickListener {
             bottomSheet.dismiss()
             
-            try {
-                exportManager.exportToMultiPagePDF(
-                    columns,
-                    customerName,
-                    unitPrice,
-                    grandTotal,
-                    totalMoney
-                )
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(this, "Lỗi: ${e.message}", Toast.LENGTH_LONG).show()
+            lifecycleScope.launch {
+                runCatching {
+                    exportManager.exportToMultiPagePDF(
+                        columns,
+                        customerName,
+                        unitPrice,
+                        grandTotal,
+                        totalMoney,
+                        showToast = false
+                    )
+                }.onSuccess { uri ->
+                    if (uri != null) {
+                        Toast.makeText(
+                            this@MainActivity,
+                            "Đã xuất PDF vào thư mục Downloads/RiceManager",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    } else {
+                        Toast.makeText(this@MainActivity, "Không thể xuất PDF", Toast.LENGTH_LONG).show()
+                    }
+                }.onFailure { error ->
+                    error.printStackTrace()
+                    Toast.makeText(this@MainActivity, "Lỗi: ${error.message}", Toast.LENGTH_LONG).show()
+                }
             }
         }
         

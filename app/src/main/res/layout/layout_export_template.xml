@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="24dp">
+        android:padding="20dp">
         
         <!-- Header -->
         <LinearLayout
@@ -29,7 +29,7 @@
                     android:layout_height="wrap_content"
                     android:text="Tên khách hàng"
                     android:textColor="@color/export_text_primary"
-                    android:textSize="16sp"
+                    android:textSize="17sp"
                     android:textStyle="bold" />
                 
                 <TextView
@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:text="Đơn giá: 0 VNĐ/kg"
                 android:textColor="@color/export_text_primary"
-                android:textSize="14sp"
+                android:textSize="15sp"
                 android:textStyle="bold"
                 android:layout_gravity="center_vertical" />
         </LinearLayout>
@@ -57,7 +57,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/export_text_primary"
+            android:background="@color/export_text_secondary"
             android:layout_marginBottom="16dp" />
         
         <!-- Title -->
@@ -66,7 +66,7 @@
             android:layout_height="wrap_content"
             android:text="PHIẾU CÂN"
             android:textColor="@color/export_text_primary"
-            android:textSize="20sp"
+            android:textSize="22sp"
             android:textStyle="bold"
             android:gravity="center"
             android:layout_marginBottom="16dp" />
@@ -92,7 +92,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/export_text_primary"
+            android:background="@color/export_text_secondary"
             android:layout_marginTop="16dp"
             android:layout_marginBottom="16dp" />
         
@@ -102,7 +102,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:background="@color/export_totals_bg"
-            android:padding="12dp">
+            android:padding="14dp">
             
             <LinearLayout
                 android:layout_width="match_parent"

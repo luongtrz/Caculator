@@ -13,9 +13,10 @@ import android.provider.MediaStore
 import android.view.View
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
-import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -24,6 +25,12 @@ import java.util.*
  * Uses MediaStore API for modern Android compatibility
  */
 class ExportManager(private val context: Context) {
+
+    private fun showToastLong(message: String) {
+        android.os.Handler(android.os.Looper.getMainLooper()).post {
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+        }
+    }
     
     /**
      * Create a simple column view for export (vertical numbers only)
@@ -195,7 +202,11 @@ class ExportManager(private val context: Context) {
      * Save Bitmap to Gallery using MediaStore API
      * Works on all Android versions without storage permissions
      */
-    fun saveBitmapToGallery(bitmap: Bitmap, customFilename: String? = null): Uri? {
+    fun saveBitmapToGallery(
+        bitmap: Bitmap,
+        customFilename: String? = null,
+        showToast: Boolean = true
+    ): Uri? {
         val filename = customFilename ?: generateFilename("jpg")
         return try {
             val contentValues = ContentValues().apply {
@@ -218,7 +229,9 @@ class ExportManager(private val context: Context) {
             uri
         } catch (e: Exception) {
             e.printStackTrace()
-            Toast.makeText(context, "Lỗi khi lưu ảnh: ${e.message}", Toast.LENGTH_LONG).show()
+            if (showToast) {
+                showToastLong("Lỗi khi lưu ảnh: ${e.message}")
+            }
             null
         }
     }
@@ -294,12 +307,12 @@ class ExportManager(private val context: Context) {
                     pdfDocument.writeTo(outputStream)
                 }
                 pdfDocument.close()
-                Toast.makeText(context, "Đã lưu PDF vào thư mục Documents/RiceManager", Toast.LENGTH_LONG).show()
+                showToastLong("Đã lưu PDF vào thư mục Documents/RiceManager")
                 it
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            Toast.makeText(context, "Lỗi khi tạo PDF: ${e.message}", Toast.LENGTH_LONG).show()
+            showToastLong("Lỗi khi tạo PDF: ${e.message}")
             null
         }
     }
@@ -307,29 +320,28 @@ class ExportManager(private val context: Context) {
     /**
      * Export to multiple images (one per page)
      */
-    fun exportToMultipleImages(
+    suspend fun exportToMultipleImages(
         columns: List<List<Double>>,
         customerName: String,
         unitPrice: Long,
         grandTotal: Double,
-        totalMoney: Long
+        totalMoney: Long,
+        showToast: Boolean = true
     ): List<Uri> {
         val pages = createMultiplePages(columns, customerName, unitPrice, grandTotal, totalMoney)
-        val uris = mutableListOf<Uri>()
-        
-        pages.forEachIndexed { index, bitmap ->
-            val filename = generateFilename("jpg").replace(".jpg", "_page${index + 1}.jpg")
-            saveBitmapToGallery(bitmap, filename)?.let { uri ->
-                uris.add(uri)
+        val uris = withContext(Dispatchers.IO) {
+            val pageUris = mutableListOf<Uri>()
+            pages.forEachIndexed { index, bitmap ->
+                val filename = generateFilename("jpg").replace(".jpg", "_page${index + 1}.jpg")
+                saveBitmapToGallery(bitmap, filename, showToast)?.let { uri ->
+                    pageUris.add(uri)
+                }
             }
+            pageUris
         }
         
-        if (uris.isNotEmpty()) {
-            Toast.makeText(
-                context,
-                "Đã xuất ${uris.size} ảnh vào thư mục Pictures/RiceManager",
-                Toast.LENGTH_LONG
-            ).show()
+        if (showToast && uris.isNotEmpty()) {
+            showToastLong("Đã xuất ${uris.size} ảnh vào thư mục Pictures/RiceManager")
         }
         
         return uris
@@ -338,60 +350,62 @@ class ExportManager(private val context: Context) {
     /**
      * Export to multi-page PDF
      */
-    fun exportToMultiPagePDF(
+    suspend fun exportToMultiPagePDF(
         columns: List<List<Double>>,
         customerName: String,
         unitPrice: Long,
         grandTotal: Double,
-        totalMoney: Long
+        totalMoney: Long,
+        showToast: Boolean = true
     ): Uri? {
         val pages = createMultiplePages(columns, customerName, unitPrice, grandTotal, totalMoney)
-        
-        return try {
-            val pdfDocument = PdfDocument()
-            
-            pages.forEachIndexed { index, bitmap ->
-                val pageInfo = PdfDocument.PageInfo.Builder(bitmap.width, bitmap.height, index + 1).create()
-                val page = pdfDocument.startPage(pageInfo)
+        return withContext(Dispatchers.IO) {
+            try {
+                val pdfDocument = PdfDocument()
                 
-                val canvas = page.canvas
-                canvas.drawBitmap(bitmap, 0f, 0f, null)
-                
-                pdfDocument.finishPage(page)
-            }
-            
-            // Save PDF
-            val filename = generateFilename("pdf")
-            val contentValues = ContentValues().apply {
-                put(MediaStore.Files.FileColumns.DISPLAY_NAME, filename)
-                put(MediaStore.Files.FileColumns.MIME_TYPE, "application/pdf")
-                put(MediaStore.Files.FileColumns.RELATIVE_PATH, "${Environment.DIRECTORY_DOWNLOADS}/RiceManager")
-            }
-            
-            val uri = context.contentResolver.insert(
-                MediaStore.Files.getContentUri("external"),
-                contentValues
-            )
-            
-            uri?.let {
-                context.contentResolver.openOutputStream(it)?.use { outputStream ->
-                    pdfDocument.writeTo(outputStream)
+                pages.forEachIndexed { index, bitmap ->
+                    val pageInfo = PdfDocument.PageInfo.Builder(bitmap.width, bitmap.height, index + 1).create()
+                    val page = pdfDocument.startPage(pageInfo)
+                    
+                    val canvas = page.canvas
+                    canvas.drawBitmap(bitmap, 0f, 0f, null)
+                    
+                    pdfDocument.finishPage(page)
                 }
-                pdfDocument.close()
-                Toast.makeText(
-                    context,
-                    "Đã xuất PDF ${pages.size} trang vào thư mục Downloads/RiceManager",
-                    Toast.LENGTH_LONG
-                ).show()
-                it
-            } ?: run {
-                pdfDocument.close()
+                
+                // Save PDF
+                val filename = generateFilename("pdf")
+                val contentValues = ContentValues().apply {
+                    put(MediaStore.Files.FileColumns.DISPLAY_NAME, filename)
+                    put(MediaStore.Files.FileColumns.MIME_TYPE, "application/pdf")
+                    put(MediaStore.Files.FileColumns.RELATIVE_PATH, "${Environment.DIRECTORY_DOWNLOADS}/RiceManager")
+                }
+                
+                val uri = context.contentResolver.insert(
+                    MediaStore.Files.getContentUri("external"),
+                    contentValues
+                )
+                
+                uri?.let {
+                    context.contentResolver.openOutputStream(it)?.use { outputStream ->
+                        pdfDocument.writeTo(outputStream)
+                    }
+                    pdfDocument.close()
+                    if (showToast) {
+                        showToastLong("Đã xuất PDF ${pages.size} trang vào thư mục Downloads/RiceManager")
+                    }
+                    it
+                } ?: run {
+                    pdfDocument.close()
+                    null
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                if (showToast) {
+                    showToastLong("Lỗi khi tạo PDF: ${e.message}")
+                }
                 null
             }
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Toast.makeText(context, "Lỗi khi tạo PDF: ${e.message}", Toast.LENGTH_LONG).show()
-            null
         }
     }
     

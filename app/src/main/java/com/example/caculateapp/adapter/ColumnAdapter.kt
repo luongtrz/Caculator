@@ -1,13 +1,12 @@
 package com.example.caculateapp.adapter
 
-import android.text.Editable
-import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.EditText
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.caculateapp.R
 import com.example.caculateapp.databinding.ItemColumnBinding
-import android.widget.EditText
 
 /**
  * ColumnAdapter: Displays rice weight data in column format
@@ -19,12 +18,11 @@ class ColumnAdapter(
     
     // List of columns, each column has 5 weights
     private var columns = mutableListOf<MutableList<Double>>()
-    private val textWatchers = mutableMapOf<Int, MutableList<TextWatcher>>()
     
     inner class ColumnViewHolder(val binding: ItemColumnBinding) : 
         RecyclerView.ViewHolder(binding.root) {
         
-        val editTexts = listOf(
+        private val weightViews = listOf(
             binding.editWeight1,
             binding.editWeight2,
             binding.editWeight3,
@@ -35,67 +33,23 @@ class ColumnAdapter(
         fun bind(columnIndex: Int, weights: List<Double>, columnTotal: Double) {
             // Set column number
             binding.tvColumnNumber.text = "Cột ${columnIndex + 1}"
-            
-            // COMPLETELY remove ALL old watchers for this ViewHolder
-            editTexts.forEach { editText ->
-                // Remove all watchers (not just from map)
-                val watchersList = textWatchers[adapterPosition]
-                watchersList?.forEach { watcher ->
-                    editText.removeTextChangedListener(watcher)
-                }
-            }
-            textWatchers.remove(adapterPosition)
-            
-            // Create new watchers list
-            val watchers = mutableListOf<TextWatcher>()
-            
+
             // Bind each weight with CLICK TO EDIT dialog
-            editTexts.forEachIndexed { bagIndex, editText ->
+            weightViews.forEachIndexed { bagIndex, textView ->
                 val weight = weights.getOrNull(bagIndex) ?: 0.0
-                
+
                 // Display current value
-                editText.setText(if (weight > 0) weight.toString() else "")
-                
-                // Make EditText non-editable but clickable
-                editText.isFocusable = false
-                editText.isFocusableInTouchMode = false
-                editText.isClickable = true
-                
+                val displayText = if (weight > 0.0) weight.toString() else ""
+                if (textView.text.toString() != displayText) {
+                    textView.text = displayText
+                }
+
                 // Click listener to show dialog
-                editText.setOnClickListener {
-                    showEditDialog(editText, columnIndex, bagIndex, weight)
+                textView.setOnClickListener {
+                    showEditDialog(textView, bagIndex, weight)
                 }
-                
-                // Create text watcher for any programmatic changes
-                val watcher = object : TextWatcher {
-                    private var isUpdating = false
-                    
-                    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-                    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-                    override fun afterTextChanged(s: Editable?) {
-                        if (isUpdating) return
-                        
-                        val currentPosition = adapterPosition
-                        if (currentPosition == RecyclerView.NO_POSITION) return
-                        
-                        val newWeight = s?.toString()?.toDoubleOrNull() ?: 0.0
-                        onWeightChanged(currentPosition, bagIndex, newWeight)
-                    }
-                    
-                    fun setTextWithoutTrigger(text: String) {
-                        isUpdating = true
-                        editText.setText(text)
-                        isUpdating = false
-                    }
-                }
-                
-                editText.addTextChangedListener(watcher)
-                watchers.add(watcher)
             }
-            
-            // Store watchers using adapterPosition
-            textWatchers[adapterPosition] = watchers
-            
+
             // Set column total
             binding.tvColumnTotal.text = String.format("%.1f kg", columnTotal)
         }
@@ -103,8 +57,8 @@ class ColumnAdapter(
         /**
          * Show dialog to edit weight value
          */
-        private fun showEditDialog(editText: EditText, columnIndex: Int, bagIndex: Int, currentWeight: Double) {
-            val context = editText.context
+        private fun showEditDialog(targetView: TextView, bagIndex: Int, currentWeight: Double) {
+            val context = targetView.context
             val dialog = android.app.AlertDialog.Builder(context).create()
             val dialogView = android.view.LayoutInflater.from(context)
                 .inflate(R.layout.dialog_edit_weight, null)
@@ -141,7 +95,10 @@ class ColumnAdapter(
                 // Update the value
                 val currentPosition = adapterPosition
                 if (currentPosition != RecyclerView.NO_POSITION) {
-                    editText.setText(if (newWeight > 0) newWeight.toString() else "")
+                    val newText = if (newWeight > 0.0) newWeight.toString() else ""
+                    if (targetView.text.toString() != newText) {
+                        targetView.text = newText
+                    }
                     onWeightChanged(currentPosition, bagIndex, newWeight)
                 }
                 
@@ -173,7 +130,7 @@ class ColumnAdapter(
      * Update columns data with targeted notifications (avoids full rebind)
      */
     fun updateColumns(newColumns: List<List<Double>>) {
-        val oldColumns = columns
+        val oldColumns = columns.toList()
         val newColumnsList = newColumns.map { it.toMutableList() }.toMutableList()
         columns = newColumnsList
 
