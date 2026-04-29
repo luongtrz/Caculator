@@ -20,8 +20,7 @@
         app:subtitleTextColor="@color/md_theme_primaryContainer"
         app:navigationIcon="@drawable/ic_launcher_rice_scaled"
         app:navigationIconTint="@color/md_theme_onPrimary"
-        android:background="@color/md_theme_primary"
-        app:menu="@menu/menu_main" />
+        android:background="@color/md_theme_primary" />
 
     <!-- Form card: customer + price + quick input (collapsed into 1 card) -->
     <com.google.android.material.card.MaterialCardView

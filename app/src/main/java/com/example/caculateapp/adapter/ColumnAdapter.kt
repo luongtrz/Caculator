@@ -36,7 +36,8 @@ class ColumnAdapter(
             // Create listeners once per ViewHolder — avoids re-allocation on every bind
             weightViews.forEachIndexed { bagIndex, textView ->
                 textView.setOnClickListener {
-                    val pos = bindingAdapterPosition
+                    @Suppress("DEPRECATION")
+                    val pos = adapterPosition
                     if (pos == RecyclerView.NO_POSITION) return@setOnClickListener
                     val weight = getItem(pos).getOrElse(bagIndex) { 0.0 }
                     showEditDialog(textView, pos, bagIndex, weight)

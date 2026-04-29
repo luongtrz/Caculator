@@ -6,7 +6,6 @@
         android:id="@+id/action_history"
         android:title="Lịch sử"
         android:icon="@android:drawable/ic_menu_recent_history"
-        app:showAsAction="ifRoom"
-        app:iconTint="@color/md_theme_onPrimary" />
+        app:showAsAction="ifRoom" />
 
 </menu>

@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.KeyEvent
+import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
@@ -84,6 +85,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateToolbarDate() {
         binding.toolbar.subtitle = dateFormat.format(Date())
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        // Tint menu icons to match toolbar text color
+        for (i in 0 until menu.size()) {
+            menu.getItem(i).icon?.setTint(
+                androidx.core.content.ContextCompat.getColor(this, R.color.md_theme_onPrimary)
+            )
+        }
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
