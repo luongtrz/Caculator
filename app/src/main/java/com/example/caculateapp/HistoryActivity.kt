@@ -7,6 +7,10 @@ import android.text.Editable
 import android.text.TextWatcher
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.caculateapp.adapter.HistoryAdapter
@@ -37,13 +41,23 @@ class HistoryActivity : AppCompatActivity() {
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
-        // Hide action bar/title bar
-        supportActionBar?.hide()
-        
+
+        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
+
         binding = ActivityHistoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        
+
+        // Apply top inset to toolbar so it clears the status bar
+        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(binding.rootHistory) { _, insets ->
+            val sys = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
+            binding.toolbar.updatePadding(top = sys.top)
+            binding.rootHistory.updatePadding(bottom = sys.bottom)
+            insets
+        }
+
+        setSupportActionBar(binding.toolbar)
+        supportActionBar?.setDisplayShowTitleEnabled(true)
+
         setupDateTime()
         setupRecyclerView()
         setupFAB()
@@ -80,7 +94,7 @@ class HistoryActivity : AppCompatActivity() {
             val dayOfWeek = dayNames[calendar.get(java.util.Calendar.DAY_OF_WEEK)]
             val date = dateFormat.format(calendar.time)
 
-            binding.tvDateTime.text = "$time, $dayOfWeek, $date"
+            binding.toolbar.subtitle = "$time  $dayOfWeek, $date"
 
             timeHandler.postDelayed(this, 1000)
         }

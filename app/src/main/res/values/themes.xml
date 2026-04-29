@@ -39,8 +39,9 @@
         <item name="colorOutline">@color/md_theme_outline</item>
         <item name="colorOutlineVariant">@color/md_theme_outlineVariant</item>
 
-        <!-- System bars -->
-        <item name="android:statusBarColor">@color/md_theme_primary</item>
-        <item name="android:navigationBarColor">@color/md_theme_surface</item>
+        <!-- System bars — transparent for edge-to-edge; Activities handle padding via WindowInsets -->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">false</item>
     </style>
 </resources>

@@ -4,8 +4,8 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/spacing_xs"
-    app:cardCornerRadius="@dimen/corner_sm"
-    app:cardElevation="@dimen/card_elevation"
+    app:cardCornerRadius="@dimen/corner_md"
+    app:cardElevation="2dp"
     app:strokeWidth="1dp"
     app:strokeColor="@color/md_theme_outlineVariant"
     app:cardBackgroundColor="@color/md_theme_surfaceContainerLowest">
@@ -14,36 +14,32 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="6dp">
+        android:padding="0dp">
 
-        <!-- Column Header -->
+        <!-- Column Header — primary background for clear visual anchor -->
         <TextView
             android:id="@+id/tv_column_number"
             android:layout_width="@dimen/weight_cell_width"
-            android:layout_height="wrap_content"
+            android:layout_height="32dp"
             android:text="Cột 1"
-            android:textSize="@dimen/text_body"
+            android:textSize="@dimen/text_body_sm"
             android:textStyle="bold"
-            android:textColor="@color/md_theme_onSurfaceVariant"
+            android:textColor="@color/md_theme_onPrimary"
             android:gravity="center"
-            android:background="@drawable/bg_column_header"
-            android:layout_marginBottom="3dp" />
+            android:background="@color/md_theme_primary" />
 
         <!-- Bag 1 -->
         <TextView
             android:id="@+id/edit_weight_1"
             android:layout_width="@dimen/weight_cell_width"
-            android:layout_height="wrap_content"
-            android:hint="0.0"
+            android:layout_height="@dimen/weight_cell_height"
+            android:hint="—"
             android:textColorHint="@color/md_theme_outlineVariant"
             android:gravity="center"
             android:textSize="@dimen/weight_text_size"
             android:textStyle="bold"
             android:textColor="@color/md_theme_onSurface"
-            android:padding="4dp"
             android:background="@drawable/bg_weight_cell"
-            android:layout_marginBottom="1dp"
-            android:minHeight="@dimen/weight_cell_height"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground" />
@@ -52,17 +48,14 @@
         <TextView
             android:id="@+id/edit_weight_2"
             android:layout_width="@dimen/weight_cell_width"
-            android:layout_height="wrap_content"
-            android:hint="0.0"
+            android:layout_height="@dimen/weight_cell_height"
+            android:hint="—"
             android:textColorHint="@color/md_theme_outlineVariant"
             android:gravity="center"
             android:textSize="@dimen/weight_text_size"
             android:textStyle="bold"
             android:textColor="@color/md_theme_onSurface"
-            android:padding="4dp"
             android:background="@drawable/bg_weight_cell"
-            android:layout_marginBottom="1dp"
-            android:minHeight="@dimen/weight_cell_height"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground" />
@@ -71,17 +64,14 @@
         <TextView
             android:id="@+id/edit_weight_3"
             android:layout_width="@dimen/weight_cell_width"
-            android:layout_height="wrap_content"
-            android:hint="0.0"
+            android:layout_height="@dimen/weight_cell_height"
+            android:hint="—"
             android:textColorHint="@color/md_theme_outlineVariant"
             android:gravity="center"
             android:textSize="@dimen/weight_text_size"
             android:textStyle="bold"
             android:textColor="@color/md_theme_onSurface"
-            android:padding="4dp"
             android:background="@drawable/bg_weight_cell"
-            android:layout_marginBottom="1dp"
-            android:minHeight="@dimen/weight_cell_height"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground" />
@@ -90,17 +80,14 @@
         <TextView
             android:id="@+id/edit_weight_4"
             android:layout_width="@dimen/weight_cell_width"
-            android:layout_height="wrap_content"
-            android:hint="0.0"
+            android:layout_height="@dimen/weight_cell_height"
+            android:hint="—"
             android:textColorHint="@color/md_theme_outlineVariant"
             android:gravity="center"
             android:textSize="@dimen/weight_text_size"
             android:textStyle="bold"
             android:textColor="@color/md_theme_onSurface"
-            android:padding="4dp"
             android:background="@drawable/bg_weight_cell"
-            android:layout_marginBottom="1dp"
-            android:minHeight="@dimen/weight_cell_height"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground" />
@@ -109,37 +96,27 @@
         <TextView
             android:id="@+id/edit_weight_5"
             android:layout_width="@dimen/weight_cell_width"
-            android:layout_height="wrap_content"
-            android:hint="0.0"
+            android:layout_height="@dimen/weight_cell_height"
+            android:hint="—"
             android:textColorHint="@color/md_theme_outlineVariant"
             android:gravity="center"
             android:textSize="@dimen/weight_text_size"
             android:textStyle="bold"
             android:textColor="@color/md_theme_onSurface"
-            android:padding="4dp"
             android:background="@drawable/bg_weight_cell"
-            android:layout_marginBottom="1dp"
-            android:minHeight="@dimen/weight_cell_height"
             android:clickable="true"
             android:focusable="true"
             android:foreground="?attr/selectableItemBackground" />
 
-        <!-- Divider Line -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:background="@color/md_theme_primary"
-            android:layout_marginVertical="3dp" />
-
-        <!-- Column Total -->
+        <!-- Column Total — highlighted chip at bottom -->
         <TextView
             android:id="@+id/tv_column_total"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="28dp"
             android:text="0.0 kg"
-            android:textSize="@dimen/weight_total_text_size"
+            android:textSize="13sp"
             android:textStyle="bold"
-            android:textColor="@color/md_theme_onPrimaryContainer"
+            android:textColor="@color/md_theme_onPrimary"
             android:gravity="center"
             android:background="@drawable/bg_column_total" />
 

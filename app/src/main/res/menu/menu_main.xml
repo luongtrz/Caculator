@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_history"
+        android:title="Lịch sử"
+        android:icon="@android:drawable/ic_menu_recent_history"
+        app:showAsAction="ifRoom"
+        app:iconTint="@color/md_theme_onPrimary" />
+
+</menu>
