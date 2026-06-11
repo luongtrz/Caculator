@@ -3,49 +3,58 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/md_theme_surface"
+    android:background="@drawable/bg_surface_gradient"
     android:padding="@dimen/spacing_xl">
 
     <LinearLayout
         android:id="@+id/layout_login_content"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
         android:gravity="center_horizontal"
-        app:layout_constraintTop_toTopOf="parent"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent">
 
-        <ImageView
-            android:layout_width="96dp"
-            android:layout_height="96dp"
-            android:src="@drawable/ic_app_logo_rice"
-            android:scaleType="centerInside"
-            android:contentDescription="Logo"
-            android:layout_marginBottom="@dimen/spacing_lg" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Cân kg"
-            android:textAppearance="@style/TextAppearance.Rice.Headline"
-            android:textColor="@color/md_theme_onSurface" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Quản lý phiếu cân nhanh, gọn, rõ ràng"
-            android:textAppearance="@style/TextAppearance.Rice.BodyLarge"
-            android:textColor="@color/md_theme_onSurfaceVariant"
-            android:layout_marginTop="@dimen/spacing_xs"
-            android:layout_marginBottom="@dimen/spacing_xl" />
-
-        <com.google.android.material.card.MaterialCardView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@drawable/bg_header_gradient"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="@dimen/spacing_xl">
+
+            <ImageView
+                android:layout_width="88dp"
+                android:layout_height="88dp"
+                android:contentDescription="Logo"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_app_logo_rice" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:text="Cân Lúa Cloud"
+                android:textAppearance="@style/TextAppearance.Rice.Headline"
+                android:textColor="@color/md_theme_onPrimary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:text="Lưu phiếu cân nhanh, nhìn rõ, đồng bộ an toàn."
+                android:textAlignment="center"
+                android:textColor="#CCFFFFFF"
+                android:textSize="@dimen/text_body" />
+        </LinearLayout>
+
+        <com.google.android.material.card.MaterialCardView
             style="@style/Widget.Rice.Card.Outlined"
-            android:layout_marginBottom="@dimen/spacing_xl">
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_lg">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -63,18 +72,21 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="• Dữ liệu lưu an toàn trên cloud\n• Hỗ trợ offline và tự đồng bộ\n• Không mất dữ liệu khi thoát app"
-                    android:textAppearance="@style/TextAppearance.Rice.Body"
-                    android:textColor="@color/md_theme_onSurfaceVariant"
+                    android:layout_marginTop="@dimen/spacing_md"
                     android:lineSpacingExtra="4dp"
-                    android:layout_marginTop="@dimen/spacing_md" />
+                    android:text="• Quản lý toàn bộ lịch sử cân trong một nơi&#10;• Làm việc offline và tự đồng bộ khi có mạng&#10;• Xuất phiếu đẹp hơn cho khách ngay trên điện thoại"
+                    android:textAppearance="@style/TextAppearance.Rice.Body"
+                    android:textColor="@color/md_theme_onSurfaceVariant" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.gms.common.SignInButton
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_google_sign_in"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height_lg" />
+            android:layout_height="@dimen/button_height_lg"
+            android:layout_marginTop="@dimen/spacing_lg"
+            android:text="Tiếp tục với Google"
+            style="@style/Widget.Rice.Button.Primary" />
 
         <ProgressBar
             android:id="@+id/progress_bar"

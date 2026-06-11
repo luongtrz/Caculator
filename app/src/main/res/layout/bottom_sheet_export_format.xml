@@ -2,112 +2,119 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/md_theme_surfaceContainerLow"
     android:orientation="vertical"
-    android:padding="@dimen/spacing_lg"
-    android:background="@color/md_theme_surfaceContainerLow">
+    android:padding="@dimen/spacing_lg">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center"
+        android:paddingBottom="@dimen/spacing_lg"
         android:text="Chọn định dạng xuất"
         android:textAppearance="@style/TextAppearance.Rice.TitleSmall"
-        android:textColor="@color/md_theme_onSurface"
-        android:gravity="center"
-        android:paddingBottom="@dimen/spacing_lg" />
+        android:textColor="@color/md_theme_onSurface" />
 
-    <!-- Export as Image -->
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.Rice.Card.Outlined"
         android:id="@+id/btn_export_image"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@drawable/bg_weight_cell"
-        android:padding="@dimen/spacing_lg"
-        android:gravity="center_vertical"
         android:clickable="true"
         android:focusable="true">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="ẢNH"
-            android:textAppearance="@style/TextAppearance.Rice.Caption"
-            android:textStyle="bold"
-            android:layout_marginEnd="@dimen/spacing_lg" />
-
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="@dimen/spacing_lg">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Lưu thành Ảnh (.jpg)"
-                android:textAppearance="@style/TextAppearance.Rice.BodyLarge"
-                android:textStyle="bold"
-                android:textColor="@color/md_theme_onSurface" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Lưu vào thư mục Pictures"
+                android:layout_marginEnd="@dimen/spacing_lg"
+                android:text="ẢNH"
                 android:textAppearance="@style/TextAppearance.Rice.Caption"
-                android:textColor="@color/md_theme_onSurfaceVariant"
-                android:layout_marginTop="@dimen/spacing_xs" />
+                android:textColor="@color/md_theme_primary"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lưu thành ảnh (.jpg)"
+                    android:textAppearance="@style/TextAppearance.Rice.BodyLarge"
+                    android:textColor="@color/md_theme_onSurface"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:text="Phù hợp để gửi nhanh qua Zalo hoặc Messenger."
+                    android:textAppearance="@style/TextAppearance.Rice.Caption"
+                    android:textColor="@color/md_theme_onSurfaceVariant" />
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
-    <!-- Divider -->
-    <View
+    <Space
         android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/color_divider"
-        android:layout_marginVertical="@dimen/spacing_sm" />
+        android:layout_height="@dimen/spacing_sm" />
 
-    <!-- Export as PDF -->
-    <LinearLayout
+    <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.Rice.Card.Outlined"
         android:id="@+id/btn_export_pdf"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="@drawable/bg_weight_cell"
-        android:padding="@dimen/spacing_lg"
-        android:gravity="center_vertical"
         android:clickable="true"
         android:focusable="true">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="PDF"
-            android:textAppearance="@style/TextAppearance.Rice.Caption"
-            android:textStyle="bold"
-            android:layout_marginEnd="@dimen/spacing_lg" />
-
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:padding="@dimen/spacing_lg">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Lưu thành PDF (.pdf)"
-                android:textAppearance="@style/TextAppearance.Rice.BodyLarge"
-                android:textStyle="bold"
-                android:textColor="@color/md_theme_onSurface" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Lưu vào thư mục Documents"
+                android:layout_marginEnd="@dimen/spacing_lg"
+                android:text="PDF"
                 android:textAppearance="@style/TextAppearance.Rice.Caption"
-                android:textColor="@color/md_theme_onSurfaceVariant"
-                android:layout_marginTop="@dimen/spacing_xs" />
+                android:textColor="@color/md_theme_primary"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Lưu thành PDF"
+                    android:textAppearance="@style/TextAppearance.Rice.BodyLarge"
+                    android:textColor="@color/md_theme_onSurface"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_xs"
+                    android:text="Phù hợp để in hoặc lưu trữ chính thức."
+                    android:textAppearance="@style/TextAppearance.Rice.Caption"
+                    android:textColor="@color/md_theme_onSurfaceVariant" />
+            </LinearLayout>
         </LinearLayout>
-    </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>

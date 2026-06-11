@@ -9,16 +9,28 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.example.caculateapp.R
 import com.example.caculateapp.databinding.ItemColumnBinding
+import com.example.caculateapp.utils.UiFormatters
+import com.example.caculateapp.viewmodel.WeightColumn
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 
 class ColumnAdapter(
     private val onWeightChanged: (columnIndex: Int, bagIndex: Int, weight: Double) -> Unit
-) : ListAdapter<List<Double>, ColumnAdapter.ColumnViewHolder>(DIFF_CALLBACK) {
+) : ListAdapter<WeightColumn, ColumnAdapter.ColumnViewHolder>(DIFF_CALLBACK) {
 
     companion object {
-        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<List<Double>>() {
-            override fun areItemsTheSame(old: List<Double>, new: List<Double>) = old === new
-            override fun areContentsTheSame(old: List<Double>, new: List<Double>) = old == new
+        private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<WeightColumn>() {
+            override fun areItemsTheSame(old: WeightColumn, new: WeightColumn): Boolean {
+                return old.index == new.index
+            }
+
+            override fun areContentsTheSame(old: WeightColumn, new: WeightColumn): Boolean {
+                return old == new
+            }
         }
+    }
+
+    init {
+        setHasStableIds(true)
     }
 
     inner class ColumnViewHolder(val binding: ItemColumnBinding) :
@@ -33,37 +45,35 @@ class ColumnAdapter(
         )
 
         init {
-            // Create listeners once per ViewHolder — avoids re-allocation on every bind
             weightViews.forEachIndexed { bagIndex, textView ->
                 textView.setOnClickListener {
-                    @Suppress("DEPRECATION")
-                    val pos = adapterPosition
-                    if (pos == RecyclerView.NO_POSITION) return@setOnClickListener
-                    val weight = getItem(pos).getOrElse(bagIndex) { 0.0 }
-                    showEditDialog(textView, pos, bagIndex, weight)
+                    val position = bindingAdapterPosition
+                    if (position == RecyclerView.NO_POSITION) return@setOnClickListener
+
+                    val weight = getItem(position).weights.getOrElse(bagIndex) { 0.0 }
+                    showEditDialog(textView, position, bagIndex, weight)
                 }
             }
         }
 
-        fun bind(columnIndex: Int, weights: List<Double>) {
-            binding.tvColumnNumber.text = "Cột ${columnIndex + 1}"
+        fun bind(column: WeightColumn) {
+            binding.tvColumnNumber.text = "Cột ${column.index + 1}"
 
-            var total = 0.0
-            weightViews.forEachIndexed { i, tv ->
-                val w = weights.getOrElse(i) { 0.0 }
-                total += w
-                val display = if (w > 0.0) formatWeight(w) else ""
-                if (tv.text.toString() != display) tv.text = display
+            weightViews.forEachIndexed { index, textView ->
+                val weight = column.weights.getOrElse(index) { 0.0 }
+                val display = UiFormatters.weightCell(weight)
+
+                if (textView.text.toString() != display) {
+                    textView.text = display
+                }
+                textView.alpha = if (weight > 0.0) 1f else 0.65f
             }
 
-            val totalText = "%.1f kg".format(total)
+            val totalText = UiFormatters.weightTotal(column.total)
             if (binding.tvColumnTotal.text.toString() != totalText) {
                 binding.tvColumnTotal.text = totalText
             }
         }
-
-        private fun formatWeight(w: Double): String =
-            if (w % 1.0 == 0.0) w.toInt().toString() else w.toString()
 
         private fun showEditDialog(
             targetView: TextView,
@@ -72,17 +82,19 @@ class ColumnAdapter(
             currentWeight: Double
         ) {
             val context = targetView.context
-            val dialog = android.app.AlertDialog.Builder(context).create()
             val dialogView = LayoutInflater.from(context).inflate(R.layout.dialog_edit_weight, null)
-            dialog.setView(dialogView)
+            val dialog = MaterialAlertDialogBuilder(context)
+                .setView(dialogView)
+                .create()
 
             val etEdit = dialogView.findViewById<EditText>(R.id.et_edit_weight)
             val btnCancel = dialogView.findViewById<android.widget.Button>(R.id.btn_cancel)
             val btnSave = dialogView.findViewById<android.widget.Button>(R.id.btn_save)
 
-            if (currentWeight > 0) {
-                etEdit.setText(formatWeight(currentWeight))
+            if (currentWeight > 0.0) {
+                etEdit.setText(UiFormatters.weightCell(currentWeight))
             }
+
             etEdit.requestFocus()
             etEdit.selectAll()
             etEdit.postDelayed({
@@ -108,10 +120,14 @@ class ColumnAdapter(
     }
 
     override fun onBindViewHolder(holder: ColumnViewHolder, position: Int) {
-        holder.bind(position, getItem(position))
+        holder.bind(getItem(position))
     }
 
-    fun updateColumns(newColumns: List<List<Double>>) {
-        submitList(newColumns.map { it.toList() })
+    override fun getItemId(position: Int): Long {
+        return getItem(position).index.toLong()
+    }
+
+    fun updateColumns(newColumns: List<WeightColumn>) {
+        submitList(newColumns.map { it.copy(weights = it.weights.toList()) })
     }
 }

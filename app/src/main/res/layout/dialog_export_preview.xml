@@ -3,20 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/md_theme_surface">
+    android:background="@drawable/bg_surface_gradient"
+    android:orientation="vertical">
 
     <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.Rice.Card.Elevated"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/spacing_sm"
-        style="@style/Widget.Rice.Card">
+        android:layout_margin="@dimen/spacing_sm">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:gravity="center_vertical"
+            android:orientation="horizontal"
             android:padding="@dimen/spacing_md">
 
             <TextView
@@ -24,8 +24,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Xem trước phiếu cân"
-                android:textColor="@color/md_theme_onSurface"
-                android:textAppearance="@style/TextAppearance.Rice.TitleSmall" />
+                android:textAppearance="@style/TextAppearance.Rice.TitleSmall"
+                android:textColor="@color/md_theme_onSurface" />
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_close_preview"
@@ -36,13 +36,12 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Scrollable pages -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:fillViewport="true"
-        android:clipToPadding="false">
+        android:clipToPadding="false"
+        android:fillViewport="true">
 
         <LinearLayout
             android:id="@+id/layout_pages_container"
@@ -52,15 +51,12 @@
             android:padding="@dimen/spacing_md" />
     </ScrollView>
 
-    <!-- Confirm Button -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_confirm_export"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Tiếp tục xuất"
-        android:textSize="@dimen/text_body_lg"
-        android:textStyle="bold"
+        android:layout_height="@dimen/button_height_lg"
         android:layout_margin="@dimen/spacing_sm"
+        android:text="Tiếp tục xuất"
         style="@style/Widget.Rice.Button.Primary" />
 
 </LinearLayout>
