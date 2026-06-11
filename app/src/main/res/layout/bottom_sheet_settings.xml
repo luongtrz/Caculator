@@ -1,110 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/md_theme_surfaceContainerLow"
     android:orientation="vertical"
-    android:padding="@dimen/spacing_xl"
-    android:background="@color/md_theme_surfaceContainerLow">
+    android:padding="@dimen/spacing_xl">
 
-    <!-- Header -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Cài đặt"
         android:textAppearance="@style/TextAppearance.Rice.Title"
-        android:textColor="@color/md_theme_onSurface"
-        android:layout_marginBottom="@dimen/spacing_lg" />
+        android:textColor="@color/md_theme_onSurface" />
 
-    <!-- Divider -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/color_divider"
-        android:layout_marginBottom="@dimen/spacing_lg" />
-
-    <!-- User Info Section -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Tài khoản"
-        android:textAppearance="@style/TextAppearance.Rice.Caption"
+        android:layout_marginTop="@dimen/spacing_xs"
+        android:text="Theo dõi tài khoản và trạng thái đồng bộ."
         android:textColor="@color/md_theme_onSurfaceVariant"
-        android:textStyle="bold"
-        android:layout_marginBottom="@dimen/spacing_sm" />
+        android:textSize="@dimen/text_body_sm" />
 
     <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.Rice.Card.Outlined"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/spacing_lg"
-        style="@style/Widget.Rice.Card.Outlined">
+        android:layout_marginTop="@dimen/spacing_lg">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
+            android:orientation="vertical"
             android:padding="@dimen/spacing_md">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tài khoản"
-                android:textAppearance="@style/TextAppearance.Rice.Caption"
-                android:textStyle="bold"
                 android:textColor="@color/md_theme_onSurfaceVariant"
-                android:layout_marginEnd="@dimen/spacing_md" />
+                android:textSize="@dimen/text_caption"
+                android:textStyle="bold" />
 
-            <LinearLayout
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/tv_user_name"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:layout_marginTop="@dimen/spacing_sm"
+                android:text="Loading..."
+                android:textAppearance="@style/TextAppearance.Rice.BodyLarge"
+                android:textColor="@color/md_theme_onSurface"
+                android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/tv_user_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Loading..."
-                    android:textAppearance="@style/TextAppearance.Rice.BodyLarge"
-                    android:textStyle="bold"
-                    android:textColor="@color/md_theme_onSurface" />
-
-                <TextView
-                    android:id="@+id/tv_user_email"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Loading..."
-                    android:textAppearance="@style/TextAppearance.Rice.Body"
-                    android:textColor="@color/md_theme_onSurfaceVariant" />
-            </LinearLayout>
+            <TextView
+                android:id="@+id/tv_user_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Loading..."
+                android:textAppearance="@style/TextAppearance.Rice.Body"
+                android:textColor="@color/md_theme_onSurfaceVariant" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Sync Status Section -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Trạng thái đồng bộ"
-        android:textAppearance="@style/TextAppearance.Rice.Caption"
-        android:textColor="@color/md_theme_onSurfaceVariant"
-        android:textStyle="bold"
-        android:layout_marginBottom="@dimen/spacing_sm" />
-
     <com.google.android.material.card.MaterialCardView
+        style="@style/Widget.Rice.Card.Outlined"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/spacing_lg"
-        style="@style/Widget.Rice.Card.Outlined">
+        android:layout_marginTop="@dimen/spacing_md">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:gravity="center_vertical"
+            android:orientation="horizontal"
             android:padding="@dimen/spacing_md">
 
-            <!-- Sync Status Badge -->
             <View
                 android:id="@+id/sync_status_badge"
                 android:layout_width="12dp"
@@ -124,28 +93,27 @@
                     android:layout_height="wrap_content"
                     android:text="Đã đồng bộ"
                     android:textAppearance="@style/TextAppearance.Rice.Body"
-                    android:textStyle="bold"
-                    android:textColor="@color/md_theme_onSurface" />
+                    android:textColor="@color/md_theme_onSurface"
+                    android:textStyle="bold" />
 
                 <TextView
                     android:id="@+id/tv_sync_detail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Tất cả dữ liệu đã lưu trên cloud"
+                    android:layout_marginTop="2dp"
+                    android:text="Tất cả dữ liệu đã lưu an toàn trên cloud."
                     android:textAppearance="@style/TextAppearance.Rice.Caption"
                     android:textColor="@color/md_theme_onSurfaceVariant" />
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Sign Out Button -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_sign_out_settings"
         android:layout_width="match_parent"
         android:layout_height="@dimen/button_height_lg"
+        android:layout_marginTop="@dimen/spacing_lg"
         android:text="Đăng xuất"
-        android:textStyle="bold"
-        android:layout_marginTop="@dimen/spacing_sm"
         style="@style/Widget.Rice.Button.Danger" />
 
 </LinearLayout>

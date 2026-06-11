@@ -9,6 +9,18 @@ import com.example.caculateapp.data.FirebaseService
 import com.example.caculateapp.data.RiceRecord
 import kotlinx.coroutines.launch
 
+data class WeightColumn(
+    val index: Int,
+    val weights: List<Double>,
+    val total: Double
+)
+
+data class SessionOverview(
+    val filledBags: Int = 0,
+    val totalSlots: Int = 0,
+    val columnCount: Int = 0
+)
+
 /**
  * ViewModel for MainActivity
  * Manages rice weighing session data with real-time calculations
@@ -45,12 +57,18 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     // Calculated totals
     private val _columnTotals = MutableLiveData<List<Double>>(emptyList())
     val columnTotals: LiveData<List<Double>> = _columnTotals
-    
+
+    private val _columns = MutableLiveData<List<WeightColumn>>(emptyList())
+    val columns: LiveData<List<WeightColumn>> = _columns
+
     private val _grandTotal = MutableLiveData<Double>(0.0)
     val grandTotal: LiveData<Double> = _grandTotal
-    
+
     private val _totalMoney = MutableLiveData<Long>(0L)
     val totalMoney: LiveData<Long> = _totalMoney
+
+    private val _sessionOverview = MutableLiveData(SessionOverview())
+    val sessionOverview: LiveData<SessionOverview> = _sessionOverview
     
     // UI state
     private val _saveStatus = MutableLiveData<String>()
@@ -176,24 +194,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * Converts flat list to list of columns (each column = 5 weights)
      */
     fun getColumns(): List<List<Double>> {
-        val weights = _weightList.value ?: return listOf()
-        val columns = mutableListOf<List<Double>>()
-        
-        for (i in weights.indices step 5) {
-            val columnWeights = weights.subList(i, minOf(i + 5, weights.size)).toMutableList()
-            // Pad with zeros if less than 5
-            while (columnWeights.size < 5) {
-                columnWeights.add(0.0)
-            }
-            columns.add(columnWeights)
-        }
-        
-        // If no columns, add one empty column
-        if (columns.isEmpty()) {
-            columns.add(listOf(0.0, 0.0, 0.0, 0.0, 0.0))
-        }
-        
-        return columns
+        return _columns.value?.map { it.weights } ?: emptyList()
     }
     
     /**
@@ -224,30 +225,44 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     private fun calculateTotals() {
         val weights = _weightList.value ?: mutableListOf()
-        val columns = mutableListOf<Double>()
-        
-        // Calculate column totals (each column has 5 bags)
-        var index = 0
-        while (index < weights.size) {
-            var columnSum = 0.0
-            repeat(5) {
-                if (index < weights.size) {
-                    columnSum += weights[index]
-                    index++
+        val columnStates = weights.chunked(BAGS_PER_COLUMN).mapIndexed { index, chunk ->
+            val paddedWeights = buildList(BAGS_PER_COLUMN) {
+                addAll(chunk)
+                repeat(BAGS_PER_COLUMN - chunk.size) {
+                    add(0.0)
                 }
             }
-            columns.add(columnSum)
+            WeightColumn(
+                index = index,
+                weights = paddedWeights,
+                total = paddedWeights.sum()
+            )
+        }.ifEmpty {
+            listOf(
+                WeightColumn(
+                    index = 0,
+                    weights = List(BAGS_PER_COLUMN) { 0.0 },
+                    total = 0.0
+                )
+            )
         }
-        
-        _columnTotals.value = columns
-        
+
+        _columns.value = columnStates
+        _columnTotals.value = columnStates.map { it.total }
+
         // Calculate grand total
         val total = weights.sum()
         _grandTotal.value = total
-        
+
         // Calculate total money (convert to Long)
         val price = _unitPrice.value ?: 0L
         _totalMoney.value = (total * price).toLong()
+
+        _sessionOverview.value = SessionOverview(
+            filledBags = weights.count { it > 0.0 },
+            totalSlots = weights.size,
+            columnCount = columnStates.size
+        )
     }
     
     /**

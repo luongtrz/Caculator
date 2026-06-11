@@ -5,22 +5,34 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.caculateapp.data.FirebaseService
 import com.example.caculateapp.data.RiceRecord
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withTimeoutOrNull
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
+data class HistorySummary(
+    val recordCount: Int = 0,
+    val totalWeight: Double = 0.0,
+    val totalMoney: Long = 0L
+)
+
 /**
  * ViewModel for History Screen
  * Manages list of all saved rice weighing sessions
  * Now uses Firebase Firestore with realtime updates
  */
+@OptIn(FlowPreview::class)
 class HistoryViewModel(application: Application) : AndroidViewModel(application) {
     
     private val firebaseService = FirebaseService()
@@ -34,6 +46,39 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
     // Sync status (true = synced, false = pending)
     private val _isCloudSynced = MutableStateFlow(true)
     val isCloudSynced: StateFlow<Boolean> = _isCloudSynced.asStateFlow()
+
+    private val searchQuery = MutableStateFlow("")
+
+    val visibleRecords = searchQuery
+        .debounce(250)
+        .combine(allRecords) { query, records ->
+            if (query.isBlank()) {
+                records
+            } else {
+                records.filter { record ->
+                    record.customerName.contains(query, ignoreCase = true)
+                }
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = emptyList()
+        )
+
+    val historySummary = allRecords
+        .map { records ->
+            HistorySummary(
+                recordCount = records.size,
+                totalWeight = records.sumOf { it.grandTotal },
+                totalMoney = records.sumOf { it.totalMoney }
+            )
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5_000),
+            initialValue = HistorySummary()
+        )
     
     private var syncListenerRegistration: com.google.firebase.firestore.ListenerRegistration? = null
     
@@ -45,17 +90,8 @@ class HistoryViewModel(application: Application) : AndroidViewModel(application)
      * Search records by customer name
      * Note: Firestore search is limited, doing client-side filtering for now
      */
-    fun searchRecords(query: String): Flow<List<RiceRecord>> {
-        return if (query.isBlank()) {
-            allRecords
-        } else {
-            // Client-side search - could be improved with Algolia or similar
-            allRecords.map { records ->
-                records.filter { record ->
-                    record.customerName.contains(query, ignoreCase = true)
-                }
-            }
-        }
+    fun setSearchQuery(query: String) {
+        searchQuery.value = query.trim()
     }
     
     /**

@@ -1,130 +1,176 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_item"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_marginStart="@dimen/spacing_sm"
-    android:layout_marginEnd="@dimen/spacing_sm"
     android:layout_marginTop="@dimen/spacing_xs"
+    android:layout_marginEnd="@dimen/spacing_sm"
     android:layout_marginBottom="@dimen/spacing_xs"
-    app:cardElevation="@dimen/card_elevation"
-    app:cardCornerRadius="@dimen/corner_md"
-    app:strokeWidth="1dp"
-    app:strokeColor="@color/md_theme_outlineVariant"
     app:cardBackgroundColor="@color/md_theme_surfaceContainerLowest"
-    android:id="@+id/card_item">
+    app:cardCornerRadius="@dimen/corner_md"
+    app:cardElevation="2dp"
+    app:strokeColor="@color/md_theme_outlineVariant"
+    app:strokeWidth="1dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:orientation="vertical"
         android:padding="@dimen/spacing_md">
 
-        <!-- Header row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
             android:gravity="center_vertical"
-            android:layout_marginBottom="@dimen/spacing_sm">
+            android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/tv_customer_name"
+                android:id="@+id/tv_customer_initial"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
+                android:background="@drawable/bg_avatar_circle"
+                android:gravity="center"
+                android:text="K"
+                android:textColor="@color/md_theme_primary"
+                android:textSize="@dimen/text_body_lg"
+                android:textStyle="bold" />
+
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/spacing_md"
                 android:layout_weight="1"
-                android:text="Nguyễn Văn A"
-                android:textColor="@color/md_theme_onSurface"
-                android:textSize="@dimen/text_body_lg"
-                android:textStyle="bold"
-                android:maxLines="1"
-                android:ellipsize="end" />
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/tv_date_time"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="11:30 PM 26/12/2025"
-                android:textColor="@color/md_theme_onSurfaceVariant"
-                android:textSize="@dimen/text_body_sm"
-                android:layout_marginStart="@dimen/spacing_sm"
-                android:layout_marginEnd="@dimen/spacing_xs" />
+                <TextView
+                    android:id="@+id/tv_customer_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="Nguyễn Văn A"
+                    android:textColor="@color/md_theme_onSurface"
+                    android:textSize="@dimen/text_body_lg"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_date_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:text="16:32 • 11/06/2026"
+                    android:textColor="@color/md_theme_onSurfaceVariant"
+                    android:textSize="@dimen/text_body_sm" />
+            </LinearLayout>
 
             <ImageButton
                 android:id="@+id/btn_menu"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:padding="@dimen/spacing_sm"
                 android:background="@drawable/bg_weight_cell"
-                android:src="@drawable/ic_more_vert"
                 android:contentDescription="Menu"
-                app:tint="@color/md_theme_onSurfaceVariant"
-                android:scaleType="centerInside" />
+                android:padding="@dimen/spacing_sm"
+                android:scaleType="centerInside"
+                android:src="@drawable/ic_more_vert"
+                app:tint="@color/md_theme_onSurfaceVariant" />
         </LinearLayout>
 
-        <!-- Divider -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/color_divider"
-            android:layout_marginBottom="@dimen/spacing_sm" />
+        <TextView
+            android:id="@+id/tv_bag_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_sm"
+            android:background="@drawable/bg_history_tag"
+            android:paddingStart="@dimen/spacing_sm"
+            android:paddingTop="@dimen/spacing_xs"
+            android:paddingEnd="@dimen/spacing_sm"
+            android:paddingBottom="@dimen/spacing_xs"
+            android:text="0 bao"
+            android:textColor="@color/md_theme_onSecondaryContainer"
+            android:textSize="@dimen/text_caption"
+            android:textStyle="bold" />
 
-        <!-- Totals row -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md"
             android:orientation="horizontal">
 
-            <LinearLayout
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical">
+                app:cardBackgroundColor="@color/md_theme_surfaceContainerLow"
+                app:cardCornerRadius="@dimen/corner_sm"
+                app:strokeColor="@color/md_theme_outlineVariant"
+                app:strokeWidth="1dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Tổng khối lượng"
-                    android:textColor="@color/md_theme_onSurfaceVariant"
-                    android:textSize="@dimen/text_caption"
-                    android:layout_marginBottom="2dp" />
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_sm">
 
-                <TextView
-                    android:id="@+id/tv_grand_total"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="125.5 kg"
-                    android:textColor="@color/color_weight_positive"
-                    android:textSize="@dimen/text_title_sm"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Khối lượng"
+                        android:textColor="@color/md_theme_onSurfaceVariant"
+                        android:textSize="@dimen/text_caption" />
 
-            <LinearLayout
+                    <TextView
+                        android:id="@+id/tv_grand_total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:text="125.5 kg"
+                        android:textColor="@color/color_weight_positive"
+                        android:textSize="@dimen/text_title_sm"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <Space
+                android:layout_width="@dimen/spacing_sm"
+                android:layout_height="1dp" />
+
+            <com.google.android.material.card.MaterialCardView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="end">
+                app:cardBackgroundColor="@color/md_theme_surfaceContainerLow"
+                app:cardCornerRadius="@dimen/corner_sm"
+                app:strokeColor="@color/md_theme_outlineVariant"
+                app:strokeWidth="1dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Thành tiền"
-                    android:textColor="@color/md_theme_onSurfaceVariant"
-                    android:textSize="@dimen/text_caption"
-                    android:layout_marginBottom="2dp" />
+                    android:orientation="vertical"
+                    android:padding="@dimen/spacing_sm">
 
-                <TextView
-                    android:id="@+id/tv_total_money"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="0 VNĐ"
-                    android:textColor="@color/color_money_highlight"
-                    android:textSize="@dimen/text_title_sm"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Thành tiền"
+                        android:textColor="@color/md_theme_onSurfaceVariant"
+                        android:textSize="@dimen/text_caption" />
+
+                    <TextView
+                        android:id="@+id/tv_total_money"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xs"
+                        android:text="0 VNĐ"
+                        android:textColor="@color/color_money_highlight"
+                        android:textSize="@dimen/text_title_sm"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
-
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>

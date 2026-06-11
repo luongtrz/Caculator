@@ -1,111 +1,241 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/root_history"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/md_theme_surface">
+    android:background="@drawable/bg_surface_gradient">
 
-    <!-- Toolbar: app icon + title + date subtitle + sync badge + settings -->
-    <com.google.android.material.appbar.AppBarLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/md_theme_primary"
-        app:elevation="4dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:title="Lịch sử"
-            app:titleTextColor="@color/md_theme_onPrimary"
-            app:subtitle=""
-            app:subtitleTextColor="@color/md_theme_primaryContainer"
-            app:navigationIcon="@drawable/ic_launcher_rice_scaled"
-            app:navigationIconTint="@color/md_theme_onPrimary"
-            android:background="@color/md_theme_primary">
-
-            <!-- Sync badge + Settings button inside toolbar -->
-            <FrameLayout
-                android:id="@+id/btn_settings"
-                android:layout_width="44dp"
-                android:layout_height="44dp"
-                android:layout_gravity="end"
-                android:layout_marginEnd="@dimen/spacing_sm"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackgroundBorderless">
-
-                <ImageView
-                    android:layout_width="22dp"
-                    android:layout_height="22dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_settings_white"
-                    android:tint="@color/md_theme_onPrimary"
-                    android:contentDescription="Cài đặt" />
-
-                <View
-                    android:id="@+id/sync_badge"
-                    android:layout_width="10dp"
-                    android:layout_height="10dp"
-                    android:background="@drawable/bg_sync_badge"
-                    android:layout_gravity="top|end"
-                    android:layout_marginTop="4dp"
-                    android:layout_marginEnd="4dp" />
-            </FrameLayout>
-
-        </com.google.android.material.appbar.MaterialToolbar>
-
-        <!-- Search bar inside AppBar -->
         <LinearLayout
+            android:id="@+id/hero_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_header_gradient"
             android:paddingStart="@dimen/spacing_md"
+            android:paddingTop="@dimen/spacing_sm"
             android:paddingEnd="@dimen/spacing_md"
-            android:paddingBottom="@dimen/spacing_sm"
-            android:orientation="vertical">
+            android:paddingBottom="@dimen/spacing_lg">
+
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                app:navigationIcon="@drawable/ic_launcher_rice_scaled"
+                app:navigationIconTint="@color/md_theme_onPrimary"
+                app:subtitle=""
+                app:subtitleTextColor="#CCFFFFFF"
+                app:title="Lịch sử cân"
+                app:titleTextColor="@color/md_theme_onPrimary">
+
+                <FrameLayout
+                    android:id="@+id/btn_settings"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
+                    android:layout_gravity="end"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:focusable="true">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="Cài đặt"
+                        android:src="@drawable/ic_settings_white"
+                        android:tint="@color/md_theme_onPrimary" />
+
+                    <View
+                        android:id="@+id/sync_badge"
+                        android:layout_width="12dp"
+                        android:layout_height="12dp"
+                        android:layout_gravity="top|end"
+                        android:layout_marginTop="6dp"
+                        android:layout_marginEnd="6dp"
+                        android:background="@drawable/bg_sync_badge" />
+                </FrameLayout>
+            </com.google.android.material.appbar.MaterialToolbar>
+
+            <TextView
+                android:id="@+id/tv_sync_state"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_xs"
+                android:text="Cloud đã đồng bộ"
+                android:textColor="#CCFFFFFF"
+                android:textSize="@dimen/text_body_sm" />
 
             <EditText
                 android:id="@+id/et_search"
                 android:layout_width="match_parent"
-                android:layout_height="48dp"
+                android:layout_height="52dp"
+                android:layout_marginTop="@dimen/spacing_md"
                 android:background="@drawable/bg_search_bar"
                 android:hint="Tìm theo tên khách hàng..."
+                android:imeOptions="actionSearch"
+                android:inputType="textFilter"
                 android:paddingStart="@dimen/spacing_lg"
                 android:paddingEnd="@dimen/spacing_lg"
-                android:textColorHint="@color/md_theme_onSurfaceVariant"
-                android:textColor="@color/md_theme_onSurface"
                 android:singleLine="true"
-                android:textSize="@dimen/text_body"
-                android:imeOptions="actionSearch"
-                android:inputType="textFilter" />
+                android:textColor="@color/md_theme_onPrimary"
+                android:textColorHint="#AAFFFFFF"
+                android:textSize="@dimen/text_body" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/spacing_md"
+                android:orientation="horizontal"
+                android:weightSum="3">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="@dimen/spacing_xs"
+                    app:cardBackgroundColor="#1EFFFFFF"
+                    app:cardCornerRadius="@dimen/corner_md"
+                    app:strokeColor="#2AFFFFFF"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_md">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Phiếu"
+                            android:textColor="#B3FFFFFF"
+                            android:textSize="@dimen/text_caption" />
+
+                        <TextView
+                            android:id="@+id/tv_stat_sessions"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_xs"
+                            android:text="0"
+                            android:textColor="@color/md_theme_onPrimary"
+                            android:textSize="@dimen/text_title_sm"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginHorizontal="@dimen/spacing_xs"
+                    app:cardBackgroundColor="#1EFFFFFF"
+                    app:cardCornerRadius="@dimen/corner_md"
+                    app:strokeColor="#2AFFFFFF"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_md">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Khối lượng"
+                            android:textColor="#B3FFFFFF"
+                            android:textSize="@dimen/text_caption" />
+
+                        <TextView
+                            android:id="@+id/tv_stat_weight"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_xs"
+                            android:text="0.0 kg"
+                            android:textColor="@color/md_theme_onPrimary"
+                            android:textSize="@dimen/text_body_lg"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="@dimen/spacing_xs"
+                    app:cardBackgroundColor="#1EFFFFFF"
+                    app:cardCornerRadius="@dimen/corner_md"
+                    app:strokeColor="#2AFFFFFF"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="@dimen/spacing_md">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Giá trị"
+                            android:textColor="#B3FFFFFF"
+                            android:textSize="@dimen/text_caption" />
+
+                        <TextView
+                            android:id="@+id/tv_stat_value"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/spacing_xs"
+                            android:text="0 VNĐ"
+                            android:textColor="@color/md_theme_onPrimary"
+                            android:textSize="@dimen/text_body_lg"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
         </LinearLayout>
 
-    </com.google.android.material.appbar.AppBarLayout>
+        <TextView
+            android:id="@+id/tv_empty_state"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/spacing_md"
+            android:layout_marginTop="@dimen/spacing_lg"
+            android:layout_marginEnd="@dimen/spacing_md"
+            android:text="Chưa có phiên cân nào. Tạo phiếu mới để bắt đầu."
+            android:textAlignment="center"
+            android:textColor="@color/md_theme_onSurfaceVariant"
+            android:textSize="@dimen/text_body"
+            android:visibility="gone" />
 
-    <!-- Record list -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycler_history"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:paddingTop="@dimen/spacing_xs"
-        android:paddingBottom="80dp"
-        android:clipToPadding="false" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_history"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:clipToPadding="false"
+            android:paddingStart="@dimen/spacing_sm"
+            android:paddingTop="@dimen/spacing_sm"
+            android:paddingEnd="@dimen/spacing_sm"
+            android:paddingBottom="96dp" />
+    </LinearLayout>
 
-    <!-- Add new session button (full-width at bottom) -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/fab_add_session"
         android:layout_width="match_parent"
         android:layout_height="@dimen/button_height_lg"
+        android:layout_gravity="bottom"
         android:layout_marginStart="@dimen/spacing_md"
         android:layout_marginEnd="@dimen/spacing_md"
         android:layout_marginBottom="@dimen/spacing_md"
-        android:text="＋  Thêm mới"
-        android:textSize="@dimen/text_body_lg"
+        android:text="Tạo phiếu cân mới"
         android:textStyle="bold"
         style="@style/Widget.Rice.Button.Primary" />
 
-</LinearLayout>
+</FrameLayout>

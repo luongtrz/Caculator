@@ -4,228 +4,276 @@
     android:id="@+id/root_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@color/md_theme_surface">
+    android:background="@drawable/bg_surface_gradient"
+    android:orientation="vertical">
 
-    <!-- Toolbar: app name + date subtitle + settings button -->
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/toolbar"
+    <LinearLayout
+        android:id="@+id/header_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:minHeight="?attr/actionBarSize"
-        android:paddingTop="0dp"
-        app:title="Cân Lúa"
-        app:titleTextColor="@color/md_theme_onPrimary"
-        app:subtitle=""
-        app:subtitleTextColor="@color/md_theme_primaryContainer"
-        app:navigationIcon="@drawable/ic_launcher_rice_scaled"
-        app:navigationIconTint="@color/md_theme_onPrimary"
-        android:background="@color/md_theme_primary" />
+        android:background="@drawable/bg_header_gradient"
+        android:orientation="vertical"
+        android:paddingStart="@dimen/spacing_md"
+        android:paddingTop="@dimen/spacing_sm"
+        android:paddingEnd="@dimen/spacing_md"
+        android:paddingBottom="@dimen/spacing_lg">
 
-    <!-- Form card: customer + price + quick input (collapsed into 1 card) -->
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/spacing_md"
-        android:layout_marginEnd="@dimen/spacing_md"
-        android:layout_marginTop="@dimen/spacing_sm"
-        android:layout_marginBottom="@dimen/spacing_xs"
-        app:cardCornerRadius="@dimen/corner_lg"
-        app:cardElevation="2dp"
-        app:cardBackgroundColor="@color/md_theme_surfaceContainerLowest"
-        app:strokeWidth="1dp"
-        app:strokeColor="@color/md_theme_outlineVariant">
-
-        <LinearLayout
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="@dimen/spacing_md"
-            android:paddingEnd="@dimen/spacing_md"
-            android:paddingTop="@dimen/spacing_sm"
-            android:paddingBottom="@dimen/spacing_sm">
+            android:background="@android:color/transparent"
+            app:navigationIcon="@drawable/ic_launcher_rice_scaled"
+            app:navigationIconTint="@color/md_theme_onPrimary"
+            app:subtitle=""
+            app:subtitleTextColor="#CCFFFFFF"
+            app:title="Phiếu cân"
+            app:titleTextColor="@color/md_theme_onPrimary" />
 
-            <!-- Row 1: Customer name + Unit price -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:text="Nhập nhanh từng bao, chạm vào ô để sửa chính xác."
+            android:textColor="#CCFFFFFF"
+            android:textSize="@dimen/text_body_sm" />
+
+        <TextView
+            android:id="@+id/tv_session_meta"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_xs"
+            android:text="0/15 bao đã nhập • 3 cột"
+            android:textColor="@color/md_theme_onPrimary"
+            android:textSize="@dimen/text_body"
+            android:textStyle="bold" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_md"
+            app:cardBackgroundColor="@color/md_theme_surfaceContainerLowest"
+            app:cardCornerRadius="@dimen/corner_lg"
+            app:cardElevation="2dp">
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="@dimen/spacing_xs"
-                android:weightSum="10">
+                android:orientation="vertical"
+                android:padding="@dimen/spacing_md">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="0dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="6"
-                    android:layout_marginEnd="@dimen/spacing_xs"
-                    android:hint="Tên khách hàng"
-                    style="@style/Widget.Rice.TextInputLayout">
+                    android:orientation="horizontal"
+                    android:weightSum="10">
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edit_customer_name"
-                        android:layout_width="match_parent"
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.Rice.TextInputLayout"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:inputType="textPersonName"
-                        android:maxLines="1"
-                        android:textSize="@dimen/text_body_lg"
-                        android:textColor="@color/md_theme_onSurface" />
-                </com.google.android.material.textfield.TextInputLayout>
+                        android:layout_weight="6"
+                        android:layout_marginEnd="@dimen/spacing_xs"
+                        android:hint="Tên khách hàng">
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="4"
-                    android:hint="Đơn giá"
-                    style="@style/Widget.Rice.TextInputLayout">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_customer_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPersonName"
+                            android:maxLines="1"
+                            android:textColor="@color/md_theme_onSurface"
+                            android:textSize="@dimen/text_body_lg" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/edit_unit_price"
-                        android:layout_width="match_parent"
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.Rice.TextInputLayout"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:inputType="number"
-                        android:maxLines="1"
-                        android:textSize="@dimen/text_body_lg"
-                        android:textColor="@color/md_theme_onSurface" />
-                </com.google.android.material.textfield.TextInputLayout>
-            </LinearLayout>
+                        android:layout_weight="4"
+                        android:hint="Đơn giá">
 
-            <!-- Row 2: Quick input + Confirm button -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edit_unit_price"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="number"
+                            android:maxLines="1"
+                            android:textColor="@color/md_theme_onSurface"
+                            android:textSize="@dimen/text_body_lg" />
+                    </com.google.android.material.textfield.TextInputLayout>
+                </LinearLayout>
 
-                <com.google.android.material.textfield.TextInputLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:layout_marginEnd="@dimen/spacing_xs"
-                    android:hint="Nhập nhanh (kg)"
-                    app:endIconMode="clear_text"
-                    style="@style/Widget.Rice.TextInputLayout">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/et_quick_input"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="numberDecimal"
-                        android:maxLength="7"
-                        android:maxLines="1"
-                        android:imeOptions="actionDone"
-                        android:textSize="@dimen/text_title_sm"
-                        android:textColor="@color/md_theme_onSurface" />
-                </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btn_confirm"
+                <TextView
                     android:layout_width="wrap_content"
-                    android:layout_height="56dp"
-                    android:minWidth="80dp"
-                    android:text="Thêm"
-                    android:textStyle="bold"
-                    style="@style/Widget.Rice.Button.Primary" />
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_md"
+                    android:text="Nhập nhanh"
+                    android:textColor="@color/md_theme_onSurface"
+                    android:textSize="@dimen/text_body_lg"
+                    android:textStyle="bold" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:background="@drawable/bg_quick_input"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/spacing_xs">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.Rice.TextInputLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="Nhập số kg"
+                        app:endIconMode="clear_text">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_quick_input"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:imeOptions="actionDone"
+                            android:inputType="numberDecimal"
+                            android:maxLength="7"
+                            android:maxLines="1"
+                            android:textColor="@color/md_theme_onSurface"
+                            android:textSize="@dimen/text_title_sm" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_confirm"
+                        android:layout_width="wrap_content"
+                        android:layout_height="56dp"
+                        android:layout_marginStart="@dimen/spacing_sm"
+                        android:minWidth="96dp"
+                        android:text="Thêm"
+                        style="@style/Widget.Rice.Button.Primary" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tv_quick_hint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/spacing_sm"
+                    android:text="Mỗi cột gồm 5 bao. Có thể chạm vào ô cân để sửa ngay."
+                    android:textColor="@color/md_theme_onSurfaceVariant"
+                    android:textSize="@dimen/text_body_sm" />
             </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
 
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/spacing_md"
+        android:paddingTop="@dimen/spacing_md"
+        android:paddingEnd="@dimen/spacing_md"
+        android:paddingBottom="@dimen/spacing_sm">
 
-    <!-- Weight grid: RecyclerView with BOUNDED height — enables proper recycling -->
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Bảng cân"
+            android:textColor="@color/md_theme_onSurface"
+            android:textSize="@dimen/text_title_sm"
+            android:textStyle="bold" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_add_column"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Thêm cột"
+            style="@style/Widget.Rice.Button.Secondary" />
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_weights"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
+        android:clipToPadding="false"
+        android:overScrollMode="ifContentScrolls"
         android:paddingStart="@dimen/spacing_sm"
         android:paddingEnd="@dimen/spacing_sm"
-        android:paddingTop="@dimen/spacing_xs"
-        android:paddingBottom="@dimen/spacing_xs"
-        android:clipToPadding="false"
-        android:overScrollMode="ifContentScrolls" />
+        android:paddingBottom="@dimen/spacing_md" />
 
-    <!-- Bottom totals + action bar -->
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing_md"
         android:layout_marginEnd="@dimen/spacing_md"
         android:layout_marginBottom="@dimen/spacing_md"
+        app:cardBackgroundColor="@color/md_theme_primary"
         app:cardCornerRadius="@dimen/corner_lg"
-        app:cardElevation="4dp"
-        app:cardBackgroundColor="@color/md_theme_primary">
+        app:cardElevation="4dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingStart="@dimen/spacing_md"
-            android:paddingEnd="@dimen/spacing_md"
-            android:paddingTop="@dimen/spacing_sm"
-            android:paddingBottom="@dimen/spacing_sm">
+            android:padding="@dimen/spacing_md">
 
-            <!-- Totals row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:layout_marginBottom="@dimen/spacing_sm">
+                android:layout_marginBottom="@dimen/spacing_sm"
+                android:orientation="horizontal">
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="center"
                     android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Tổng khối lượng"
-                        android:textColor="@color/md_theme_primaryContainer"
+                        android:textColor="#CCFFFFFF"
                         android:textSize="@dimen/text_caption" />
 
                     <TextView
                         android:id="@+id/tv_grand_total"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xs"
                         android:text="0.0 kg"
                         android:textColor="@color/md_theme_onPrimary"
-                        android:textStyle="bold"
-                        android:textSize="@dimen/text_title_sm" />
+                        android:textSize="@dimen/text_title_sm"
+                        android:textStyle="bold" />
                 </LinearLayout>
-
-                <View
-                    android:layout_width="1dp"
-                    android:layout_height="match_parent"
-                    android:background="@color/md_theme_primaryContainer"
-                    android:alpha="0.4" />
 
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:gravity="center"
+                    android:gravity="end"
                     android:orientation="vertical">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Thành tiền"
-                        android:textColor="@color/md_theme_primaryContainer"
+                        android:textColor="#CCFFFFFF"
                         android:textSize="@dimen/text_caption" />
 
                     <TextView
                         android:id="@+id/tv_total_money"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/spacing_xs"
                         android:text="0 VNĐ"
                         android:textColor="@color/md_theme_onPrimary"
-                        android:textStyle="bold"
-                        android:textSize="@dimen/text_title_sm" />
+                        android:textSize="@dimen/text_title_sm"
+                        android:textStyle="bold" />
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Action buttons row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -237,11 +285,8 @@
                     android:layout_height="@dimen/button_height_lg"
                     android:layout_weight="1"
                     android:layout_marginEnd="@dimen/spacing_xs"
-                    android:text="Lưu"
-                    android:textStyle="bold"
-                    app:backgroundTint="@color/md_theme_primaryContainer"
-                    android:textColor="@color/md_theme_onPrimaryContainer"
-                    style="@style/Widget.Rice.Button.Primary" />
+                    android:text="Lưu phiên cân"
+                    style="@style/Widget.Rice.Button.Secondary" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/btn_share"
@@ -249,15 +294,9 @@
                     android:layout_height="@dimen/button_height_lg"
                     android:layout_weight="1"
                     android:layout_marginStart="@dimen/spacing_xs"
-                    android:text="Xuất / Chia sẻ"
-                    android:textStyle="bold"
-                    app:backgroundTint="@color/md_theme_surfaceContainerLowest"
-                    android:textColor="@color/md_theme_primary"
-                    app:strokeColor="@color/md_theme_primaryContainer"
-                    app:strokeWidth="1dp"
+                    android:text="Xuất / chia sẻ"
                     style="@style/Widget.Rice.Button.Primary" />
             </LinearLayout>
-
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 

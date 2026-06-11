@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- ==================== Buttons ==================== -->
-
     <style name="Widget.Rice.Button.Primary" parent="Widget.Material3.Button">
         <item name="backgroundTint">@color/md_theme_primary</item>
         <item name="android:textColor">@color/md_theme_onPrimary</item>
@@ -34,17 +32,16 @@
         <item name="android:textColor">@color/md_theme_onSurfaceVariant</item>
     </style>
 
-    <!-- ==================== Cards ==================== -->
-
-    <style name="Widget.Rice.Card" parent="Widget.Material3.CardView.Filled">
+    <style name="Widget.Rice.Card" parent="Widget.Material3.CardView.Elevated">
         <item name="cardCornerRadius">@dimen/corner_md</item>
         <item name="cardElevation">@dimen/card_elevation</item>
-        <item name="cardBackgroundColor">@color/md_theme_surfaceContainerLow</item>
+        <item name="cardBackgroundColor">@color/md_theme_surfaceContainerLowest</item>
     </style>
 
     <style name="Widget.Rice.Card.Elevated" parent="Widget.Material3.CardView.Elevated">
         <item name="cardCornerRadius">@dimen/corner_md</item>
-        <item name="cardElevation">2dp</item>
+        <item name="cardElevation">4dp</item>
+        <item name="cardBackgroundColor">@color/md_theme_surfaceContainerLowest</item>
     </style>
 
     <style name="Widget.Rice.Card.Outlined" parent="Widget.Material3.CardView.Outlined">
@@ -55,9 +52,7 @@
         <item name="cardBackgroundColor">@color/md_theme_surfaceContainerLowest</item>
     </style>
 
-    <!-- ==================== Text Appearances ==================== -->
-
-    <style name="TextAppearance.Rice.Headline" parent="TextAppearance.Material3.HeadlineMedium">
+    <style name="TextAppearance.Rice.Headline" parent="TextAppearance.Material3.DisplaySmall">
         <item name="android:textSize">@dimen/text_headline</item>
         <item name="android:textStyle">bold</item>
     </style>
@@ -84,15 +79,16 @@
         <item name="android:textSize">@dimen/text_caption</item>
     </style>
 
-    <!-- ==================== Text Input ==================== -->
-
     <style name="Widget.Rice.TextInputLayout" parent="Widget.Material3.TextInputLayout.OutlinedBox">
         <item name="boxBackgroundColor">@color/md_theme_surfaceContainerLowest</item>
         <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">2dp</item>
+        <item name="boxStrokeColor">@color/md_theme_primary</item>
         <item name="boxCornerRadiusTopStart">@dimen/corner_sm</item>
         <item name="boxCornerRadiusTopEnd">@dimen/corner_sm</item>
         <item name="boxCornerRadiusBottomStart">@dimen/corner_sm</item>
         <item name="boxCornerRadiusBottomEnd">@dimen/corner_sm</item>
+        <item name="hintTextColor">@color/md_theme_onSurfaceVariant</item>
     </style>
 
 </resources>

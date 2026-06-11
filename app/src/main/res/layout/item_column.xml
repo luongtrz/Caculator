@@ -4,122 +4,113 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_margin="@dimen/spacing_xs"
+    app:cardBackgroundColor="@color/md_theme_surfaceContainerLowest"
     app:cardCornerRadius="@dimen/corner_md"
     app:cardElevation="2dp"
-    app:strokeWidth="1dp"
     app:strokeColor="@color/md_theme_outlineVariant"
-    app:cardBackgroundColor="@color/md_theme_surfaceContainerLowest">
+    app:strokeWidth="1dp">
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="0dp">
+        android:orientation="vertical">
 
-        <!-- Column Header — primary background for clear visual anchor -->
         <TextView
             android:id="@+id/tv_column_number"
             android:layout_width="@dimen/weight_cell_width"
-            android:layout_height="32dp"
-            android:text="Cột 1"
-            android:textSize="@dimen/text_body_sm"
-            android:textStyle="bold"
-            android:textColor="@color/md_theme_onPrimary"
+            android:layout_height="40dp"
+            android:background="@color/md_theme_primary"
             android:gravity="center"
-            android:background="@color/md_theme_primary" />
+            android:text="Cột 1"
+            android:textColor="@color/md_theme_onPrimary"
+            android:textSize="@dimen/text_body"
+            android:textStyle="bold" />
 
-        <!-- Bag 1 -->
         <TextView
             android:id="@+id/edit_weight_1"
             android:layout_width="@dimen/weight_cell_width"
             android:layout_height="@dimen/weight_cell_height"
-            android:hint="—"
-            android:textColorHint="@color/md_theme_outlineVariant"
-            android:gravity="center"
-            android:textSize="@dimen/weight_text_size"
-            android:textStyle="bold"
-            android:textColor="@color/md_theme_onSurface"
             android:background="@drawable/bg_weight_cell"
             android:clickable="true"
             android:focusable="true"
-            android:foreground="?attr/selectableItemBackground" />
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:hint="—"
+            android:textColor="@color/md_theme_onSurface"
+            android:textColorHint="@color/md_theme_outline"
+            android:textSize="@dimen/weight_text_size"
+            android:textStyle="bold" />
 
-        <!-- Bag 2 -->
         <TextView
             android:id="@+id/edit_weight_2"
             android:layout_width="@dimen/weight_cell_width"
             android:layout_height="@dimen/weight_cell_height"
-            android:hint="—"
-            android:textColorHint="@color/md_theme_outlineVariant"
-            android:gravity="center"
-            android:textSize="@dimen/weight_text_size"
-            android:textStyle="bold"
-            android:textColor="@color/md_theme_onSurface"
             android:background="@drawable/bg_weight_cell"
             android:clickable="true"
             android:focusable="true"
-            android:foreground="?attr/selectableItemBackground" />
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:hint="—"
+            android:textColor="@color/md_theme_onSurface"
+            android:textColorHint="@color/md_theme_outline"
+            android:textSize="@dimen/weight_text_size"
+            android:textStyle="bold" />
 
-        <!-- Bag 3 -->
         <TextView
             android:id="@+id/edit_weight_3"
             android:layout_width="@dimen/weight_cell_width"
             android:layout_height="@dimen/weight_cell_height"
-            android:hint="—"
-            android:textColorHint="@color/md_theme_outlineVariant"
-            android:gravity="center"
-            android:textSize="@dimen/weight_text_size"
-            android:textStyle="bold"
-            android:textColor="@color/md_theme_onSurface"
             android:background="@drawable/bg_weight_cell"
             android:clickable="true"
             android:focusable="true"
-            android:foreground="?attr/selectableItemBackground" />
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:hint="—"
+            android:textColor="@color/md_theme_onSurface"
+            android:textColorHint="@color/md_theme_outline"
+            android:textSize="@dimen/weight_text_size"
+            android:textStyle="bold" />
 
-        <!-- Bag 4 -->
         <TextView
             android:id="@+id/edit_weight_4"
             android:layout_width="@dimen/weight_cell_width"
             android:layout_height="@dimen/weight_cell_height"
-            android:hint="—"
-            android:textColorHint="@color/md_theme_outlineVariant"
-            android:gravity="center"
-            android:textSize="@dimen/weight_text_size"
-            android:textStyle="bold"
-            android:textColor="@color/md_theme_onSurface"
             android:background="@drawable/bg_weight_cell"
             android:clickable="true"
             android:focusable="true"
-            android:foreground="?attr/selectableItemBackground" />
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:hint="—"
+            android:textColor="@color/md_theme_onSurface"
+            android:textColorHint="@color/md_theme_outline"
+            android:textSize="@dimen/weight_text_size"
+            android:textStyle="bold" />
 
-        <!-- Bag 5 -->
         <TextView
             android:id="@+id/edit_weight_5"
             android:layout_width="@dimen/weight_cell_width"
             android:layout_height="@dimen/weight_cell_height"
-            android:hint="—"
-            android:textColorHint="@color/md_theme_outlineVariant"
-            android:gravity="center"
-            android:textSize="@dimen/weight_text_size"
-            android:textStyle="bold"
-            android:textColor="@color/md_theme_onSurface"
             android:background="@drawable/bg_weight_cell"
             android:clickable="true"
             android:focusable="true"
-            android:foreground="?attr/selectableItemBackground" />
+            android:foreground="?attr/selectableItemBackground"
+            android:gravity="center"
+            android:hint="—"
+            android:textColor="@color/md_theme_onSurface"
+            android:textColorHint="@color/md_theme_outline"
+            android:textSize="@dimen/weight_text_size"
+            android:textStyle="bold" />
 
-        <!-- Column Total — highlighted chip at bottom -->
         <TextView
             android:id="@+id/tv_column_total"
             android:layout_width="match_parent"
-            android:layout_height="28dp"
-            android:text="0.0 kg"
-            android:textSize="13sp"
-            android:textStyle="bold"
-            android:textColor="@color/md_theme_onPrimary"
+            android:layout_height="34dp"
+            android:background="@drawable/bg_column_total"
             android:gravity="center"
-            android:background="@drawable/bg_column_total" />
-
+            android:text="0.0 kg"
+            android:textColor="@color/md_theme_onPrimary"
+            android:textSize="@dimen/text_body_sm"
+            android:textStyle="bold" />
     </LinearLayout>
 
 </com.google.android.material.card.MaterialCardView>
