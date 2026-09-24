@@ -512,7 +512,7 @@ class HistoryActivity : AppCompatActivity() {
             pageView.findViewById<android.widget.TextView>(R.id.tv_page_customer_name).text = record.customerName
             pageView.findViewById<android.widget.TextView>(R.id.tv_page_date).text = 
                 java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault())
-                    .format(java.util.Date(record.createdAt))
+                    .format(java.util.Date(if (record.updatedAt > 0L) record.updatedAt else record.createdAt))
             pageView.findViewById<android.widget.TextView>(R.id.tv_page_unit_price).text = 
                 String.format("%,d VNĐ/kg", record.unitPrice)
             pageView.findViewById<android.widget.TextView>(R.id.tv_page_title).text = 
