@@ -55,8 +55,8 @@ class MainActivity : AppCompatActivity() {
         supportActionBar?.setDisplayShowTitleEnabled(true)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val recordId = intent.getStringExtra("EXTRA_RECORD_ID")
-        if (recordId != null) {
+        val recordId = intent.getLongExtra("EXTRA_RECORD_ID", -1L)
+        if (recordId != -1L) {
             viewModel.loadExistingRecord(recordId)
         } else {
             updateToolbarDate()
@@ -69,7 +69,7 @@ class MainActivity : AppCompatActivity() {
         setupButtons()
         setupBackPressHandler()
 
-        if (recordId == null) {
+        if (recordId == -1L) {
             binding.etQuickInput.postDelayed({
                 binding.etQuickInput.requestFocus()
                 val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager

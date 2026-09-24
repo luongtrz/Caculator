@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/menu_share_qr"
+        android:title="Chia sẻ mã QR" />
+    <item
         android:id="@+id/menu_export"
-        android:title="Xuất" />
+        android:title="Xuất phiếu" />
     <item
         android:id="@+id/menu_delete"
         android:title="Xóa" />

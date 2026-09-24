@@ -5,15 +5,14 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.example.caculateapp.data.FirebaseService
+import com.example.caculateapp.data.AppDatabase
 import com.example.caculateapp.data.RiceRecord
 import kotlinx.coroutines.launch
 
 /**
  * ViewModel for MainActivity
  * Manages rice weighing session data with real-time calculations
- * Handles both new session creation and existing session editing
- * Now uses Firebase Firestore instead of Room Database
+ * Handles both new session creation and existing session editing (100% Offline Room Database)
  */
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     
@@ -23,10 +22,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         private const val INITIAL_CELL_COUNT = INITIAL_COLUMNS * BAGS_PER_COLUMN
     }
     
-    private val firebaseService = FirebaseService()
+    private val dao = AppDatabase.getDatabase(application).riceDao()
     
-    // Current record ID for edit mode (null = new session, non-null = editing)
-    private var currentRecordId: String? = null
+    // Current record ID for edit mode (null/0 = new session, non-null = editing)
+    private var currentRecordId: Long? = null
     
     // Original state for change tracking
     private var originalRecord: RiceRecord? = null
@@ -84,12 +83,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     /**
      * Load existing record for editing
      */
-    fun loadExistingRecord(recordId: String) {
+    fun loadExistingRecord(recordId: Long) {
         viewModelScope.launch {
             try {
-                val result = firebaseService.getRecord(recordId)
-                val record = result.getOrNull()
-                
+                val record = dao.getRecordById(recordId)
                 if (record != null) {
                     currentRecordId = record.id
                     _customerName.value = record.customerName
@@ -100,7 +97,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                     // Save original state for change tracking
                     originalRecord = record.copy()
                 } else {
-                    _saveStatus.value = "Lỗi khi tải dữ liệu: ${result.exceptionOrNull()?.message}"
+                    _saveStatus.value = "Lỗi khi tải dữ liệu: Không tìm thấy"
                 }
             } catch (e: Exception) {
                 _saveStatus.value = "Lỗi khi tải dữ liệu: ${e.message}"
@@ -256,42 +253,25 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
                 val money = _totalMoney.value ?: 0L
                 
                 val record = RiceRecord(
-                    id = currentRecordId,
+                    id = currentRecordId ?: 0L,
                     customerName = name,
                     unitPrice = price,
                     weightList = weights.toList(),
                     grandTotal = total,
-                    totalMoney = money
+                    totalMoney = money,
+                    createdAt = originalRecord?.createdAt ?: System.currentTimeMillis()
                 )
                 
-                val isSuccess: Boolean
-                val errorMessage: String?
-                val savedId: String?
-                
-                if (currentRecordId != null) {
-                    // Update existing record
-                    val result = firebaseService.updateRecord(record)
-                    isSuccess = result.isSuccess
-                    errorMessage = result.exceptionOrNull()?.message
-                    savedId = currentRecordId
+                if (currentRecordId != null && currentRecordId != 0L) {
+                    dao.update(record)
+                    originalRecord = record.copy()
                 } else {
-                    // Create new record
-                    val result = firebaseService.saveRecord(record)
-                    isSuccess = result.isSuccess
-                    errorMessage = result.exceptionOrNull()?.message
-                    savedId = result.getOrNull()
+                    val newId = dao.insert(record)
+                    currentRecordId = newId
+                    originalRecord = record.copy(id = newId)
                 }
                 
-                if (isSuccess) {
-                    _saveStatus.value = "Đã lưu thành công!"
-                    // Update original record tracking
-                    if (savedId != null) {
-                        originalRecord = record.copy(id = savedId)
-                        currentRecordId = savedId
-                    }
-                } else {
-                    _saveStatus.value = "Lỗi khi lưu: $errorMessage"
-                }
+                _saveStatus.value = "Đã lưu thành công!"
             } catch (e: Exception) {
                 _saveStatus.value = "Lỗi khi lưu: ${e.message}"
             }

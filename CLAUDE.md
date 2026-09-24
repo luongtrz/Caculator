@@ -23,18 +23,18 @@ rtk ./gradlew clean assembleDebug
 rtk ./gradlew lint
 ```
 
-Open in Android Studio for device/emulator deployment. Requires `google-services.json` in `app/` from Firebase Console (see FIREBASE_SETUP.md).
+Open in Android Studio for device/emulator deployment. No external configuration, API keys, or Firebase files required.
 
 ## Architecture
 
 **Pattern**: Activity + ViewModel + LiveData (no Compose, no Fragments)
 
-**Data flow**: UI (Activity + ViewBinding) -> ViewModel (LiveData) -> FirebaseService -> Firestore
+**Data flow**: UI (Activity + ViewBinding) -> ViewModel (LiveData) -> AppDatabase / RiceDao (Room SQLite)
 
-- **Activities**: `LoginActivity` (Google Sign-in) -> `HistoryActivity` (record list) -> `MainActivity` (weighing session, edit or create)
-- **ViewModels**: `MainViewModel` manages weighing session state and calculations; `HistoryViewModel` manages record list with real-time Firestore flow
-- **Data layer**: `FirebaseService` handles all Firestore CRUD, scoped to `users/{uid}/records/{recordId}`. Uses 2-second timeout for offline-tolerant writes.
-- **Auth**: `AuthManager` wraps Firebase Auth + Google Sign-in. `R.string.default_web_client_id` is auto-generated from `google-services.json`.
+- **Activities**: `HistoryActivity` (record list, QR export/scan, selection mode) -> `MainActivity` (weighing session, edit or create)
+- **ViewModels**: `MainViewModel` manages weighing session state and calculations; `HistoryViewModel` manages record list via Room Database LiveData / Flow
+- **Data layer**: `AppDatabase` (Room SQLite) provides `RiceDao` with standard CRUD operations.
+- **P2P Sharing**: `QrTransferManager` compresses rice records using GZIP + Base64 into QR code format, and Google Code Scanner parses QR codes to import records without internet.
 
 **Weight grid model**: Flat `List<Double>` in ViewModel, chunked into columns of 5 for display via `ColumnAdapter` (horizontal RecyclerView). New columns auto-expand when all slots are filled.
 
@@ -44,8 +44,8 @@ Open in Android Studio for device/emulator deployment. Requires `google-services
 
 - Language: UI strings and comments are in **Vietnamese**. Variable names and class names in English.
 - Money is `Long` (VND, no decimals). Weights are `Double` (kg).
-- `RiceRecord` is the single data class for Firestore documents. It has a no-arg constructor for Firestore deserialization.
-- Offline safety: Firestore persistence is enabled in `CaculateApplication`. Sign-out checks for pending writes (see OFFLINE_SAFETY.md).
+- `RiceRecord` is the Room entity stored locally in SQLite (`app_database`).
+- Offline-first: 100% offline operation without network permissions or cloud servers.
 - Min SDK 24, Target SDK 36, Kotlin 2.0, AGP 8.13, Java 11 target.
 
 <!-- rtk-instructions v2 -->

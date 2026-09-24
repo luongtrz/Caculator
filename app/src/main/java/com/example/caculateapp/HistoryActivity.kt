@@ -5,30 +5,33 @@ import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.caculateapp.adapter.HistoryAdapter
+import com.example.caculateapp.data.RiceRecord
 import com.example.caculateapp.databinding.ActivityHistoryBinding
+import com.example.caculateapp.databinding.DialogQrImportConfirmBinding
+import com.example.caculateapp.databinding.DialogQrShareBinding
 import com.example.caculateapp.utils.ExportManager
+import com.example.caculateapp.utils.QrTransferManager
 import com.example.caculateapp.viewmodel.HistoryViewModel
-import com.google.firebase.firestore.ktx.firestore
-import com.google.firebase.ktx.Firebase
+import com.journeyapps.barcodescanner.ScanContract
+import com.journeyapps.barcodescanner.ScanOptions
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import kotlinx.coroutines.withTimeoutOrNull
 
 /**
- * History Activity - Main launcher screen
+ * History Activity - Main launcher screen (100% Offline)
  * Displays list of all saved rice weighing sessions
  */
 class HistoryActivity : AppCompatActivity() {
@@ -43,23 +46,29 @@ class HistoryActivity : AppCompatActivity() {
     
     private val newSessionLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { /* list auto-updates via Firestore Flow */ }
+    ) { /* list auto-updates via Room Flow */ }
 
     private val editSessionLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
-    ) { /* list auto-updates via Firestore Flow */ }
+    ) { /* list auto-updates via Room Flow */ }
+
+    private val qrScanLauncher = registerForActivityResult(ScanContract()) { result ->
+        if (result.contents != null) {
+            handleScannedQr(result.contents)
+        }
+    }
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        androidx.core.view.WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
 
         binding = ActivityHistoryBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         // Apply top inset to toolbar so it clears the status bar
-        androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(binding.rootHistory) { _, insets ->
-            val sys = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars())
+        ViewCompat.setOnApplyWindowInsetsListener(binding.rootHistory) { _, insets ->
+            val sys = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             binding.toolbar.updatePadding(top = sys.top)
             binding.rootHistory.updatePadding(bottom = sys.bottom)
             insets
@@ -73,18 +82,46 @@ class HistoryActivity : AppCompatActivity() {
         setupRecyclerView()
         setupFAB()
         setupSearch()
-        setupSettings()
-        observeSyncStatus()
+        setupInfoButton()
+        setupQrAndSelectionActions()
+        setupBackPressHandler()
         observeRecords()
+    }
+
+    private fun setupBackPressHandler() {
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                if (::adapter.isInitialized && adapter.isSelectionMode) {
+                    adapter.exitSelectionMode()
+                } else {
+                    isEnabled = false
+                    onBackPressedDispatcher.onBackPressed()
+                }
+            }
+        })
     }
     
     /**
-     * Setup Settings icon click
+     * Setup Info button click
      */
-    private fun setupSettings() {
+    private fun setupInfoButton() {
         binding.btnSettings.setOnClickListener {
-            showSettingsBottomSheet()
+            showAboutDialog()
         }
+    }
+
+    private fun showAboutDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Cân Lúa (100% Offline)")
+            .setMessage(
+                "• Ứng dụng hoạt động hoàn toàn ngoại tuyến, không cần internet.\n" +
+                "• Không yêu cầu đăng nhập tài khoản, không cần bất kỳ API key nào.\n" +
+                "• Dữ liệu lưu trữ an toàn trực tiếp trên điện thoại.\n" +
+                "• Chia sẻ và nhận đợt cân nhanh chóng giữa các điện thoại qua mã QR.\n" +
+                "• Hỗ trợ xuất phiếu dạng ảnh và PDF chuyên nghiệp."
+            )
+            .setPositiveButton("Đã hiểu", null)
+            .show()
     }
 
     private val timeFormat = java.text.SimpleDateFormat("hh:mm:ss a", java.util.Locale.US)
@@ -120,105 +157,12 @@ class HistoryActivity : AppCompatActivity() {
         searchHandler.removeCallbacksAndMessages(null)
     }
 
-    
-    /**
-     * Show sign out confirmation dialog
-     */
-    private fun showSignOutConfirmation() {
-        // First, check for pending Firestore writes
-        lifecycleScope.launch {
-            try {
-                val firestore = Firebase.firestore
-                
-                // Try to wait for pending writes with timeout
-                val hasPendingWrites = withTimeoutOrNull(5000) {
-                    try {
-                        firestore.waitForPendingWrites().await()
-                        false // No pending writes
-                    } catch (e: Exception) {
-                        true // Has pending writes or error
-                    }
-                } ?: true // Timeout = assume has pending writes
-                
-                if (hasPendingWrites) {
-                    showPendingWritesWarning()
-                } else {
-                    showNormalSignOutDialog()
-                }
-            } catch (e: Exception) {
-                // If check fails, show warning to be safe
-                showPendingWritesWarning()
-            }
-        }
-    }
-    
-    /**
-     * Show warning when there are pending writes
-     */
-    private fun showPendingWritesWarning() {
-        AlertDialog.Builder(this)
-            .setTitle("⚠️ Cảnh báo")
-            .setMessage(
-                "Có dữ liệu chưa được đồng bộ lên cloud!\n\n" +
-                "Nếu đăng xuất ngay, bạn có thể MẤT DỮ LIỆU vừa nhập.\n\n" +
-                "Khuyến nghị:\n" +
-                "• Kết nối WiFi/4G trước\n" +
-                "• Đợi ít nhất 5-10 giây cho app sync\n" +
-                "• Hoặc hủy và tiếp tục làm việc"
-            )
-            .setPositiveButton("Vẫn đăng xuất (RỦI RO)") { _, _ ->
-                performSignOut()
-            }
-            .setNegativeButton("Hủy - Giữ an toàn", null)
-            .setCancelable(true)
-            .show()
-    }
-    
-    /**
-     * Show normal sign out dialog (when all data is synced)
-     */
-    private fun showNormalSignOutDialog() {
-        AlertDialog.Builder(this)
-            .setTitle("Đăng xuất")
-            .setMessage("Bạn có chắc muốn đăng xuất?\n\nDữ liệu đã được lưu an toàn trên cloud.")
-            .setPositiveButton("Đăng xuất") { _, _ ->
-                performSignOut()
-            }
-            .setNegativeButton("Hủy", null)
-            .show()
-    }
-    
-    /**
-     * Perform sign out and navigate to LoginActivity
-     */
-    private fun performSignOut() {
-        lifecycleScope.launch {
-            try {
-                val authManager = com.example.caculateapp.auth.AuthManager(this@HistoryActivity)
-                authManager.signOut()
-                
-                // Navigate to LoginActivity
-                val intent = Intent(this@HistoryActivity, com.example.caculateapp.auth.LoginActivity::class.java)
-                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                startActivity(intent)
-                finish()
-            } catch (e: Exception) {
-                AlertDialog.Builder(this@HistoryActivity)
-                    .setTitle("Lỗi")
-                    .setMessage("Không thể đăng xuất: ${e.message}")
-                    .setPositiveButton("OK", null)
-                    .show()
-            }
-        }
-    }
-    
     /**
      * Setup RecyclerView with adapter
      */
     private fun setupRecyclerView() {
         adapter = HistoryAdapter(
             onItemClick = { record ->
-                // Click on card -> open MainActivity to view/edit this record
                 openEditSession(record.id)
             },
             onDelete = { record ->
@@ -226,6 +170,15 @@ class HistoryActivity : AppCompatActivity() {
             },
             onExport = { record ->
                 exportRecord(record)
+            },
+            onShareQr = { record ->
+                shareRecordsAsQr(listOf(record))
+            },
+            onSelectionModeChanged = { inSelectionMode ->
+                updateSelectionModeUI(inSelectionMode)
+            },
+            onSelectionCountChanged = { count ->
+                updateSelectionCountUI(count)
             }
         )
         
@@ -233,6 +186,210 @@ class HistoryActivity : AppCompatActivity() {
             layoutManager = LinearLayoutManager(this@HistoryActivity)
             adapter = this@HistoryActivity.adapter
             setHasFixedSize(true)
+        }
+    }
+
+    /**
+     * Setup QR and Selection Toolbar & Bottom buttons
+     */
+    private fun setupQrAndSelectionActions() {
+        // Toolbar: Scan QR
+        binding.btnScanQr.setOnClickListener {
+            startQrScan()
+        }
+
+        // Toolbar: Enter multi-selection mode
+        binding.btnEnterSelect.setOnClickListener {
+            adapter.enterSelectionMode()
+        }
+
+        // Toolbar: Cancel selection
+        binding.btnCancelSelection.setOnClickListener {
+            adapter.exitSelectionMode()
+        }
+
+        // Toolbar: Select all records
+        binding.btnSelectAll.setOnClickListener {
+            adapter.selectAll()
+        }
+
+        // Bottom: Share selected records via QR
+        binding.btnShareSelectedQr.setOnClickListener {
+            val selected = adapter.getSelectedRecords()
+            if (selected.isEmpty()) {
+                android.widget.Toast.makeText(this, "Vui lòng tick chọn ít nhất 1 đợt cân", android.widget.Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            shareRecordsAsQr(selected)
+        }
+    }
+
+    private fun updateSelectionModeUI(inSelectionMode: Boolean) {
+        if (inSelectionMode) {
+            binding.layoutNormalActions.visibility = android.view.View.GONE
+            binding.layoutSelectionActions.visibility = android.view.View.VISIBLE
+            binding.fabAddSession.visibility = android.view.View.GONE
+            binding.btnShareSelectedQr.visibility = android.view.View.VISIBLE
+            binding.btnShareSelectedQr.isEnabled = false
+            supportActionBar?.title = "Đã chọn: 0"
+        } else {
+            binding.layoutNormalActions.visibility = android.view.View.VISIBLE
+            binding.layoutSelectionActions.visibility = android.view.View.GONE
+            binding.fabAddSession.visibility = android.view.View.VISIBLE
+            binding.btnShareSelectedQr.visibility = android.view.View.GONE
+            supportActionBar?.title = "Lịch sử"
+        }
+    }
+
+    private fun updateSelectionCountUI(count: Int) {
+        supportActionBar?.title = "Đã chọn: $count"
+        binding.btnShareSelectedQr.text = "Tạo mã QR chia sẻ ($count)"
+        binding.btnShareSelectedQr.isEnabled = count > 0
+    }
+
+    /**
+     * Start QR scanner using ZXing (Offline)
+     */
+    private fun startQrScan() {
+        val options = ScanOptions().apply {
+            setPrompt("Hướng camera vào mã QR để nhận đợt cân")
+            setBeepEnabled(true)
+            setOrientationLocked(false)
+            setBarcodeImageEnabled(false)
+        }
+        qrScanLauncher.launch(options)
+    }
+
+    /**
+     * Handle scanned QR code content
+     */
+    private fun handleScannedQr(contents: String) {
+        val parseResult = QrTransferManager.deserializeRecords(contents)
+        parseResult.onSuccess { records ->
+            showImportConfirmDialog(records)
+        }.onFailure { error ->
+            AlertDialog.Builder(this)
+                .setTitle("Mã QR không hợp lệ")
+                .setMessage(error.message ?: "Không thể đọc dữ liệu từ mã QR này.")
+                .setPositiveButton("OK", null)
+                .show()
+        }
+    }
+
+    /**
+     * Show confirmation dialog when importing records from QR
+     */
+    private fun showImportConfirmDialog(records: List<RiceRecord>) {
+        val dialog = android.app.Dialog(this)
+        val dialogBinding = DialogQrImportConfirmBinding.inflate(layoutInflater)
+        dialog.setContentView(dialogBinding.root)
+        dialog.window?.setLayout(
+            (resources.displayMetrics.widthPixels * 0.92).toInt(),
+            android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+        )
+
+        dialogBinding.tvImportCount.text = "Tìm thấy ${records.size} đợt cân hợp lệ:"
+
+        val container = dialogBinding.layoutImportItemsContainer
+        container.removeAllViews()
+
+        val moneyFormat = java.text.NumberFormat.getInstance(java.util.Locale("vi", "VN"))
+        val weightFormat = java.text.NumberFormat.getInstance(java.util.Locale.getDefault()).apply {
+            minimumFractionDigits = 1
+            maximumFractionDigits = 1
+        }
+
+        for ((index, rec) in records.withIndex()) {
+            val itemView = layoutInflater.inflate(R.layout.item_history, container, false)
+            itemView.findViewById<android.view.View>(R.id.btn_menu)?.visibility = android.view.View.GONE
+            itemView.findViewById<android.widget.TextView>(R.id.tv_customer_name)?.text =
+                "${index + 1}. ${rec.customerName.ifBlank { "Khách hàng" }}"
+            itemView.findViewById<android.widget.TextView>(R.id.tv_date_time)?.text =
+                "${rec.weightList.size} bao"
+            itemView.findViewById<android.widget.TextView>(R.id.tv_grand_total)?.text =
+                "${weightFormat.format(rec.grandTotal)} kg"
+            itemView.findViewById<android.widget.TextView>(R.id.tv_total_money)?.text =
+                "${moneyFormat.format(rec.totalMoney)} VNĐ"
+            container.addView(itemView)
+        }
+
+        dialogBinding.btnCancelImport.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialogBinding.btnConfirmImport.setOnClickListener {
+            dialog.dismiss()
+            viewModel.importRecords(records) { success, failed ->
+                if (success > 0) {
+                    android.widget.Toast.makeText(
+                        this,
+                        "Đã nhận thành công $success đợt cân!",
+                        android.widget.Toast.LENGTH_LONG
+                    ).show()
+                } else {
+                    android.widget.Toast.makeText(
+                        this,
+                        "Lỗi khi lưu đợt cân: $failed thất bại",
+                        android.widget.Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
+        }
+
+        dialog.show()
+    }
+
+    /**
+     * Display QR Code dialog to share one or multiple records
+     */
+    private fun shareRecordsAsQr(records: List<RiceRecord>) {
+        if (records.isEmpty()) return
+
+        lifecycleScope.launch {
+            try {
+                val qrData = QrTransferManager.serializeRecords(records)
+                val qrBitmap = QrTransferManager.generateQrBitmap(qrData, 800)
+
+                val dialog = android.app.Dialog(this@HistoryActivity)
+                val dialogBinding = DialogQrShareBinding.inflate(layoutInflater)
+                dialog.setContentView(dialogBinding.root)
+                dialog.window?.setLayout(
+                    (resources.displayMetrics.widthPixels * 0.92).toInt(),
+                    android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+
+                val moneyFormat = java.text.NumberFormat.getInstance(java.util.Locale("vi", "VN"))
+                val totalKg = records.sumOf { it.grandTotal }
+                val totalMoney = records.sumOf { it.totalMoney }
+
+                val summaryText = if (records.size == 1) {
+                    val r = records[0]
+                    "${r.customerName.ifBlank { "Khách hàng" }} • %.1f kg • %s VNĐ".format(
+                        r.grandTotal,
+                        moneyFormat.format(r.totalMoney)
+                    )
+                } else {
+                    "${records.size} đợt cân • %.1f kg • %s VNĐ".format(
+                        totalKg,
+                        moneyFormat.format(totalMoney)
+                    )
+                }
+
+                dialogBinding.tvQrSummary.text = summaryText
+                dialogBinding.imgQrCode.setImageBitmap(qrBitmap)
+
+                dialogBinding.btnCloseQr.setOnClickListener {
+                    dialog.dismiss()
+                }
+
+                dialog.show()
+            } catch (e: Exception) {
+                AlertDialog.Builder(this@HistoryActivity)
+                    .setTitle("Lỗi tạo mã QR")
+                    .setMessage(e.message ?: "Không thể tạo mã QR cho các đợt cân này.")
+                    .setPositiveButton("OK", null)
+                    .show()
+            }
         }
     }
     
@@ -296,7 +453,7 @@ class HistoryActivity : AppCompatActivity() {
     /**
      * Open MainActivity to edit existing session
      */
-    private fun openEditSession(recordId: String?) {
+    private fun openEditSession(recordId: Long) {
         val intent = Intent(this, MainActivity::class.java)
             .putExtra("EXTRA_RECORD_ID", recordId)
         editSessionLauncher.launch(intent)
@@ -305,7 +462,7 @@ class HistoryActivity : AppCompatActivity() {
     /**
      * Show delete confirmation dialog
      */
-    private fun showDeleteConfirmation(record: com.example.caculateapp.data.RiceRecord) {
+    private fun showDeleteConfirmation(record: RiceRecord) {
         AlertDialog.Builder(this)
             .setTitle("Xác nhận xóa")
             .setMessage("Bạn có chắc muốn xóa đợt cân của ${record.customerName}?")
@@ -323,20 +480,17 @@ class HistoryActivity : AppCompatActivity() {
     /**
      * Export a specific record with preview
      */
-    private fun exportRecord(record: com.example.caculateapp.data.RiceRecord) {
-        // Show preview dialog first, then format selection
+    private fun exportRecord(record: RiceRecord) {
         showExportPreviewForRecord(record)
     }
     
     /**
      * Show export preview for a specific record
      */
-    private fun showExportPreviewForRecord(record: com.example.caculateapp.data.RiceRecord) {
+    private fun showExportPreviewForRecord(record: RiceRecord) {
         val dialog = android.app.Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen)
         val dialogBinding = com.example.caculateapp.databinding.DialogExportPreviewBinding.inflate(layoutInflater)
         dialog.setContentView(dialogBinding.root)
-        
-        val exportManager = ExportManager(this)
         
         // Convert flat weightList to columns
         val columns = mutableListOf<List<Double>>()
@@ -347,10 +501,8 @@ class HistoryActivity : AppCompatActivity() {
             columns.add(col)
         }
         
-        // Get pages container
         val pagesContainer = dialogBinding.layoutPagesContainer
         
-        // Generate all pages and add to container
         val columnChunks = columns.chunked(10)
         columnChunks.forEachIndexed { pageIndex, pageColumns ->
             val inflater = android.view.LayoutInflater.from(this)
@@ -360,17 +512,15 @@ class HistoryActivity : AppCompatActivity() {
             pageView.findViewById<android.widget.TextView>(R.id.tv_page_customer_name).text = record.customerName
             pageView.findViewById<android.widget.TextView>(R.id.tv_page_date).text = 
                 java.text.SimpleDateFormat("dd/MM/yyyy HH:mm", java.util.Locale.getDefault())
-                    .format(record.createdAt ?: java.util.Date())
+                    .format(java.util.Date(record.createdAt))
             pageView.findViewById<android.widget.TextView>(R.id.tv_page_unit_price).text = 
                 String.format("%,d VNĐ/kg", record.unitPrice)
             pageView.findViewById<android.widget.TextView>(R.id.tv_page_title).text = 
                 "PHIẾU CÂN - Trang ${pageIndex + 1}/${columnChunks.size}"
             
-            // Get row containers
             val topRow = pageView.findViewById<android.widget.LinearLayout>(R.id.layout_top_row)
             val bottomRow = pageView.findViewById<android.widget.LinearLayout>(R.id.layout_bottom_row)
             
-            // Add columns (first 5 to top, next 5 to bottom)
             var pageTotal = 0.0
             pageColumns.forEachIndexed { colIndex, colWeights ->
                 val globalColumnNumber = pageIndex * 10 + colIndex + 1
@@ -392,7 +542,6 @@ class HistoryActivity : AppCompatActivity() {
             pageView.findViewById<android.widget.TextView>(R.id.tv_total_money).text = 
                 String.format("%,d VNĐ", record.totalMoney)
             
-            // Add page to container with some margin
             val layoutParams = android.widget.LinearLayout.LayoutParams(
                 android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
                 android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
@@ -403,12 +552,10 @@ class HistoryActivity : AppCompatActivity() {
             pagesContainer.addView(pageView)
         }
         
-        // Close button
         dialogBinding.btnClosePreview.setOnClickListener {
             dialog.dismiss()
         }
         
-        // Confirm export button -> show format selection
         dialogBinding.btnConfirmExport.setOnClickListener {
             dialog.dismiss()
             showFormatSelectionForRecord(record, columns)
@@ -421,7 +568,7 @@ class HistoryActivity : AppCompatActivity() {
      * Show format selection for exporting a record
      */
     private fun showFormatSelectionForRecord(
-        record: com.example.caculateapp.data.RiceRecord,
+        record: RiceRecord,
         columns: List<List<Double>>
     ) {
         val bottomSheet = com.google.android.material.bottomsheet.BottomSheetDialog(this)
@@ -525,7 +672,6 @@ class HistoryActivity : AppCompatActivity() {
             setPadding(8, 0, 8, 0)
         }
         
-        // Column header
         val header = android.widget.TextView(this).apply {
             text = "Cột $columnNumber"
             setTextColor(android.graphics.Color.BLACK)
@@ -536,26 +682,22 @@ class HistoryActivity : AppCompatActivity() {
         }
         columnLayout.addView(header)
         
-        // Weight values (always show 5 cells)
         weights.forEach { weight ->
             val weightText = android.widget.TextView(this).apply {
                 text = if (weight > 0.0) {
                     if (weight % 1.0 == 0.0) weight.toInt().toString() else weight.toString()
                 } else {
-                    "" // Empty string for zero values
+                    ""
                 }
                 setTextColor(android.graphics.Color.BLACK)
                 textSize = 13f
                 gravity = android.view.Gravity.CENTER
                 setPadding(0, 4, 0, 4)
-                
-                // Ensure it has height even if empty
                 minHeight = (24 * resources.displayMetrics.density).toInt()
             }
             columnLayout.addView(weightText)
         }
         
-        // Divider
         val divider = android.view.View(this).apply {
             layoutParams = android.widget.LinearLayout.LayoutParams(
                 android.widget.LinearLayout.LayoutParams.MATCH_PARENT,
@@ -567,7 +709,6 @@ class HistoryActivity : AppCompatActivity() {
         }
         columnLayout.addView(divider)
         
-        // Column total
         val total = weights.sum()
         val totalText = android.widget.TextView(this).apply {
             text = String.format("%.1f kg", total)
@@ -580,90 +721,4 @@ class HistoryActivity : AppCompatActivity() {
         
         return columnLayout
     }
-    
-    /**
-     * Start monitoring Firestore sync status
-     */
-    private fun observeSyncStatus() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.isCloudSynced.collectLatest { isSynced ->
-                    updateSyncBadge(isSynced)
-                }
-            }
-        }
-    }
-    
-    /**
-     * Update sync status badge
-     */
-    /**
-     * Update sync status badge
-     */
-    private fun updateSyncBadge(isSynced: Boolean) {
-        binding.syncBadge.setBackgroundColor(
-            if (isSynced) {
-                androidx.core.content.ContextCompat.getColor(this, R.color.color_weight_positive) // Green
-            } else {
-                androidx.core.content.ContextCompat.getColor(this, R.color.md_theme_secondary) // Orange
-            }
-        )
-    }
-    
-    /**
-     * Show settings bottom sheet
-     */
-    private fun showSettingsBottomSheet() {
-        val bottomSheet = com.google.android.material.bottomsheet.BottomSheetDialog(this)
-        val sheetView = layoutInflater.inflate(R.layout.bottom_sheet_settings, null)
-        bottomSheet.setContentView(sheetView)
-        
-        // Get user info
-        val currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().currentUser
-        sheetView.findViewById<android.widget.TextView>(R.id.tv_user_name).text = 
-            currentUser?.displayName ?: "User"
-        sheetView.findViewById<android.widget.TextView>(R.id.tv_user_email).text = 
-            currentUser?.email ?: "No email"
-        
-        // Check sync status using ViewModel state (Realtime)
-        val syncStatusBadge = sheetView.findViewById<android.view.View>(R.id.sync_status_badge)
-        val syncStatusText = sheetView.findViewById<android.widget.TextView>(R.id.tv_sync_status)
-        val syncDetailText = sheetView.findViewById<android.widget.TextView>(R.id.tv_sync_detail)
-        
-        // Launch a job to collect sync status while the bottom sheet is open
-        // We use sheetView attached to window or dialog lifecycle?
-        // Using activity lifecycleScope is fine, but we should probably cancel it when dialog closes.
-        // Easier: Just launch in lifecycleScope and let it update the detached view (no harm)
-        // Or better: Observe until dialog is dismissed.
-        
-        val job = lifecycleScope.launch {
-            viewModel.isCloudSynced.collectLatest { isSynced ->
-                if (isSynced) {
-                    // All synced
-                    syncStatusBadge.setBackgroundColor(androidx.core.content.ContextCompat.getColor(this@HistoryActivity, R.color.color_weight_positive)) // Green
-                    syncStatusText.text = "Đã đồng bộ"
-                    syncDetailText.text = "Tất cả dữ liệu đã lưu trên cloud"
-                } else {
-                    // Has pending
-                    syncStatusBadge.setBackgroundColor(androidx.core.content.ContextCompat.getColor(this@HistoryActivity, R.color.md_theme_secondary)) // Orange
-                    syncStatusText.text = "Đang đồng bộ..."
-                    syncDetailText.text = "Có dữ liệu chưa sync lên cloud"
-                }
-            }
-        }
-        
-        bottomSheet.setOnDismissListener {
-            job.cancel()
-        }
-        
-        // Setup sign out button
-        sheetView.findViewById<android.widget.Button>(R.id.btn_sign_out_settings).setOnClickListener {
-            bottomSheet.dismiss()
-            showSignOutConfirmation()
-        }
-        
-        bottomSheet.show()
-    }
-    
 }
-

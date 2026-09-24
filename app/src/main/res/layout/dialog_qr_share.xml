@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@drawable/bg_weight_cell"
+    android:padding="@dimen/spacing_lg">
+
+    <!-- Header title -->
+    <TextView
+        android:id="@+id/tv_qr_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Mã QR chia sẻ đợt cân"
+        android:textAppearance="@style/TextAppearance.Rice.Headline"
+        android:textColor="@color/md_theme_onSurface"
+        android:textSize="@dimen/text_title"
+        android:gravity="center"
+        android:layout_marginBottom="@dimen/spacing_xs" />
+
+    <TextView
+        android:id="@+id/tv_qr_summary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="1 đợt cân • 150.0 kg • 1,275,000 VNĐ"
+        android:textAppearance="@style/TextAppearance.Rice.Body"
+        android:textColor="@color/md_theme_onSurfaceVariant"
+        android:gravity="center"
+        android:layout_marginBottom="@dimen/spacing_md" />
+
+    <!-- QR Code Container Card -->
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        app:cardCornerRadius="@dimen/corner_md"
+        app:cardElevation="2dp"
+        app:strokeWidth="1dp"
+        app:strokeColor="@color/md_theme_outlineVariant"
+        app:cardBackgroundColor="#FFFFFF"
+        android:layout_marginBottom="@dimen/spacing_md">
+
+        <ImageView
+            android:id="@+id/img_qr_code"
+            android:layout_width="260dp"
+            android:layout_height="260dp"
+            android:layout_margin="12dp"
+            android:contentDescription="Mã QR đợt cân"
+            android:scaleType="fitCenter" />
+    </com.google.android.material.card.MaterialCardView>
+
+    <!-- Guide text -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/bg_sync_badge"
+        android:backgroundTint="@color/md_theme_surfaceContainerLow"
+        android:padding="@dimen/spacing_sm"
+        android:layout_marginBottom="@dimen/spacing_lg">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ℹ️ "
+            android:textSize="@dimen/text_body" />
+
+        <TextView
+            android:id="@+id/tv_qr_instruction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mở app trên điện thoại khác và nhấn nút [Quét QR] để nhận dữ liệu (không cần mạng)."
+            android:textAppearance="@style/TextAppearance.Rice.BodySmall"
+            android:textColor="@color/md_theme_onSurfaceVariant" />
+    </LinearLayout>
+
+    <!-- Actions -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_close_qr"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/button_height"
+        android:text="Đóng"
+        style="@style/Widget.Rice.Button.Primary" />
+
+</LinearLayout>

@@ -2,12 +2,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     
-    <!-- Internet permission for Firebase -->
-    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Camera permission for QR scanning (100% offline) -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <application
         android:name=".CaculateApplication"
         android:allowBackup="true"
+        android:hardwareAccelerated="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -16,9 +18,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CaculateApp">
         
-        <!-- Login Activity - First screen (Launcher) -->
+        <!-- History Activity - Main app screen (Launcher) -->
         <activity
-            android:name=".auth.LoginActivity"
+            android:name=".HistoryActivity"
             android:exported="true"
             android:screenOrientation="portrait">
             <intent-filter>
@@ -26,12 +28,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        
-        <!-- History Activity - Main app screen -->
-        <activity
-            android:name=".HistoryActivity"
-            android:exported="false"
-            android:screenOrientation="portrait" />
         
         <!-- Main Activity - Detail/Edit screen -->
         <activity
