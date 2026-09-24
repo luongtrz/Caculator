@@ -373,27 +373,25 @@ class MainActivity : AppCompatActivity() {
     private fun setupBackPressHandler() {
         onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (!viewModel.hasUnsavedChanges()) {
+                if (viewModel.hasUnsavedChanges() && viewModel.hasAnyData()) {
                     isEnabled = false
-                    onBackPressedDispatcher.onBackPressed()
-                    return
-                }
-                val dialogView = layoutInflater.inflate(R.layout.dialog_unsaved_warning, null)
-                val dialog = Dialog(this@MainActivity)
-                dialog.setContentView(dialogView)
-                dialog.window?.setBackgroundDrawableResource(android.R.drawable.dialog_holo_light_frame)
-                dialog.setCancelable(true)
-
-                dialogView.findViewById<android.widget.Button>(R.id.btn_exit_anyway).setOnClickListener {
+                    lifecycleScope.launch {
+                        viewModel.autoSave()
+                        Toast.makeText(this@MainActivity, "Đã tự động lưu", Toast.LENGTH_SHORT).show()
+                        finish()
+                    }
+                } else {
                     isEnabled = false
-                    dialog.dismiss()
-                    onBackPressedDispatcher.onBackPressed()
+                    finish()
                 }
-                dialogView.findViewById<android.widget.Button>(R.id.btn_cancel).setOnClickListener {
-                    dialog.dismiss()
-                }
-                dialog.show()
             }
         })
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (viewModel.hasUnsavedChanges() && viewModel.hasAnyData()) {
+            viewModel.autoSaveInBackground()
+        }
     }
 }

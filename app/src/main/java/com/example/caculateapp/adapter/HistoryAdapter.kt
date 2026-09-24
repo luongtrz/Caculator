@@ -104,7 +104,8 @@ class HistoryAdapter(
         
         fun bind(record: RiceRecord) {
             tvCustomerName.text = record.customerName.ifBlank { "Khách hàng" }
-            tvDateTime.text = dateFormat.format(Date(record.createdAt))
+            val displayTime = if (record.updatedAt > 0L) record.updatedAt else record.createdAt
+            tvDateTime.text = dateFormat.format(Date(displayTime))
             tvGrandTotal.text = "${weightFormat.format(record.grandTotal)} kg"
             tvTotalMoney.text = "${moneyFormat.format(record.totalMoney)} VNĐ"
             

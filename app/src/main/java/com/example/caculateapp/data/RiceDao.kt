@@ -21,12 +21,12 @@ interface RiceDao {
     @Query("DELETE FROM rice_records WHERE id = :id")
     suspend fun deleteById(id: Long)
 
-    @Query("SELECT * FROM rice_records ORDER BY createdAt DESC")
+    @Query("SELECT * FROM rice_records ORDER BY CASE WHEN updated_at > 0 THEN updated_at ELSE createdAt END DESC")
     fun getAllRecords(): Flow<List<RiceRecord>>
 
     @Query("SELECT * FROM rice_records WHERE id = :id")
     suspend fun getRecordById(id: Long): RiceRecord?
 
-    @Query("SELECT * FROM rice_records WHERE customerName LIKE '%' || :query || '%' ORDER BY createdAt DESC")
+    @Query("SELECT * FROM rice_records WHERE customerName LIKE '%' || :query || '%' ORDER BY CASE WHEN updated_at > 0 THEN updated_at ELSE createdAt END DESC")
     fun searchRecords(query: String): Flow<List<RiceRecord>>
 }

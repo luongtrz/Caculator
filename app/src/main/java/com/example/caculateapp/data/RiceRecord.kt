@@ -22,7 +22,10 @@ data class RiceRecord(
     
     val totalMoney: Long = 0L, // grandTotal * unitPrice (integer only)
     
-    val createdAt: Long = System.currentTimeMillis() // Local timestamp (epoch millis)
+    val createdAt: Long = System.currentTimeMillis(), // Local timestamp (epoch millis)
+
+    @androidx.room.ColumnInfo(name = "updated_at")
+    val updatedAt: Long = System.currentTimeMillis() // Last updated timestamp (epoch millis)
 )
 
 /**

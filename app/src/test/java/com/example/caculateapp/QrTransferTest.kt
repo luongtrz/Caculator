@@ -18,7 +18,8 @@ class QrTransferTest {
                 weightList = listOf(50.2, 51.0, 49.8, 52.3, 50.5),
                 grandTotal = 253.8,
                 totalMoney = 2157300L,
-                createdAt = 1710000000000L
+                createdAt = 1710000000000L,
+                updatedAt = 1710002000000L
             ),
             RiceRecord(
                 id = 456L,
@@ -27,7 +28,8 @@ class QrTransferTest {
                 weightList = listOf(60.0, 61.2, 59.5),
                 grandTotal = 180.7,
                 totalMoney = 1626300L,
-                createdAt = 1710005000000L
+                createdAt = 1710005000000L,
+                updatedAt = 1710006000000L
             )
         )
 
@@ -51,6 +53,7 @@ class QrTransferTest {
         assertEquals(253.8, r1.grandTotal, 0.001)
         assertEquals(2157300L, r1.totalMoney)
         assertEquals(1710000000000L, r1.createdAt)
+        assertEquals(1710002000000L, r1.updatedAt)
 
         val r2 = deserializedRecords[1]
         assertEquals("Trần Thị B", r2.customerName)
@@ -58,6 +61,8 @@ class QrTransferTest {
         assertEquals(3, r2.weightList.size)
         assertEquals(180.7, r2.grandTotal, 0.001)
         assertEquals(1626300L, r2.totalMoney)
+        assertEquals(1710005000000L, r2.createdAt)
+        assertEquals(1710006000000L, r2.updatedAt)
     }
 
     @Test

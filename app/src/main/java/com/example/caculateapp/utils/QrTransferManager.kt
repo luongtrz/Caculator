@@ -40,6 +40,7 @@ object QrTransferManager {
             obj.put("gt", record.grandTotal)
             obj.put("tm", record.totalMoney)
             obj.put("t", record.createdAt)
+            obj.put("u", record.updatedAt)
 
             val weightsArray = JSONArray()
             for (w in record.weightList) {
@@ -94,6 +95,7 @@ object QrTransferManager {
                 val grandTotal = obj.optDouble("gt", 0.0)
                 val totalMoney = obj.optLong("tm", 0L)
                 val timestamp = obj.optLong("t", System.currentTimeMillis())
+                val updatedAt = obj.optLong("u", timestamp)
 
                 val weightsArray = obj.optJSONArray("w")
                 val weightList = mutableListOf<Double>()
@@ -111,7 +113,8 @@ object QrTransferManager {
                         weightList = weightList,
                         grandTotal = grandTotal,
                         totalMoney = totalMoney,
-                        createdAt = timestamp
+                        createdAt = timestamp,
+                        updatedAt = updatedAt
                     )
                 )
             }

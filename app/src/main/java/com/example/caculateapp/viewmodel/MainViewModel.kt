@@ -7,7 +7,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.example.caculateapp.data.AppDatabase
 import com.example.caculateapp.data.RiceRecord
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 
 /**
  * ViewModel for MainActivity
@@ -230,79 +233,141 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         _totalMoney.value = (total * price).toLong()
     }
     
+    private val saveMutex = Mutex()
+
     /**
-     * Save current session to Firestore
+     * Check if the session has any real entered data
      */
-    fun saveSession() {
-        viewModelScope.launch {
+    fun hasAnyData(): Boolean {
+        val name = _customerName.value?.trim() ?: ""
+        val price = _unitPrice.value ?: 0L
+        val weights = _weightList.value ?: emptyList()
+        val hasWeights = weights.any { it > 0.0 }
+        return name.isNotEmpty() || price > 0L || hasWeights
+    }
+
+    /**
+     * Internal save helper. Performs insert or update in Room SQLite.
+     * Sets updatedAt to current time.
+     */
+    private suspend fun saveInternal(nameOverride: String? = null): RiceRecord {
+        val rawName = nameOverride ?: _customerName.value?.trim() ?: ""
+        val finalName = if (rawName.isBlank()) "Khách hàng" else rawName
+        val price = _unitPrice.value ?: 0L
+        val weights = (_weightList.value ?: mutableListOf()).toList()
+        val total = _grandTotal.value ?: 0.0
+        val money = _totalMoney.value ?: 0L
+        val now = System.currentTimeMillis()
+
+        val record = RiceRecord(
+            id = currentRecordId ?: 0L,
+            customerName = finalName,
+            unitPrice = price,
+            weightList = weights,
+            grandTotal = total,
+            totalMoney = money,
+            createdAt = originalRecord?.createdAt?.takeIf { it > 0L } ?: now,
+            updatedAt = now
+        )
+
+        if (currentRecordId != null && currentRecordId != 0L) {
+            dao.update(record)
+            originalRecord = record.copy()
+        } else {
+            val newId = dao.insert(record)
+            currentRecordId = newId
+            originalRecord = record.copy(id = newId)
+        }
+
+        return originalRecord!!
+    }
+
+    /**
+     * Auto-save current session silently without prompting.
+     * Returns true if saved, false if skipped.
+     */
+    suspend fun autoSave(): Boolean {
+        return saveMutex.withLock {
+            if (!hasUnsavedChanges()) return@withLock false
+            if (currentRecordId == null && !hasAnyData()) return@withLock false
+
             try {
-                val name = _customerName.value ?: ""
-                if (name.isBlank()) {
-                    _saveStatus.value = "Vui lòng nhập tên khách hàng"
-                    return@launch
-                }
-                
-                val price = _unitPrice.value ?: 0L
-                if (price <= 0L) {
-                    _saveStatus.value = "Vui lòng nhập đơn giá hợp lệ"
-                    return@launch
-                }
-                
-                val weights = _weightList.value ?: mutableListOf()
-                val total = _grandTotal.value ?: 0.0
-                val money = _totalMoney.value ?: 0L
-                
-                val record = RiceRecord(
-                    id = currentRecordId ?: 0L,
-                    customerName = name,
-                    unitPrice = price,
-                    weightList = weights.toList(),
-                    grandTotal = total,
-                    totalMoney = money,
-                    createdAt = originalRecord?.createdAt ?: System.currentTimeMillis()
-                )
-                
-                if (currentRecordId != null && currentRecordId != 0L) {
-                    dao.update(record)
-                    originalRecord = record.copy()
-                } else {
-                    val newId = dao.insert(record)
-                    currentRecordId = newId
-                    originalRecord = record.copy(id = newId)
-                }
-                
-                _saveStatus.value = "Đã lưu thành công!"
+                saveInternal()
+                true
             } catch (e: Exception) {
-                _saveStatus.value = "Lỗi khi lưu: ${e.message}"
+                android.util.Log.e("MainViewModel", "Auto save failed: ${e.message}", e)
+                false
             }
         }
     }
-    
+
+    /**
+     * Background trigger for auto-save (e.g. onPause / onStop)
+     */
+    fun autoSaveInBackground() {
+        if (!hasUnsavedChanges()) return
+        if (currentRecordId == null && !hasAnyData()) return
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                autoSave()
+            } catch (e: Exception) {
+                android.util.Log.e("MainViewModel", "Background auto save failed: ${e.message}", e)
+            }
+        }
+    }
+
+    /**
+     * Manual save current session to SQLite
+     */
+    fun saveSession() {
+        viewModelScope.launch {
+            saveMutex.withLock {
+                try {
+                    val name = _customerName.value?.trim() ?: ""
+                    val weights = _weightList.value ?: emptyList()
+                    val hasWeights = weights.any { it > 0.0 }
+                    val price = _unitPrice.value ?: 0L
+
+                    if (name.isBlank() && !hasWeights && price <= 0L) {
+                        _saveStatus.value = "Chưa có dữ liệu để lưu"
+                        return@withLock
+                    }
+
+                    saveInternal()
+                    _saveStatus.value = "Đã lưu thành công!"
+                } catch (e: Exception) {
+                    _saveStatus.value = "Lỗi khi lưu: ${e.message}"
+                }
+            }
+        }
+    }
+
     /**
      * Check if current state differs from original/saved state
      */
     fun hasUnsavedChanges(): Boolean {
-        val currentName = _customerName.value ?: ""
+        val currentName = _customerName.value?.trim() ?: ""
         val currentPrice = _unitPrice.value ?: 0L
         val currentWeights = _weightList.value ?: emptyList()
-        
-        // If we have an original record, compare against it
+
         val original = originalRecord ?: return (currentName.isNotEmpty() || currentPrice > 0L || currentWeights.any { it > 0.0 })
-        
-        if (currentName != original.customerName) return true
+
+        val originalName = original.customerName.trim()
+        val nameChanged = if (currentName.isEmpty() && (originalName.isEmpty() || originalName == "Khách hàng")) {
+            false
+        } else {
+            currentName != originalName
+        }
+        if (nameChanged) return true
         if (currentPrice != original.unitPrice) return true
-        
-        // Compare weights (values only)
+
         val originalWeights = original.weightList
         if (currentWeights.size != originalWeights.size) return true
-        
+
         for (i in currentWeights.indices) {
-            // Compare as Double roughly or exact
-            // Since we load and save doubles, exact match should usually work if no math changed them
-            // But let's be safe with strict equality for now as they are direct values
             if (currentWeights[i] != originalWeights[i]) return true
         }
-        
+
         return false
     }    
     /**
