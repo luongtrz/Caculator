@@ -52,15 +52,25 @@
             android:padding="@dimen/spacing_md" />
     </ScrollView>
 
-    <!-- Confirm Button -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_confirm_export"
+    <!-- Confirm Button — elevated container keeps it visible above nav bar -->
+    <LinearLayout
+        android:id="@+id/layout_action_bar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Tiếp tục xuất"
-        android:textSize="@dimen/text_body_lg"
-        android:textStyle="bold"
-        android:layout_margin="@dimen/spacing_sm"
-        style="@style/Widget.Rice.Button.Primary" />
+        android:orientation="vertical"
+        android:background="@color/md_theme_surface"
+        android:elevation="8dp"
+        android:padding="@dimen/spacing_sm">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_confirm_export"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height_lg"
+            android:text="Tiếp tục xuất"
+            android:textSize="@dimen/text_body_lg"
+            android:textStyle="bold"
+            style="@style/Widget.Rice.Button.Primary" />
+
+    </LinearLayout>
 
 </LinearLayout>

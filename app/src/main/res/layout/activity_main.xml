@@ -18,7 +18,6 @@
         app:titleTextColor="@color/md_theme_onPrimary"
         app:subtitle=""
         app:subtitleTextColor="@color/md_theme_primaryContainer"
-        app:navigationIcon="@drawable/ic_launcher_rice_scaled"
         app:navigationIconTint="@color/md_theme_onPrimary"
         android:background="@color/md_theme_primary" />
 
@@ -130,14 +129,14 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Weight grid: RecyclerView with BOUNDED height — enables proper recycling -->
+    <!-- Weight grid: vertical scroll, 3 columns per row -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_weights"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:paddingStart="@dimen/spacing_sm"
-        android:paddingEnd="@dimen/spacing_sm"
+        android:paddingStart="@dimen/spacing_xs"
+        android:paddingEnd="@dimen/spacing_xs"
         android:paddingTop="@dimen/spacing_xs"
         android:paddingBottom="@dimen/spacing_xs"
         android:clipToPadding="false"
@@ -186,12 +185,17 @@
 
                     <TextView
                         android:id="@+id/tv_grand_total"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="0.0 kg"
                         android:textColor="@color/md_theme_onPrimary"
                         android:textStyle="bold"
-                        android:textSize="@dimen/text_title_sm" />
+                        android:maxLines="1"
+                        android:gravity="center"
+                        android:textSize="@dimen/text_title_sm"
+                        app:autoSizeTextType="uniform"
+                        app:autoSizeMinTextSize="10sp"
+                        app:autoSizeMaxTextSize="18sp" />
                 </LinearLayout>
 
                 <View
@@ -216,12 +220,17 @@
 
                     <TextView
                         android:id="@+id/tv_total_money"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="0 VNĐ"
                         android:textColor="@color/md_theme_onPrimary"
                         android:textStyle="bold"
-                        android:textSize="@dimen/text_title_sm" />
+                        android:maxLines="1"
+                        android:gravity="center"
+                        android:textSize="@dimen/text_title_sm"
+                        app:autoSizeTextType="uniform"
+                        app:autoSizeMinTextSize="10sp"
+                        app:autoSizeMaxTextSize="18sp" />
                 </LinearLayout>
             </LinearLayout>
 

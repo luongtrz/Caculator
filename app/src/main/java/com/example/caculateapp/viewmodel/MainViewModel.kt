@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 class MainViewModel(application: Application) : AndroidViewModel(application) {
     
     companion object {
-        private const val INITIAL_COLUMNS = 3
+        private const val INITIAL_COLUMNS = 1
         private const val BAGS_PER_COLUMN = 5
         private const val INITIAL_CELL_COUNT = INITIAL_COLUMNS * BAGS_PER_COLUMN
     }
@@ -124,24 +124,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
     
     /**
-     * Update weight at specific position
-     */
-    fun updateWeight(position: Int, weight: Double) {
-        val currentList = _weightList.value ?: mutableListOf()
-        if (position in currentList.indices) {
-            currentList[position] = weight
-            _weightList.value = currentList
-            calculateTotals()
-        }
-    }
-    
-    /**
      * Add a new column (5 bags)
      */
     fun addColumn() {
         val currentList = _weightList.value ?: mutableListOf()
-        // Add 5 new entries
-        repeat(5) {
+        repeat(BAGS_PER_COLUMN) {
             currentList.add(0.0)
         }
         _weightList.value = currentList
@@ -157,10 +144,9 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         // Find first empty slot (0.0)
         var emptyIndex = currentList.indexOfFirst { it == 0.0 }
         
-        // If no empty slot found, add new column (5 new slots)
         if (emptyIndex == -1) {
-            repeat(5) { currentList.add(0.0) }
-            emptyIndex = currentList.size - 5
+            repeat(BAGS_PER_COLUMN) { currentList.add(0.0) }
+            emptyIndex = currentList.size - BAGS_PER_COLUMN
         }
         
         // Set the weight
@@ -179,18 +165,16 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val weights = _weightList.value ?: return listOf()
         val columns = mutableListOf<List<Double>>()
         
-        for (i in weights.indices step 5) {
-            val columnWeights = weights.subList(i, minOf(i + 5, weights.size)).toMutableList()
-            // Pad with zeros if less than 5
-            while (columnWeights.size < 5) {
+        for (i in weights.indices step BAGS_PER_COLUMN) {
+            val columnWeights = weights.subList(i, minOf(i + BAGS_PER_COLUMN, weights.size)).toMutableList()
+            while (columnWeights.size < BAGS_PER_COLUMN) {
                 columnWeights.add(0.0)
             }
             columns.add(columnWeights)
         }
-        
-        // If no columns, add one empty column
+
         if (columns.isEmpty()) {
-            columns.add(listOf(0.0, 0.0, 0.0, 0.0, 0.0))
+            columns.add(List(BAGS_PER_COLUMN) { 0.0 })
         }
         
         return columns
@@ -201,11 +185,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      */
     fun updateWeight(columnIndex: Int, bagIndex: Int, weight: Double) {
         // Validate indices
-        if (columnIndex < 0 || bagIndex < 0 || bagIndex >= 5) {
+        if (columnIndex < 0 || bagIndex < 0 || bagIndex >= BAGS_PER_COLUMN) {
             return
         }
-        
-        val flatIndex = columnIndex * 5 + bagIndex
+
+        val flatIndex = columnIndex * BAGS_PER_COLUMN + bagIndex
         val currentList = _weightList.value?.toMutableList() ?: mutableListOf()
         
         // Ensure list is large enough
@@ -226,11 +210,10 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         val weights = _weightList.value ?: mutableListOf()
         val columns = mutableListOf<Double>()
         
-        // Calculate column totals (each column has 5 bags)
         var index = 0
         while (index < weights.size) {
             var columnSum = 0.0
-            repeat(5) {
+            repeat(BAGS_PER_COLUMN) {
                 if (index < weights.size) {
                     columnSum += weights[index]
                     index++
@@ -361,13 +344,12 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         sb.append("CHI TIẾT CÂN:\n")
         sb.append("━━━━━━━━━━━━━━━━━━\n")
         
-        // Group weights by columns (5 bags each)
         var index = 0
         var columnNumber = 1
         while (index < weights.size) {
             sb.append("\nCột $columnNumber:\n")
             val columnWeights = mutableListOf<Double>()
-            repeat(5) {
+            repeat(BAGS_PER_COLUMN) {
                 if (index < weights.size) {
                     val weight = weights[index]
                     if (weight > 0) {
@@ -419,7 +401,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     fun clearSession() {
         _customerName.value = ""
         _unitPrice.value = 0L
-        _weightList.value = MutableList(15) { 0.0 }
+        _weightList.value = MutableList(INITIAL_CELL_COUNT) { 0.0 }
         calculateTotals()
     }
 }

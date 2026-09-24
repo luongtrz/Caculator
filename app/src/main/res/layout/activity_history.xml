@@ -22,8 +22,6 @@
             app:titleTextColor="@color/md_theme_onPrimary"
             app:subtitle=""
             app:subtitleTextColor="@color/md_theme_primaryContainer"
-            app:navigationIcon="@drawable/ic_launcher_rice_scaled"
-            app:navigationIconTint="@color/md_theme_onPrimary"
             android:background="@color/md_theme_primary">
 
             <!-- Sync badge + Settings button inside toolbar -->
@@ -84,6 +82,19 @@
         </LinearLayout>
 
     </com.google.android.material.appbar.AppBarLayout>
+
+    <!-- Empty state -->
+    <TextView
+        android:id="@+id/tv_empty_state"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="Chưa có đợt cân nào.\nNhấn ＋ Thêm mới để bắt đầu."
+        android:textSize="@dimen/text_body"
+        android:textColor="@color/md_theme_onSurfaceVariant"
+        android:lineSpacingMultiplier="1.4"
+        android:visibility="gone" />
 
     <!-- Record list -->
     <androidx.recyclerview.widget.RecyclerView

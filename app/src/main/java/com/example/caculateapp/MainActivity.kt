@@ -10,8 +10,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
-import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -24,7 +22,6 @@ import com.example.caculateapp.adapter.ColumnAdapter
 import com.example.caculateapp.databinding.ActivityMainBinding
 import com.example.caculateapp.databinding.BottomSheetExportFormatBinding
 import com.example.caculateapp.databinding.DialogExportPreviewBinding
-import com.example.caculateapp.databinding.LayoutExportTemplateBinding
 import com.example.caculateapp.utils.ExportManager
 import com.example.caculateapp.viewmodel.MainViewModel
 import com.google.android.material.bottomsheet.BottomSheetDialog
@@ -56,11 +53,11 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(true)
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
         val recordId = intent.getStringExtra("EXTRA_RECORD_ID")
         if (recordId != null) {
             viewModel.loadExistingRecord(recordId)
-            binding.toolbar.subtitle = "Chỉnh sửa"
         } else {
             updateToolbarDate()
         }
@@ -117,16 +114,11 @@ class MainActivity : AppCompatActivity() {
             viewModel.updateWeight(columnIndex, bagIndex, weight)
         }
 
-        val layoutManager = androidx.recyclerview.widget.LinearLayoutManager(
-            this,
-            androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL,
-            false
-        )
+        val layoutManager = androidx.recyclerview.widget.GridLayoutManager(this, 3)
 
         binding.recyclerWeights.apply {
             adapter = columnAdapter
             this.layoutManager = layoutManager
-            setHasFixedSize(true)
             itemAnimator = null
         }
 
@@ -149,10 +141,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun processQuickInput() {
         val weight = binding.etQuickInput.text.toString().toDoubleOrNull()
-        if (weight == null || weight <= 0) {
-            Toast.makeText(this, "Vui lòng nhập số hợp lệ", Toast.LENGTH_SHORT).show()
-            return
-        }
+        if (weight == null || weight <= 0) return
 
         val flatIndex = viewModel.addQuickWeight(weight)
         if (flatIndex >= 0) {
@@ -162,8 +151,6 @@ class MainActivity : AppCompatActivity() {
                 binding.recyclerWeights.scrollToPosition(columnIndex)
             }
             binding.etQuickInput.requestFocus()
-        } else {
-            Toast.makeText(this, "Lỗi khi thêm dữ liệu", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -245,9 +232,7 @@ class MainActivity : AppCompatActivity() {
         val totalMoney = viewModel.totalMoney.value ?: 0L
         val columns = viewModel.getColumns()
 
-        val pagesContainer = dialogBinding.root.findViewById<android.widget.LinearLayout>(
-            resources.getIdentifier("layout_pages_container", "id", packageName)
-        )
+        val pagesContainer = dialogBinding.layoutPagesContainer
 
         val columnChunks = columns.chunked(10)
         columnChunks.forEachIndexed { pageIndex, pageColumns ->
@@ -290,6 +275,14 @@ class MainActivity : AppCompatActivity() {
             showFormatSelectionBottomSheet()
         }
         dialog.show()
+        dialog.window?.let { win ->
+            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(dialogBinding.root) { v, insets ->
+                val navBar = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.navigationBars())
+                val actionBar = v.findViewById<android.view.View>(R.id.layout_action_bar)
+                actionBar?.setPadding(0, 0, 0, navBar.bottom)
+                insets
+            }
+        }
     }
 
     private fun createPreviewColumnView(columnNumber: Int, weights: List<Double>): android.view.View {
@@ -331,65 +324,6 @@ class MainActivity : AppCompatActivity() {
             gravity = android.view.Gravity.CENTER
         })
         return col
-    }
-
-    private fun populateExportTemplate(templateBinding: LayoutExportTemplateBinding) {
-        templateBinding.tvExportCustomerName.text = viewModel.customerName.value ?: "Khách hàng"
-        templateBinding.tvExportDate.text = "Ngày: " + SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
-        val price = viewModel.unitPrice.value ?: 0L
-        templateBinding.tvExportUnitPrice.text = "Đơn giá: %,.0f VNĐ/kg".format(price.toDouble())
-        templateBinding.tvExportGrandTotal.text = "%.2f kg".format(viewModel.grandTotal.value ?: 0.0)
-        templateBinding.tvExportTotalMoney.text = "%,.0f VNĐ".format((viewModel.totalMoney.value ?: 0L).toDouble())
-        populateWeightGrid(templateBinding.layoutExportGridContainer)
-    }
-
-    private fun populateWeightGrid(container: LinearLayout) {
-        container.removeAllViews()
-        val weights = viewModel.weightList.value ?: return
-        val columnTotals = viewModel.columnTotals.value ?: listOf()
-        if (weights.isEmpty()) return
-        val numColumns = minOf((weights.size + 4) / 5, 8)
-        for (colIndex in 0 until numColumns) {
-            val colLayout = LinearLayout(this).apply {
-                orientation = LinearLayout.VERTICAL
-                layoutParams = LinearLayout.LayoutParams(
-                    resources.getDimensionPixelSize(android.R.dimen.app_icon_size),
-                    LinearLayout.LayoutParams.WRAP_CONTENT
-                ).apply { setMargins(2, 0, 2, 0) }
-            }
-            colLayout.addView(TextView(this).apply {
-                text = "C${colIndex + 1}"
-                textSize = 10f
-                setTextColor(androidx.core.content.ContextCompat.getColor(this@MainActivity, R.color.md_theme_onPrimaryContainer))
-                setPadding(4, 4, 4, 4)
-                setBackgroundColor(androidx.core.content.ContextCompat.getColor(this@MainActivity, R.color.md_theme_primaryContainer))
-                gravity = android.view.Gravity.CENTER
-            })
-            for (row in 0 until 5) {
-                val idx = colIndex * 5 + row
-                val w = if (idx < weights.size) weights[idx] else 0.0
-                colLayout.addView(TextView(this).apply {
-                    text = if (w > 0) "%.1f".format(w) else ""
-                    textSize = 11f
-                    setTextColor(androidx.core.content.ContextCompat.getColor(this@MainActivity, R.color.md_theme_onSurface))
-                    setPadding(4, 8, 4, 8)
-                    setBackgroundResource(R.drawable.bg_weight_cell)
-                    gravity = android.view.Gravity.CENTER
-                    minWidth = 60
-                })
-            }
-            val total = if (colIndex < columnTotals.size) columnTotals[colIndex] else 0.0
-            colLayout.addView(TextView(this).apply {
-                text = "%.1f".format(total)
-                textSize = 10f
-                setTextColor(androidx.core.content.ContextCompat.getColor(this@MainActivity, R.color.md_theme_onPrimary))
-                setPadding(4, 4, 4, 4)
-                setBackgroundColor(androidx.core.content.ContextCompat.getColor(this@MainActivity, R.color.md_theme_primary))
-                gravity = android.view.Gravity.CENTER
-                setTypeface(null, android.graphics.Typeface.BOLD)
-            })
-            container.addView(colLayout)
-        }
     }
 
     private fun showFormatSelectionBottomSheet() {

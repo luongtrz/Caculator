@@ -29,7 +29,7 @@
     <dimen name="button_height_lg">56dp</dimen>
     <dimen name="card_elevation">2dp</dimen>
     <dimen name="weight_cell_width">104dp</dimen>
-    <dimen name="weight_cell_height">36dp</dimen>
+    <dimen name="weight_cell_height">48dp</dimen>
     <dimen name="weight_text_size">20sp</dimen>
     <dimen name="weight_total_text_size">18sp</dimen>
 

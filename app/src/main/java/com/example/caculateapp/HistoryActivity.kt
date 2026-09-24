@@ -11,7 +11,10 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.caculateapp.adapter.HistoryAdapter
 import com.example.caculateapp.databinding.ActivityHistoryBinding
@@ -29,15 +32,22 @@ import kotlinx.coroutines.withTimeoutOrNull
  * Displays list of all saved rice weighing sessions
  */
 class HistoryActivity : AppCompatActivity() {
-    
+
+    companion object {
+        private const val BAGS_PER_COLUMN = 5
+    }
+
     private lateinit var binding: ActivityHistoryBinding
     private val viewModel: HistoryViewModel by viewModels()
     private lateinit var adapter: HistoryAdapter
     
-    companion object {
-        const val REQUEST_CODE_NEW_SESSION = 100
-        const val REQUEST_CODE_EDIT_SESSION = 101
-    }
+    private val newSessionLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { /* list auto-updates via Firestore Flow */ }
+
+    private val editSessionLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { /* list auto-updates via Firestore Flow */ }
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +67,7 @@ class HistoryActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
         supportActionBar?.setDisplayShowTitleEnabled(true)
+        supportActionBar?.setDisplayShowHomeEnabled(false)
 
         setupDateTime()
         setupRecyclerView()
@@ -65,12 +76,6 @@ class HistoryActivity : AppCompatActivity() {
         setupSettings()
         observeSyncStatus()
         observeRecords()
-    }
-    
-    override fun onResume() {
-        super.onResume()
-        // Force check status when returning (e.g. from Add Session)
-        viewModel.checkSyncStatus()
     }
     
     /**
@@ -104,9 +109,15 @@ class HistoryActivity : AppCompatActivity() {
         timeHandler.post(updateTimeRunnable)
     }
 
+    override fun onResume() {
+        super.onResume()
+        binding.fabAddSession.isEnabled = true
+    }
+
     override fun onDestroy() {
         super.onDestroy()
         timeHandler.removeCallbacks(updateTimeRunnable)
+        searchHandler.removeCallbacksAndMessages(null)
     }
 
     
@@ -230,18 +241,10 @@ class HistoryActivity : AppCompatActivity() {
      */
     private fun setupFAB() {
         binding.fabAddSession.setOnClickListener {
-            // Prevent double click (debounce 300ms)
-            if (System.currentTimeMillis() - lastClickTime < 300) return@setOnClickListener
-            lastClickTime = System.currentTimeMillis()
-            
-            // Open MainActivity for new session
-            val intent = Intent(this, MainActivity::class.java)
-            startActivityForResult(intent, REQUEST_CODE_NEW_SESSION)
+            binding.fabAddSession.isEnabled = false
+            newSessionLauncher.launch(Intent(this, MainActivity::class.java))
         }
     }
-    
-    // Add debounce variable
-    private var lastClickTime: Long = 0
     
     private var searchJob: kotlinx.coroutines.Job? = null
     private val searchHandler = android.os.Handler(android.os.Looper.getMainLooper())
@@ -268,8 +271,12 @@ class HistoryActivity : AppCompatActivity() {
      */
     private fun observeRecords() {
         lifecycleScope.launch {
-            viewModel.allRecords.collectLatest { records ->
-                adapter.submitList(records)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.allRecords.collectLatest { records ->
+                    adapter.submitList(records)
+                    binding.tvEmptyState.visibility =
+                        if (records.isEmpty()) android.view.View.VISIBLE else android.view.View.GONE
+                }
             }
         }
     }
@@ -291,8 +298,8 @@ class HistoryActivity : AppCompatActivity() {
      */
     private fun openEditSession(recordId: String?) {
         val intent = Intent(this, MainActivity::class.java)
-        intent.putExtra("EXTRA_RECORD_ID", recordId)
-        startActivityForResult(intent, REQUEST_CODE_EDIT_SESSION)
+            .putExtra("EXTRA_RECORD_ID", recordId)
+        editSessionLauncher.launch(intent)
     }
     
     /**
@@ -334,18 +341,14 @@ class HistoryActivity : AppCompatActivity() {
         // Convert flat weightList to columns
         val columns = mutableListOf<List<Double>>()
         val weights = record.weightList
-        for (i in weights.indices step 5) {
-            val columnWeights = weights.subList(i, minOf(i + 5, weights.size)).toMutableList()
-            while (columnWeights.size < 5) {
-                columnWeights.add(0.0)
-            }
-            columns.add(columnWeights)
+        for (i in weights.indices step BAGS_PER_COLUMN) {
+            val col = weights.subList(i, minOf(i + BAGS_PER_COLUMN, weights.size)).toMutableList()
+            while (col.size < BAGS_PER_COLUMN) col.add(0.0)
+            columns.add(col)
         }
         
         // Get pages container
-        val pagesContainer = dialogBinding.root.findViewById<android.widget.LinearLayout>(
-            resources.getIdentifier("layout_pages_container", "id", packageName)
-        )
+        val pagesContainer = dialogBinding.layoutPagesContainer
         
         // Generate all pages and add to container
         val columnChunks = columns.chunked(10)
@@ -583,8 +586,10 @@ class HistoryActivity : AppCompatActivity() {
      */
     private fun observeSyncStatus() {
         lifecycleScope.launch {
-            viewModel.isCloudSynced.collectLatest { isSynced ->
-                updateSyncBadge(isSynced)
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.isCloudSynced.collectLatest { isSynced ->
+                    updateSyncBadge(isSynced)
+                }
             }
         }
     }
@@ -660,12 +665,5 @@ class HistoryActivity : AppCompatActivity() {
         bottomSheet.show()
     }
     
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        // Refresh list when returning from MainActivity
-        if (resultCode == RESULT_OK) {
-            // RecyclerView will auto-update via Flow
-        }
-    }
 }
 

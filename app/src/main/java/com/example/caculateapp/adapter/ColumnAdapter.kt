@@ -16,8 +16,10 @@ class ColumnAdapter(
 
     companion object {
         private val DIFF_CALLBACK = object : DiffUtil.ItemCallback<List<Double>>() {
-            override fun areItemsTheSame(old: List<Double>, new: List<Double>) = old === new
-            override fun areContentsTheSame(old: List<Double>, new: List<Double>) = old == new
+            override fun areItemsTheSame(old: List<Double>, new: List<Double>) =
+                old.size == new.size && old.indices.all { old[it] == new[it] }
+            override fun areContentsTheSame(old: List<Double>, new: List<Double>) =
+                old.size == new.size && old.indices.all { old[it] == new[it] }
         }
     }
 

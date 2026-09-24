@@ -26,7 +26,6 @@ class HistoryAdapter(
 ) : ListAdapter<RiceRecord, HistoryAdapter.HistoryViewHolder>(DiffCallback()) {
     
     companion object {
-        private const val DATE_FORMAT_PATTERN = "dd/MM/yyyy HH:mm"
         private val dateFormat = SimpleDateFormat("hh:mm a dd/MM/yyyy", Locale.getDefault())
         private val weightFormat = NumberFormat.getInstance(Locale.getDefault()).apply {
             minimumFractionDigits = 1
