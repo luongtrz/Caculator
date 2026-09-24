@@ -86,6 +86,22 @@ class HistoryActivity : AppCompatActivity() {
         setupQrAndSelectionActions()
         setupBackPressHandler()
         observeRecords()
+
+        handleIncomingIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        handleIncomingIntent(intent)
+    }
+
+    private fun handleIncomingIntent(intent: Intent?) {
+        val uri = intent?.data ?: return
+        val urlString = uri.toString()
+        if (urlString.contains("canlua.app/import") || urlString.contains("canlua://import")) {
+            handleScannedQr(urlString)
+        }
     }
 
     private fun setupBackPressHandler() {
@@ -347,8 +363,8 @@ class HistoryActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             try {
-                val qrData = QrTransferManager.serializeRecords(records)
-                val qrBitmap = QrTransferManager.generateQrBitmap(qrData, 800)
+                val appLinkData = QrTransferManager.serializeToDeepLink(records)
+                val textReceiptData = QrTransferManager.formatTextReceipt(records)
 
                 val dialog = android.app.Dialog(this@HistoryActivity)
                 val dialogBinding = DialogQrShareBinding.inflate(layoutInflater)
@@ -376,7 +392,37 @@ class HistoryActivity : AppCompatActivity() {
                 }
 
                 dialogBinding.tvQrSummary.text = summaryText
-                dialogBinding.imgQrCode.setImageBitmap(qrBitmap)
+
+                var cachedAppLinkBitmap: android.graphics.Bitmap? = null
+                var cachedReceiptBitmap: android.graphics.Bitmap? = null
+
+                fun renderQr(isReceipt: Boolean) {
+                    if (isReceipt) {
+                        if (cachedReceiptBitmap == null) {
+                            cachedReceiptBitmap = QrTransferManager.generateQrBitmap(textReceiptData, 800)
+                        }
+                        dialogBinding.imgQrCode.setImageBitmap(cachedReceiptBitmap)
+                        dialogBinding.tvQrInstruction.text = "Bất kỳ máy nào dùng Zalo hoặc Camera chụp ảnh quét mã là đọc được ngay toàn bộ phiếu cân (không cần cài app)."
+                    } else {
+                        if (cachedAppLinkBitmap == null) {
+                            cachedAppLinkBitmap = QrTransferManager.generateQrBitmap(appLinkData, 800)
+                        }
+                        dialogBinding.imgQrCode.setImageBitmap(cachedAppLinkBitmap)
+                        dialogBinding.tvQrInstruction.text = "Đưa Camera điện thoại thường quét mã -> Bấm 'Mở bằng Cân Lúa' để nạp tự động, hoặc mở app khác quét."
+                    }
+                }
+
+                // Default to App Link mode
+                renderQr(false)
+
+                dialogBinding.toggleQrMode.addOnButtonCheckedListener { _, checkedId, isChecked ->
+                    if (isChecked) {
+                        when (checkedId) {
+                            R.id.btn_mode_text_receipt -> renderQr(true)
+                            R.id.btn_mode_app_link -> renderQr(false)
+                        }
+                    }
+                }
 
                 dialogBinding.btnCloseQr.setOnClickListener {
                     dialog.dismiss()

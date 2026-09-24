@@ -18,14 +18,34 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CaculateApp">
         
-        <!-- History Activity - Main app screen (Launcher) -->
+        <!-- History Activity - Main app screen (Launcher & Deep Link receiver) -->
         <activity
             android:name=".HistoryActivity"
             android:exported="true"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            
+            <!-- Deep link intent-filters for Camera app scanning -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="https"
+                    android:host="canlua.app"
+                    android:pathPrefix="/import" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:scheme="canlua"
+                    android:host="import" />
             </intent-filter>
         </activity>
         

@@ -27,7 +27,37 @@
         android:textAppearance="@style/TextAppearance.Rice.Body"
         android:textColor="@color/md_theme_onSurfaceVariant"
         android:gravity="center"
-        android:layout_marginBottom="@dimen/spacing_md" />
+        android:layout_marginBottom="@dimen/spacing_sm" />
+
+    <!-- Mode Selector: Deep Link vs Text Receipt -->
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/toggle_qr_mode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:singleSelection="true"
+        app:selectionRequired="true"
+        app:checkedButton="@id/btn_mode_app_link"
+        android:layout_marginBottom="@dimen/spacing_md">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_mode_app_link"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="📱 Mở vào App"
+            android:textSize="12sp"
+            style="?attr/materialButtonOutlinedStyle" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_mode_text_receipt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="📄 Biên lai chữ (Zalo)"
+            android:textSize="12sp"
+            style="?attr/materialButtonOutlinedStyle" />
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
 
     <!-- QR Code Container Card -->
     <com.google.android.material.card.MaterialCardView
